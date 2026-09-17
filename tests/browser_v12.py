@@ -23,7 +23,7 @@ with sync_playwright() as p:
     if args.inline:
         html=(ROOT/args.entry).read_text(encoding='utf-8');html=re.sub(r'<meta http-equiv="Content-Security-Policy"[^>]+>','',html)
         for css in ['src/style.css']:html=html.replace('<link rel="stylesheet" href="'+css+'">','<style>'+(ROOT/css).read_text(encoding='utf-8')+'</style>')
-        for name in ['app.js','assets.js','battle.js','battle-render.js','battle-ui.js','engine.js','editor-core.js','render.js','i18n.js']:html=html.replace('<script src="src/'+name+'"></script>','<script>'+(ROOT/'src'/name).read_text(encoding='utf-8')+'</script>')
+        for name in ['app.js','assets.js','encounter-content.js','battle-landscapes.js','battle.js','battle-render.js','battle-ui.js','engine.js','editor-core.js','render.js','i18n.js']:html=html.replace('<script src="src/'+name+'"></script>','<script>'+(ROOT/'src'/name).read_text(encoding='utf-8')+'</script>')
         page.set_content(html,wait_until='load')
     else:page.goto((ROOT/args.entry).as_uri(),wait_until='load')
     page.click('#settingsBtn');page.select_option('#setLanguage','en');page.click('#settingsDone')
@@ -54,7 +54,7 @@ with sync_playwright() as p:
         dest=OUT/name;w.value.save_as(dest);expect(dest.stat().st_size>0);page.wait_for_selector('#busy',state='hidden');return dest
     try:
         page.wait_for_selector('#mapHost svg');page.wait_for_selector('#busy',state='hidden')
-        check('Four separate creation modes and 246 bundled assets',lambda:(expect(page.locator('[data-mode]').count()==4),expect(page.locator('.asset-card').count()==246),expect(js('MegamapApp.getVersion()')=='1.2.0')))
+        check('Four separate creation modes and 278 bundled assets',lambda:(expect(page.locator('[data-mode]').count()==4),expect(page.locator('.asset-card').count()==278),expect(js('MegamapApp.getVersion()')=='1.2.0')))
         def shapes():
             mode('city');expect(page.locator('[data-opt="shape"] option').count()==12);opt('shape','l-shape');opt('shapeGuidance',100);opt('river',False);expect('Exact target envelope' in page.locator('#shapePreview').inner_text());opt('shapeGuidance',1);expect('Target ignored' in page.locator('#shapePreview').inner_text());opt('shapeGuidance',100)
         check('Twelve shape choices, live preview, guidance endpoints 1 and 100',shapes)

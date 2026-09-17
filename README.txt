@@ -5,6 +5,16 @@
 
 **Scope:** a portable **2D procedural generator and editor**, launched from a Windows `.bat` into a browser. This is the complete source-and-runtime package for the features below. It builds on the supplied Megamap v1; it is not a signed native executable, a GIS survey system, or a full fork of Watabou's current private engine.
 
+## Wizard and six additional battle encounters
+
+The large **New wizard / Nuova procedura guidata** button beside the title offers button-led creation without removing the original sidebar tabs. Choices, numeric shortcuts, individual and section randomization, Back and Skip are available; generation returns to the sidebar with the chosen settings.
+
+**Build → Battle → Preset**, or the wizard, now includes **Forest road encounter, Mountain path, Marsh causeway, Coastal cove, Mansion interior and Castle interior**. The first four generate open terrain **without rooms**; the two interiors have different 13-room programs, furnished public, private and service spaces, and editable architecture. All 12 previous battle themes remain available: **18 total**.
+
+The library now contains **278 vector assets in 14 categories**, including **32 new landscape and mansion/castle props**. Open **examples/Six-new-encounters.megamap.json** for six ready-to-edit maps. English/Italian instructions, controls, asset IDs and export limitations are in **docs/encounter-expansion.md**; wizard instructions are in **docs/map-wizard.md**.
+
+Outdoor trees and rocks are visual cover, not automatic VTT line-of-sight walls. Add wall segments where required. Imported older atlases retain their stored geometry; they are not regenerated automatically. The sections below describe the original v1.2 release and its historical verification counts.
+
 ## Start here
 
 1. Extract the **entire ZIP** into a normal folder. Keep `index.html`, `src/`, `assets/` and the launchers together.

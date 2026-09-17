@@ -17,6 +17,7 @@ test('Battle grid defaults to flat-top hex movement cells',()=>{
 
 test('Every encounter preset has an ordered zone plan, entrance first',()=>{
  for(const [theme,plan] of Object.entries(E.BATTLE_PLANS)){
+  if(E.isRoomlessBattle(theme)){assert.deepEqual(plan,[]);continue;}
   assert(plan.length>=3,theme+' plan too short');
   for(const role of plan)assert(E.BATTLE_ZONES[role],theme+' references unknown role '+role);
   assert(E.BATTLE_ZONES[plan[0]].props.length>0,'the first zone must be a furnished room');

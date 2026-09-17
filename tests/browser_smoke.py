@@ -35,7 +35,7 @@ with sync_playwright() as p:
         html=re.sub(r'<meta http-equiv="Content-Security-Policy"[^>]+>','',html)
         for css in ['src/style.css']:
             html=html.replace('<link rel="stylesheet" href="'+css+'">','<style>'+(ROOT/css).read_text(encoding='utf-8')+'</style>')
-        for name in ['app.js','assets.js','battle.js','battle-render.js','battle-ui.js','engine.js','editor-core.js','render.js','i18n.js']:
+        for name in ['app.js','assets.js','encounter-content.js','battle-landscapes.js','battle.js','battle-render.js','battle-ui.js','engine.js','editor-core.js','render.js','i18n.js']:
             html=html.replace('<script src="src/'+name+'"></script>','<script>'+(ROOT/'src'/name).read_text(encoding='utf-8')+'</script>')
         page.set_content(html,wait_until='load')
     else:page.goto((ROOT/args.entry).as_uri(),wait_until='load')
@@ -74,7 +74,7 @@ with sync_playwright() as p:
         page.wait_for_selector('#busy',state='hidden');return target
     try:
         page.wait_for_selector('#mapHost svg');page.wait_for_selector('#busy',state='hidden')
-        check('Startup: version, default 20 km region, 246 assets and visible Generate button',lambda:(expect(page.evaluate('MegamapApp.getVersion()')=='1.2.0'),expect(s()['scale']==20),expect(page.locator('.asset-card').count()==246),expect(page.locator('#generate').is_visible())))
+        check('Startup: version, default 20 km region, 278 assets and visible Generate button',lambda:(expect(page.evaluate('MegamapApp.getVersion()')=='1.2.0'),expect(s()['scale']==20),expect(page.locator('.asset-card').count()==278),expect(page.locator('#generate').is_visible())))
         def styles():
             left('style');page.select_option('#palette','parchment');page.select_option('#grid','hex');page.check('#contours');expect(s()['appearance']['palette']=='parchment');expect(s()['appearance']['grid']=='hex');expect(s()['appearance']['contours'])
         check('Style controls change and store per-map appearance',styles)
