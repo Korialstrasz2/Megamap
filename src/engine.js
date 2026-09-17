@@ -931,7 +931,7 @@ function finalizeBattle(s){
  s.appearance={grid:s.options.gridType};s.battle.boundary=mapBoundary(s);
  if(s.battle.generatorVersion===2)return s;
  if(s.options.mapShape==='rectangle')return s;
- const poly=s.battle.boundary,g=s.gridSize,{cols,rows,cells}=s.battle,outdoor=['forest','desert','bridge'].includes(s.options.theme);
+ const poly=s.battle.boundary,g=s.gridSize,{cols,rows,cells}=s.battle,outdoor=Battle.isOutdoor(s.options.theme);
  if(!outdoor){
   for(let y=0;y<rows;y++)for(let x=0;x<cols;x++)if(!inside([(x+.5)*g,(y+.5)*g],poly))cells[y*cols+x]=0;
   // Retain the largest navigable component after trimming a rectangular complex to a hex.
@@ -955,7 +955,7 @@ function finalizeBattle(s){
 defaults.city.buildings=BUILDING_TYPES.map(t=>t.id);
 function battle(seed,config){const o=options('battle',config),s=base('battle',seed,o);return Battle.generate(s,{rng,add,mapBoundary,pointOnOrInside,inside,ASSETS});}
 function wallSegments(s){
- if(!s.battle||['forest','desert','bridge'].includes(s.options.theme))return[];
+ if(!s.battle||Battle.isOutdoor(s.options.theme))return[];
  const {cols,rows,cells}=s.battle,g=s.gridSize,lines=[],exterior=new Set(s.battle.exterior||[]);
  for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
   const i=y*cols+x;if(!cells[i])continue;
@@ -1030,5 +1030,5 @@ function validateScene(s){
  return s;
 }
 
-return{VERSION,SIZE,defaults,ASSETS,CITY_SHAPES,QUARTERS,BUILDING_TYPES,LOCAL_BIOMES,GRID_TYPES,BATTLE_ZONES:ZONE_ROLES,BATTLE_PLANS:THEME_ZONES,BATTLE_TEMPLATES:Battle.TEMPLATES,battleEstimate:Battle.estimate,options,cityEnvelope,triangulate,cleanPolygon,pointOnOrInside,clipToEnvelope,regenerateDistrict,localElevation,mapBoundary,hash,rng,noise,fbm,area,center,clip,inset,inside,hull,voronoi,createAlleys,astar,wallSegments,generate,validateScene,nearPolyline,dist,clamp,EPS,PLACE_CLEARANCE,RIVER_BANK_GAP,SHORE_SETBACK,STREET_SETBACK,segmentsIntersect,segmentDistance,polygonsIntersect,polygonDistance,polygonsClearOf,polygonInsidePolygon,polygonPolylineDistance,symbolFootprint,convexQuality,capsulePolygon,subtractConvex,subtractAll,shapeOf,boundsOf,sceneReservations,cityOccupancy,convexParts,districtContext,districtDiagnostics,cleanFootprint,repairBuildingFootprint,buildingShapeReason,buildingRejection,waterProximity,waterKindOk,planOpenSpaces,reserveCompactGround,sampleConvex,waterfrontBBox,MAX_BUILD_ASPECT,MIN_BUILD_WIDTH,TIP_ANGLE,TIP_EXTENSION,TIP_TRIM,MAX_TIP_TRIMS,FOOTPRINT_TOL,WATERFRONT_GAP,OPEN_SPACE_FRACTION,MIN_OPEN_SPACE,OPEN_MATERIALS,WATER_KINDS,WATER_PROPS,PROP_MIN_SIZE,MAX_PROP_ATTEMPTS};
+return{VERSION,SIZE,defaults,ASSETS,CITY_SHAPES,QUARTERS,BUILDING_TYPES,LOCAL_BIOMES,GRID_TYPES,BATTLE_ZONES:ZONE_ROLES,BATTLE_PLANS:THEME_ZONES,BATTLE_TEMPLATES:Battle.TEMPLATES,BATTLE_EXTRA_PRESETS:Battle.EXTRA_PRESETS,isRoomlessBattle:Battle.isRoomless,battleEstimate:Battle.estimate,options,cityEnvelope,triangulate,cleanPolygon,pointOnOrInside,clipToEnvelope,regenerateDistrict,localElevation,mapBoundary,hash,rng,noise,fbm,area,center,clip,inset,inside,hull,voronoi,createAlleys,astar,wallSegments,generate,validateScene,nearPolyline,dist,clamp,EPS,PLACE_CLEARANCE,RIVER_BANK_GAP,SHORE_SETBACK,STREET_SETBACK,segmentsIntersect,segmentDistance,polygonsIntersect,polygonDistance,polygonsClearOf,polygonInsidePolygon,polygonPolylineDistance,symbolFootprint,convexQuality,capsulePolygon,subtractConvex,subtractAll,shapeOf,boundsOf,sceneReservations,cityOccupancy,convexParts,districtContext,districtDiagnostics,cleanFootprint,repairBuildingFootprint,buildingShapeReason,buildingRejection,waterProximity,waterKindOk,planOpenSpaces,reserveCompactGround,sampleConvex,waterfrontBBox,MAX_BUILD_ASPECT,MIN_BUILD_WIDTH,TIP_ANGLE,TIP_EXTENSION,TIP_TRIM,MAX_TIP_TRIMS,FOOTPRINT_TOL,WATERFRONT_GAP,OPEN_SPACE_FRACTION,MIN_OPEN_SPACE,OPEN_MATERIALS,WATER_KINDS,WATER_PROPS,PROP_MIN_SIZE,MAX_PROP_ATTEMPTS};
 });

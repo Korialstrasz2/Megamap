@@ -12,11 +12,11 @@ function defs(s,p){if(s.battle?.generatorVersion!==2)return '';const g=s.gridSiz
  <pattern id="battle-ground" width="${n(g*3)}" height="${n(g*3)}" patternUnits="userSpaceOnUse"><path d="M${n(g*.2)} ${n(g*.7)}l${n(g*.13)}-${n(g*.18)}m0 ${n(g*.2)}l${n(g*.18)}-${n(g*.12)}M${n(g*1.9)} ${n(g*1.9)}l${n(g*.08)}-${n(g*.18)}m${n(g*.1)} ${n(g*.2)}l${n(g*.14)}-${n(g*.12)}" fill="none" stroke="${p.ink}" stroke-width="${n(g*.025)}" opacity=".12"/><ellipse cx="${n(g*1.2)}" cy="${n(g*2.5)}" rx="${n(g*.34)}" ry="${n(g*.07)}" fill="${p.hill}" opacity=".15"/></pattern>
  <pattern id="battle-rock" width="${n(g*2)}" height="${n(g*2)}" patternUnits="userSpaceOnUse"><path d="M0 ${n(g)}L${n(g*.6)} ${n(g*.8)} ${n(g)} 0M${n(g*.6)} ${n(g*.8)}l${n(g*.8)} ${n(g*.8)} ${n(g*.6)}-${n(g*.2)}M${n(g*1.4)} ${n(g*1.6)}L${n(g)} ${n(g*2)}" fill="none" stroke="${p.paper}" stroke-opacity=".07" stroke-width="${n(g*.035)}"/></pattern>`;
 }
-function floor(s,p,view){const b=s.battle,g=s.gridSize,theme=s.options.theme,open=['forest','desert','bridge','tavern','dwelling','stronghold'].includes(theme),cave=['cave','ice-cave'].includes(theme),base=open?(theme==='desert'?p.sand:p.grass):p.hill;
+function floor(s,p,view){const b=s.battle,g=s.gridSize,theme=s.options.theme,open=!!b.landscape||['forest','desert','bridge','tavern','dwelling','stronghold','mansion','castle'].includes(theme),cave=['cave','ice-cave'].includes(theme),base=b.landscape?p[b.landscape.ground]:open?(theme==='desert'?p.sand:p.grass):p.hill;
  let out=`<rect width="${s.width}" height="${s.height}" fill="${open?base:'#434943'}"/>`;
  if(view.textures!==false)out+=`<rect width="${s.width}" height="${s.height}" fill="url(#${open?'battle-ground':'battle-rock'})"/>`;
  const ground=cave?(theme==='ice-cave'?p.snow:p.hill):open?base:p.paper;
- if(['dwelling','tavern','stronghold'].includes(theme)){
+ if(['dwelling','tavern','stronghold','mansion','castle'].includes(theme)){
   const solid=b.cells.map((v,i)=>v?'':`M${n(i%b.cols*g)} ${n(Math.floor(i/b.cols)*g)}h${n(g)}v${n(g)}h-${n(g)}Z`).join('');
   if(solid)out+=`<path data-painted-solid="true" d="${solid}" fill="#434d47"/>`;
  }

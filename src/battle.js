@@ -2,7 +2,7 @@
  * Rooms are allocated before doors; doors reserve circulation before furnishing.
  * All geometry is expressed in 5 ft construction cells until final projection.
  */
-(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.MegamapBattle=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
+(function(root,factory){const content=typeof module==='object'&&module.exports?require('./encounter-content.js'):root.MegamapEncounterContent,landscapes=typeof module==='object'&&module.exports?require('./battle-landscapes.js'):root.MegamapBattleLandscapes;const api=factory(content,landscapes);if(typeof module==='object'&&module.exports)module.exports=api;else root.MegamapBattle=api;})(typeof globalThis!=='undefined'?globalThis:this,function(Content,Landscapes){
 'use strict';
 const MAX_ZONES=24;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -89,8 +89,13 @@ for(const [id,z] of Object.entries(ZONE_ROLES)){
  z.access=SECURE.has(id)?'secure':PRIVATE.has(id)?'private':SERVICE.has(id)?'service':'public';
  z.near=AFFINITIES.flatMap(([a,b])=>a===id?[b]:b===id?[a]:[]);
 }
-const DEFAULTS={cols:40,rows:30,roomCount:12,theme:'dungeon',gridType:'hex-flat',mapShape:'rectangle',layout:'auto',entrySide:'auto',corridorWidth:1,furnishing:.7,condition:'inhabited',serviceExit:true};
-const LAYOUTS={dungeon:'branching',tavern:'compact',dwelling:'compact',stronghold:'courtyard',temple:'axial',ruins:'courtyard',sewer:'branching'};
+Object.assign(ZONE_ROLES,Content.roles);
+for(const [id,z] of Object.entries(Content.roles)){if(z.access==='service')SERVICE.add(id);if(z.access==='private')PRIVATE.add(id);if(z.access==='secure')SECURE.add(id);}
+for(const p of Content.presets)THEME_ZONES[p.id]=p.zones.slice();
+const isRoomless=Content.isRoomless;
+const isOutdoor=theme=>['forest','desert','bridge'].includes(theme)||isRoomless(theme);
+const DEFAULTS={cols:40,rows:30,roomCount:12,theme:'dungeon',gridType:'hex-flat',mapShape:'rectangle',layout:'auto',entrySide:'auto',corridorWidth:1,furnishing:.7,condition:'inhabited',serviceExit:true,routeWidth:2,clearingSize:5,roughness:.5};
+const LAYOUTS={dungeon:'branching',tavern:'compact',dwelling:'compact',stronghold:'courtyard',temple:'axial',ruins:'courtyard',sewer:'branching',mansion:'courtyard',castle:'courtyard'};
 const TEMPLATES=[
  {id:'garrison',name:'Dungeon garrison',theme:'dungeon',zones:THEME_ZONES.dungeon,layout:'branching'},
  {id:'home',name:'Family dwelling',theme:'dwelling',zones:THEME_ZONES.dwelling,layout:'compact',cols:28,rows:24},
@@ -102,26 +107,29 @@ const TEMPLATES=[
  {id:'caverns',name:'Living cave system',theme:'cave',zones:THEME_ZONES.cave},
  {id:'crossing',name:'River crossing',theme:'bridge',zones:THEME_ZONES.bridge}
 ];
+TEMPLATES.push(...Content.presets.filter(p=>!p.outdoor).map(p=>({id:p.id,name:p.name,theme:p.id,zones:p.zones,layout:p.layout,cols:p.cols,rows:p.rows,corridorWidth:p.corridorWidth})));
 function detail(value={},index=0,length=0){
  const v=value&&typeof value==='object'&&!Array.isArray(value)?value:{};
  return {label:typeof v.label==='string'?v.label.trim().slice(0,80):'',size:['auto','small','large'].includes(v.size)?v.size:'auto',access:['auto','public','service','private','secure'].includes(v.access)?v.access:'auto',near:Number.isInteger(v.near)&&v.near>=0&&v.near<length&&v.near!==index?v.near:null};
 }
 function normalize(input={}){
  if(!input||typeof input!=='object'||Array.isArray(input))input={};
- const o={...DEFAULTS,...input};
+ const preset=Content.presets.find(p=>p.id===input.theme),base=preset?Object.fromEntries(['cols','rows','layout','corridorWidth','routeWidth','clearingSize','roughness'].filter(k=>preset[k]!=null).map(k=>[k,preset[k]])):{};
+ const o={...DEFAULTS,...base,...input};
  for(const [k,lo,hi] of [['cols',16,80],['rows',16,80],['roomCount',3,25],['corridorWidth',1,2]])o[k]=Number.isFinite(Number(o[k]))?clamp(Math.round(Number(o[k])),lo,hi):DEFAULTS[k];
+ for(const [k,lo,hi] of [['routeWidth',1,4],['clearingSize',2,8],['roughness',0,1]])o[k]=Number.isFinite(Number(o[k]))?clamp(Number(o[k]),lo,hi):DEFAULTS[k];
  o.furnishing=Number.isFinite(Number(o.furnishing))?clamp(Number(o.furnishing),0,1):DEFAULTS.furnishing;
  for(const [key,values] of Object.entries({theme:Object.keys(THEME_ZONES),gridType:['square','hex-pointy','hex-flat'],mapShape:['rectangle','hex-pointy','hex-flat'],layout:['auto','compact','branching','courtyard','axial'],entrySide:['auto','north','east','south','west'],condition:['inhabited','abandoned','ruined']}))if(!values.includes(o[key]))o[key]=DEFAULTS[key];
  o.serviceExit=typeof o.serviceExit==='boolean'?o.serviceExit:DEFAULTS.serviceExit;
- const raw=Array.isArray(input.zones)?input.zones:THEME_ZONES[o.theme],valid=raw.map((role,i)=>({role,i})).filter(z=>typeof z.role==='string'&&Object.hasOwn(ZONE_ROLES,z.role)).slice(0,MAX_ZONES);
+ const raw=isRoomless(o.theme)?[]:Array.isArray(input.zones)?input.zones:THEME_ZONES[o.theme],valid=raw.map((role,i)=>({role,i})).filter(z=>typeof z.role==='string'&&Object.hasOwn(ZONE_ROLES,z.role)).slice(0,MAX_ZONES);
  const remap=new Map(valid.map((z,i)=>[z.i,i]));
  o.zones=valid.map(z=>z.role);
  o.zoneDetails=valid.map((z,i)=>{const v=detail(input.zoneDetails?.[z.i],z.i,raw.length);v.near=remap.has(v.near)?remap.get(v.near):null;return detail(v,i,valid.length);});
  return o;
 }
-function program(o){return (o.zones.length?o.zones:[THEME_ZONES[o.theme][0]]).map((role,index)=>{
+function program(o){if(isRoomless(o.theme))return [];return (o.zones.length?o.zones:[THEME_ZONES[o.theme][0]]).map((role,index)=>{
  const d=detail(o.zoneDetails[index],index,o.zones.length),z=ZONE_ROLES[role],size=d.size==='small'?'s':d.size==='large'?'l':z.size;
- return {role,index,key:'zone-'+index,label:d.label||z.label,access:d.access==='auto'?z.access:d.access,near:d.near,size,weight:size==='s'?12:size==='l'?38:22};
+ return {role,index,key:'zone-'+index,label:d.label||z.label,access:d.access==='auto'?z.access:d.access,near:d.near,size,weight:(size==='s'?12:size==='l'?38:22)*(['mansion','castle'].includes(o.theme)?1.7:1)*(o.theme==='castle'&&size!=='s'&&['great-hall','throne-room'].includes(role)?1.4:1)};
 });}
 function estimate(input){const o=normalize(input),p=program(o),area=p.reduce((n,z)=>n+z.weight,0)*((o.layout==='auto'?LAYOUTS[o.theme]:o.layout)==='courtyard'?1.65:1.35),factor=o.mapShape==='rectangle'?1:.62;
  const available=Math.max(1,(o.cols-4)*(o.rows-4)*factor),scale=Math.max(1,Math.sqrt(area/available));
@@ -303,6 +311,7 @@ function circulation(F){
   const candidates=[];for(let y=q.y;y<q.y+q.h;y++)for(let x=q.x;x<q.x+q.w;x++){const i=y*F.C+x;if(F.floor[i]&&!F.wet.has(i))candidates.push(i);}
   const center=Number.isInteger(q.anchor)&&F.floor[q.anchor]&&!F.wet.has(q.anchor)?q.anchor:candidates.sort((a,b)=>Math.abs(a%F.C+.5-q.x-q.w/2)+Math.abs(Math.floor(a/F.C)+.5-q.y-q.h/2)-Math.abs(b%F.C+.5-q.x-q.w/2)-Math.abs(Math.floor(b/F.C)+.5-q.y-q.h/2))[0];
   q.anchor=center;F.reserved.add(center);
+  if(q.role==='ballroom')for(let y=q.y+1;y<q.y+q.h-1;y++)for(let x=q.x+1;x<q.x+q.w-1;x++)if(Math.abs(x+.5-q.x-q.w/2)<q.w*.27&&Math.abs(y+.5-q.y-q.h/2)<q.h*.27)F.reserved.add(y*F.C+x);
   const doors=F.doors.filter(d=>d.room===q.key||d.other===q.key);
   for(const d of doors){let x=d.x,y=d.y;if(!contains(q,x,y)){x+=d.dx;y+=d.dy;}const target=y*F.C+x;
    for(const i of shortestPath(F,center,target,j=>contains(q,j%F.C,Math.floor(j/F.C))&&F.floor[j]&&!F.wet.has(j)))F.reserved.add(i);
@@ -310,7 +319,8 @@ function circulation(F){
  }
 }
 const FOOTPRINTS={bed:[1.15,2], 'bunk-bed':[1.2,2],bench:[1.8,.5],chair:[.65,.65],desk:[1.6,.8],bookshelf:[1.8,.45],table:[1.7,1.2],'long-table':[2.5,1.1],'round-table':[1.3,1.3],counter:[2.3,.6],stove:[1.1,1],fireplace:[1.5,.7],barrel:[.7,.7],crate:[.8,.8],sacks:[.7,.6],chest:[1,.6],'weapon-rack':[1.7,.5],altar:[1.6,1.1],sarcophagus:[1,2],column:[.8,.8],statue:[1,1],throne:[1.15,1.2],brazier:[.65,.65],stairs:[1.5,2],cage:[1.65,1.65],'animal-pen':[2,2],tent:[2,2.5],wagon:[1.8,3],rug:[2,2],well:[1,1],anvil:[.9,.8]};
-function footprint(asset){return FOOTPRINTS[asset]||[.85,.85];}
+Object.assign(FOOTPRINTS,Content.footprints);
+function footprint(asset){return FOOTPRINTS[asset]||(['tree','oak','pine'].includes(asset)?[1.8,1.8]:[.85,.85]);}
 function overlap(a,b,pad=.12){return a.x<b.x+b.w+pad&&a.x+a.w+pad>b.x&&a.y<b.y+b.h+pad&&a.y+a.h+pad>b.y;}
 function canPlace(F,q,room,allowWet=false){
  for(let y=Math.floor(q.y);y<=Math.ceil(q.y+q.h)-1;y++)for(let x=Math.floor(q.x);x<=Math.ceil(q.x+q.w)-1;x++){const i=y*F.C+x;if(x<0||y<0||x>=F.C||y>=F.R||!F.floor[i]||F.reserved.has(i)||(!allowWet&&F.wet.has(i))||room&&!contains(room,x,y))return false;}
@@ -339,23 +349,28 @@ function placeAgainstWall(F,q,asset,preferred='any',scale=1){
  for(const p of options){const f=prop(F,asset,p.x,p.y,p.w,p.h,p.rotation,q);if(f)return f;}
  return null;
 }
+function roomProps(F,q){
+ const overrides=F.o.theme==='castle'?{gatehouse:['portcullis-frame','armor-stand','arrow-barrel','banner-stand'],guard:['armor-stand','weapon-rack','bench','arrow-barrel'],barracks:['guard-bunk','supply-rack','chest','bench'],armory:['armor-stand','weapon-rack','arrow-barrel','supply-rack'],storage:['supply-rack','crate','barrel','sacks']}:{};
+ return overrides[q.role]||ZONE_ROLES[q.role].props;
+}
 function furnish(F){
  for(const q of F.rooms){const z=ZONE_ROLES[q.role],anchor=q.anchor??Math.floor(q.y+q.h/2)*F.C+Math.floor(q.x+q.w/2),p=F.P(anchor%F.C+.5,Math.floor(anchor/F.C)+.5),notes=(z.notes[0]||'')+' '+q.access[0].toUpperCase()+q.access.slice(1)+' space; access is through planned doorways, with a clear 5 ft circulation route.';
   const marker=F.H.add(F.s,'room',{x:p[0],y:p[1],role:q.role,roomKey:q.key,label:q.label,notes,zoneIndex:q.index});q.featureId=marker.id;
   if(F.o.furnishing===0)continue;
-  const primary=q.role==='entrance'?(F.residential?'bench':'stairs'):q.role==='nave'?'column':q.role==='cloister'?'column':z.props[0];
+  const props=roomProps(F,q);
+  const primary=q.role==='entrance'?(F.residential?'bench':'stairs'):q.role==='nave'?'column':q.role==='cloister'?'column':props[0];
   let first=placeAgainstWall(F,q,primary,SECURE.has(q.role)?'back':'any');
   if(!first)first=placeAgainstWall(F,q,primary,'any',.65);
-  const repeat=['barracks','crypt','library','storage','cellar','stable','nave','mess','common-room'].includes(q.role);
-  const placed=new Map(first?[[primary,1]]:[]),cap=asset=>asset==='bed'?(q.role==='guest'&&q.w*q.h>45?2:1):['stairs','stove','fireplace','altar','throne','rug','fountain','desk','counter','anvil','cauldron'].includes(asset)?1:asset==='column'?8:asset==='bunk-bed'?6:4;
+  const repeat=['barracks','crypt','library','storage','cellar','stable','nave','mess','common-room','servants','great-hall','gallery'].includes(q.role);
+  const placed=new Map(first?[[primary,1]]:[]),cap=asset=>asset==='bed'?(q.role==='guest'&&q.w*q.h>45?2:1):['stairs','stove','fireplace','altar','throne','rug','fountain','desk','counter','anvil','cauldron'].includes(asset)?1:asset==='column'?8:['canopy-bed','harpsichord','marble-bath','royal-dais','war-table','chess-table','portcullis-frame','ornamental-rug'].includes(asset)?1:asset==='banquet-table'?(q.role==='great-hall'?3:1):['bunk-bed','guard-bunk'].includes(asset)?6:4;
   const count=clamp(Math.round(q.w*q.h/7*F.o.furnishing),1,16);
-  const pool=z.props.filter(a=>!['bones','skull','danger','pentagram','treasure-pile','crossed-swords','chain','loom','handcart','cloister-garden','well'].includes(a)&&!(F.residential&&a==='stairs'));
+  const pool=props.filter(a=>!['bones','skull','danger','pentagram','treasure-pile','crossed-swords','chain','loom','handcart','cloister-garden','well'].includes(a)&&!(F.residential&&a==='stairs'));
   for(let k=1;k<count;k++){
    let asset=repeat&&k%2===0?primary:pool[k%Math.max(1,pool.length)]||primary;
    if((placed.get(asset)||0)>=cap(asset))asset=pool.find(a=>(placed.get(a)||0)<cap(a));
    if(!asset)break;
    const f=placeAgainstWall(F,q,asset);if(f)placed.set(asset,(placed.get(asset)||0)+1);
-   if(f&&['long-table','table','round-table','desk'].includes(asset)){
+   if(f&&['long-table','table','round-table','desk','banquet-table','war-table'].includes(asset)){
     const center=F.occupied.at(-1),seat=asset==='desk'?'chair':'bench';
     if(center){const w=Math.min(center.w,1.5);prop(F,seat,center.x+center.w/2,center.y+center.h+.55,w,.5,0,q);}
    }
@@ -386,9 +401,9 @@ function finish(F){
  s.appearance={grid:F.o.gridType};
  return s;
 }
-function material(q,F){if(['courtyard','cloister'].includes(q.role))return 'grass';if(['kitchen','pantry','privy','workshop','stable'].includes(q.role))return 'flagstone';if(['nave','altar','shrine','reliquary'].includes(q.role))return 'tile';if(['crypt','prison','treasury','cellar'].includes(q.role))return 'slate';return F.residential?'wood':'stone';}
+function material(q,F){if(['courtyard','cloister'].includes(q.role))return 'grass';if(['kitchen','pantry','privy','workshop','stable','bathroom'].includes(q.role))return 'flagstone';if(['nave','altar','shrine','reliquary','chapel','foyer'].includes(q.role))return 'tile';if(['crypt','prison','treasury','cellar'].includes(q.role))return 'slate';return F.o.theme==='castle'&&!['royal-chamber','war-room'].includes(q.role)?'stone':F.residential?'wood':'stone';}
 function interiors(F){
- const requested=program(F.o);F.layout=F.o.layout==='auto'?LAYOUTS[F.o.theme]||'branching':F.o.layout;F.residential=['tavern','dwelling','stronghold'].includes(F.o.theme);F.cw=F.o.theme==='sewer'?2:F.o.corridorWidth;
+ const requested=program(F.o);F.layout=F.o.layout==='auto'?LAYOUTS[F.o.theme]||'branching':F.o.layout;F.residential=['tavern','dwelling','stronghold','mansion','castle'].includes(F.o.theme);F.cw=F.o.theme==='sewer'?2:F.o.corridorWidth;
  if(F.layout==='axial'&&!requested.some(q=>q.role==='nave')||F.layout==='courtyard'&&requested.length<5){F.s.battle.diagnostics.warnings.push('The requested layout needs '+(F.layout==='axial'?'a nave':'at least five zones')+'; a compact plan was used.');F.layout='compact';}
  let selected=requested.slice(),plan=null,box=bounds(F,requested),usedBox;
  while(selected.length){
@@ -492,7 +507,7 @@ function outdoors(F){
  F.s.battle.entrance={room:F.rooms[0].key,side:['north','east','south','west'][F.turn],point:F.P(...route[0])};
  return finish(F);
 }
-function generate(scene,helpers){const F=frame(scene,helpers);return ['forest','desert','bridge'].includes(F.o.theme)?outdoors(F):['cave','ice-cave'].includes(F.o.theme)?caves(F):interiors(F);}
+function generate(scene,helpers){const F=frame(scene,helpers);return isRoomless(F.o.theme)?Landscapes.generate(F,{finish,prop,footprint,pointOnRoute,lineDistance,choose,clamp}):isOutdoor(F.o.theme)?outdoors(F):['cave','ice-cave'].includes(F.o.theme)?caves(F):interiors(F);}
 /** Bound optional architectural metadata before rendering; legacy atlases remain valid. */
 function validateMetadata(s){
  const fail=what=>{throw Error('Invalid battle '+what+'.');},point=p=>Array.isArray(p)&&p.length===2&&p.every(v=>Number.isFinite(v)&&Math.abs(v)<=20000),poly=(p,min,max)=>Array.isArray(p)&&p.length>=min&&p.length<=max&&p.every(point),text=v=>typeof v==='string'&&v.length<=200;
@@ -517,7 +532,8 @@ function validateMetadata(s){
  if(b.entrance!=null&&(!b.entrance||!point(b.entrance.point)||!text(b.entrance.room)||!['north','east','south','west'].includes(b.entrance.side)))fail('entrance');
  if(b.courtyard!=null&&!poly(b.courtyard,3,100))fail('courtyard');
  if(b.windows!=null&&(!Array.isArray(b.windows)||b.windows.length>100||b.windows.some(p=>!poly(p,2,2))))fail('windows');
- const d=b.diagnostics;if(!d||!Number.isInteger(d.requested)||d.requested<1||d.requested>MAX_ZONES||d.placed!==b.rooms.length||!Array.isArray(d.warnings)||d.warnings.length>100||d.warnings.some(w=>typeof w!=='string'||w.length>10000)||!Array.isArray(d.unplaced)||d.unplaced.length>MAX_ZONES)fail('diagnostics');
+ if(b.landscape!=null){const l=b.landscape;if(!l||!isRoomless(l.kind)||!['grass','hill','sand'].includes(l.ground)||!poly(l.route,2,32)||!poly(l.clearing,3,40)||!Number.isFinite(l.routeWidthFt)||l.routeWidthFt<5||l.routeWidthFt>20)fail('landscape');}
+ const d=b.diagnostics;if(!d||!Number.isInteger(d.requested)||d.requested<(isRoomless(s.options.theme)?0:1)||d.requested>MAX_ZONES||d.placed!==b.rooms.length||!Array.isArray(d.warnings)||d.warnings.length>100||d.warnings.some(w=>typeof w!=='string'||w.length>10000)||!Array.isArray(d.unplaced)||d.unplaced.length>MAX_ZONES)fail('diagnostics');
 }
-return {MAX_ZONES,ZONES:ZONE_ROLES,PLANS:THEME_ZONES,GROUPS:GROUP_NAMES,TEMPLATES,DEFAULTS,normalize,estimate,program,generate,validateMetadata};
+return {isRoomless,isOutdoor,EXTRA_PRESETS:Content.presets,MAX_ZONES,ZONES:ZONE_ROLES,PLANS:THEME_ZONES,GROUPS:GROUP_NAMES,TEMPLATES,DEFAULTS,normalize,estimate,program,generate,validateMetadata};
 });

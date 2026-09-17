@@ -16,6 +16,8 @@ const state={expanded:false,search:'',group:'recommended',detail:-1,selected:-1,
 function option(value,label,current){return `<option value="${esc(value)}"${String(value)===String(current)?' selected':''}>${esc(label)}</option>`;}
 function roles(current){return Object.entries(B.GROUPS).map(([id,name])=>`<optgroup label="${esc(name)}">${Object.entries(B.ZONES).filter(([,z])=>z.group===id).map(([id,z])=>option(id,z.name,current)).join('')}</optgroup>`).join('');}
 function render(input){const o=B.normalize(input),full=o.zones.length>=B.MAX_ZONES;
+ if(B.isRoomless(o.theme)){const p=B.EXTRA_PRESETS.find(p=>p.id===o.theme);return `<section class="outdoor-workspace" aria-label="Outdoor encounter preview"><div class="section-heading"><span class="eyebrow">OPEN TERRAIN</span><span class="tag">No rooms</span></div><h3>${esc(p.name)}</h3><p class="hint">${esc(p.hint)}</p><p class="micro">Use Landscape for route width, clearing size and cover. Use Grid &amp; size for the play area.</p><div data-outdoor-preview class="zone-plan-preview" aria-label="Outdoor encounter preview"></div><p data-outdoor-report class="micro" role="status"></p></section>`;}
+
  return `<section class="battle-workspace" aria-label="Battle zone planner">
   <div class="section-heading"><span class="eyebrow">ZONE PROGRAM</span><span class="tag">${o.zones.length} / ${B.MAX_ZONES}</span><button type="button" data-zone-expand title="Expand zone planner">Expand planner</button></div>
   <div class="zone-template-row"><label>Working plan<select data-zone-template>${option('','Choose a template…','')}${B.TEMPLATES.map(t=>option(t.id,t.name,'')).join('')}</select></label></div>
@@ -38,6 +40,17 @@ function read(host,input){const o={...input},rows=[...host.querySelectorAll('[da
  o.zones=rows.map(x=>x.value);o.zoneDetails=rows.map((_,i)=>({label:host.querySelector(`[data-zone-label="${i}"]`)?.value||'',size:host.querySelector(`[data-zone-size="${i}"]`)?.value||'auto',access:host.querySelector(`[data-zone-access="${i}"]`)?.value||'auto',near:host.querySelector(`[data-zone-near="${i}"]`)?.value===''?null:Number(host.querySelector(`[data-zone-near="${i}"]`)?.value)}));return o;
 }
 function mount(host,{get,set,engine,seed,seedInput,translate=s=>s}){
+ const outdoor=host.querySelector('.outdoor-workspace');
+ if(outdoor){let timer,disposed=false;
+  function preview(){if(disposed||!outdoor.isConnected)return;try{
+   const s=engine.generate('battle',seed()||'megamap',get()),b=s.battle,l=b.landscape,pts=p=>p.map(v=>v.map(n=>Number(n.toFixed(2))).join(',')).join(' ');
+   const ground=l.ground==='sand'?'#ddc89c':l.ground==='hill'?'#aaa899':'#aac09c';
+   outdoor.querySelector('[data-outdoor-preview]').innerHTML=`<svg viewBox="0 0 ${s.width} ${s.height}" role="img" aria-label="${esc(translate('Outdoor encounter preview'))}"><polygon points="${pts(b.boundary)}" fill="${ground}"/>${s.features.filter(f=>['water','area'].includes(f.type)).map(f=>`<polygon points="${pts(f.polygon)}" fill="${f.type==='water'?'#699eae':f.material==='mountain'?'#777f78':ground}" stroke="#71897e" stroke-width="1"/>`).join('')}<polyline points="${pts(l.route)}" fill="none" stroke="#876c48" stroke-width="${s.gridSize*l.routeWidthFt/5}" stroke-linejoin="round" stroke-linecap="round"/>${s.features.filter(f=>f.battleFootprint).map(f=>`<polygon points="${pts(f.battleFootprint)}" fill="#486957" opacity=".7"/>`).join('')}</svg>`;
+   outdoor.querySelector('[data-outdoor-report]').textContent=translate('No rooms')+' · '+translate('Route width')+': '+l.routeWidthFt+' ft · '+s.features.filter(f=>f.battleProp).length+' '+translate('cover props');
+  }catch(e){outdoor.querySelector('[data-outdoor-report]').textContent=translate('Preview unavailable: ')+e.message;}}
+  function refresh(){clearTimeout(timer);timer=setTimeout(preview,120);}
+  seedInput?.addEventListener('input',refresh);preview();return {refresh,dispose(){disposed=true;clearTimeout(timer);seedInput?.removeEventListener('input',refresh);}};
+ }
  const root=host.querySelector('.battle-workspace');if(!root)return {dispose(){},refresh(){}};
  const $=selector=>root.querySelector(selector),all=selector=>[...root.querySelectorAll(selector)];let timer,disposed=false,dialog=null,placeholder=null,dragIndex=null,previousFocus=null;
  const mutate=(o,focus)=>{state.selected=focus??state.selected;set(o,focus);};
@@ -74,7 +87,7 @@ function mount(host,{get,set,engine,seed,seedInput,translate=s=>s}){
  $('[data-zone-add]').onclick=()=>{const o=current(),plan=B.PLANS[o.theme],used=new Set(o.zones),cycle=plan.slice(1,-1);const role=plan.find(z=>!used.has(z))||cycle[o.zones.length%cycle.length]||plan[0];mutate(add(o,role),o.zones.length);};
  $('[data-zone-reset]').onclick=()=>{state.detail=-1;mutate(B.normalize({...current(),zones:B.PLANS[current().theme],zoneDetails:[]}),0);};
  $('[data-zone-clear]').onclick=()=>{state.detail=-1;mutate(B.normalize({...current(),zones:[],zoneDetails:[]}),0);};
- $('[data-zone-template]').onchange=e=>{const t=B.TEMPLATES.find(t=>t.id===e.target.value);if(t){state.detail=-1;mutate(B.normalize({...current(),theme:t.theme,zones:t.zones,zoneDetails:[],layout:t.layout||'auto',cols:t.cols||current().cols,rows:t.rows||current().rows}),0);}};
+ $('[data-zone-template]').onchange=e=>{const t=B.TEMPLATES.find(t=>t.id===e.target.value);if(t){state.detail=-1;mutate(B.normalize({...current(),theme:t.theme,zones:t.zones,zoneDetails:[],layout:t.layout||'auto',cols:t.cols||current().cols,rows:t.rows||current().rows,corridorWidth:t.corridorWidth||current().corridorWidth}),0);}};
  $('[data-zone-fit]').onclick=()=>{let o=current();o={...o,...B.estimate(o).recommended};for(let i=0;i<32;i++){const s=engine.generate('battle',seed(),{...o,furnishing:0});if(!s.battle.diagnostics.unplaced.length&&!B.estimate(o).crowded)break;if(o.cols===80&&o.rows===80)break;o.cols=Math.min(80,o.cols+2);o.rows=Math.min(80,o.rows+2);}mutate(o,state.selected);};
  seedInput?.addEventListener('input',refresh);catalogue();preview();if(state.expanded)expand();
  return {refresh,focus:focusRoom,dispose(){disposed=true;clearTimeout(timer);seedInput?.removeEventListener('input',refresh);closeExpanded(true);}};

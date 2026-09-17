@@ -1,7 +1,7 @@
 {
   "version": "1.2.0",
   "license": "GPL-3.0-only",
-  "count": 246,
+  "count": 278,
   "categories": [
     "Nature",
     "Buildings",
@@ -14,7 +14,9 @@
     "Footprints",
     "Quarter rooftops",
     "Quarter details",
-    "Local landscape"
+    "Local landscape",
+    "Battle landscapes",
+    "Manor & castle"
   ],
   "assets": [
     {
@@ -1738,6 +1740,262 @@
       "category": "Local landscape",
       "tags": "sinkhole landscape survey",
       "file": "svg/sinkhole.svg"
+    },
+    {
+      "id": "battle-oak-canopy",
+      "name": "Spreading oak canopy",
+      "category": "Battle landscapes",
+      "tags": "forest road canopy tree cover",
+      "battleShape": true,
+      "file": "svg/battle-oak-canopy.svg"
+    },
+    {
+      "id": "bramble-patch",
+      "name": "Bramble thicket",
+      "category": "Battle landscapes",
+      "tags": "forest bramble bush cover",
+      "battleShape": true,
+      "file": "svg/bramble-patch.svg"
+    },
+    {
+      "id": "timber-pile",
+      "name": "Stacked cut timber",
+      "category": "Battle landscapes",
+      "tags": "forest logging timber cover road",
+      "battleShape": true,
+      "file": "svg/timber-pile.svg"
+    },
+    {
+      "id": "broken-cart",
+      "name": "Broken roadside cart",
+      "category": "Battle landscapes",
+      "tags": "forest road wagon broken cart ambush",
+      "battleShape": true,
+      "file": "svg/broken-cart.svg"
+    },
+    {
+      "id": "crag-spire",
+      "name": "Jagged crag",
+      "category": "Battle landscapes",
+      "tags": "mountain rock cliff crag cover",
+      "battleShape": true,
+      "file": "svg/crag-spire.svg"
+    },
+    {
+      "id": "scree-fan",
+      "name": "Loose scree fan",
+      "category": "Battle landscapes",
+      "tags": "mountain scree loose rock difficult ground",
+      "battleShape": true,
+      "file": "svg/scree-fan.svg"
+    },
+    {
+      "id": "stone-cairn",
+      "name": "Trail cairn",
+      "category": "Battle landscapes",
+      "tags": "mountain path cairn landmark trail",
+      "battleShape": true,
+      "file": "svg/stone-cairn.svg"
+    },
+    {
+      "id": "rope-rail",
+      "name": "Rope safety railing",
+      "category": "Battle landscapes",
+      "tags": "mountain ledge rope railing",
+      "battleShape": true,
+      "file": "svg/rope-rail.svg"
+    },
+    {
+      "id": "marsh-tussock",
+      "name": "Marsh grass tussock",
+      "category": "Battle landscapes",
+      "tags": "marsh grass reeds island cover",
+      "battleShape": true,
+      "file": "svg/marsh-tussock.svg"
+    },
+    {
+      "id": "sunken-log",
+      "name": "Waterlogged tree trunk",
+      "category": "Battle landscapes",
+      "tags": "marsh sunken log wetland cover",
+      "battleShape": true,
+      "file": "svg/sunken-log.svg"
+    },
+    {
+      "id": "boardwalk-planks",
+      "name": "Timber boardwalk section",
+      "category": "Battle landscapes",
+      "tags": "marsh boardwalk wood planks causeway",
+      "battleShape": true,
+      "file": "svg/boardwalk-planks.svg"
+    },
+    {
+      "id": "bog-stump",
+      "name": "Hollow bog stump",
+      "category": "Battle landscapes",
+      "tags": "marsh stump hollow roots cover",
+      "battleShape": true,
+      "file": "svg/bog-stump.svg"
+    },
+    {
+      "id": "tidal-rocks",
+      "name": "Tidal boulder cluster",
+      "category": "Battle landscapes",
+      "tags": "coast beach tidal rocks cover",
+      "battleShape": true,
+      "file": "svg/tidal-rocks.svg"
+    },
+    {
+      "id": "driftwood-pile",
+      "name": "Driftwood tangle",
+      "category": "Battle landscapes",
+      "tags": "coast beach driftwood timber cover",
+      "battleShape": true,
+      "file": "svg/driftwood-pile.svg"
+    },
+    {
+      "id": "wrecked-skiff",
+      "name": "Wrecked fishing skiff",
+      "category": "Battle landscapes",
+      "tags": "coast wreck boat skiff beach",
+      "battleShape": true,
+      "file": "svg/wrecked-skiff.svg"
+    },
+    {
+      "id": "fishing-baskets",
+      "name": "Fishing baskets and net",
+      "category": "Battle landscapes",
+      "tags": "coast net basket fishing supplies",
+      "battleShape": true,
+      "file": "svg/fishing-baskets.svg"
+    },
+    {
+      "id": "canopy-bed",
+      "name": "Four-poster canopy bed",
+      "category": "Manor & castle",
+      "tags": "mansion castle bedroom canopy bed",
+      "battleShape": true,
+      "file": "svg/canopy-bed.svg"
+    },
+    {
+      "id": "chaise-longue",
+      "name": "Upholstered chaise longue",
+      "category": "Manor & castle",
+      "tags": "mansion drawing room sofa seat",
+      "battleShape": true,
+      "file": "svg/chaise-longue.svg"
+    },
+    {
+      "id": "harpsichord",
+      "name": "Harpsichord",
+      "category": "Manor & castle",
+      "tags": "mansion ballroom music instrument",
+      "battleShape": true,
+      "file": "svg/harpsichord.svg"
+    },
+    {
+      "id": "banquet-table",
+      "name": "Set banquet table",
+      "category": "Manor & castle",
+      "tags": "mansion castle dining banquet table hall",
+      "battleShape": true,
+      "file": "svg/banquet-table.svg"
+    },
+    {
+      "id": "display-cabinet",
+      "name": "Glass display cabinet",
+      "category": "Manor & castle",
+      "tags": "mansion gallery cabinet collection storage",
+      "battleShape": true,
+      "file": "svg/display-cabinet.svg"
+    },
+    {
+      "id": "marble-bath",
+      "name": "Marble bathtub",
+      "category": "Manor & castle",
+      "tags": "mansion bathroom bath tub",
+      "battleShape": true,
+      "file": "svg/marble-bath.svg"
+    },
+    {
+      "id": "chess-table",
+      "name": "Chess table",
+      "category": "Manor & castle",
+      "tags": "mansion drawing room chess gaming table",
+      "battleShape": true,
+      "file": "svg/chess-table.svg"
+    },
+    {
+      "id": "ornamental-rug",
+      "name": "Ornamental carpet",
+      "category": "Manor & castle",
+      "tags": "mansion castle carpet rug",
+      "battleShape": true,
+      "file": "svg/ornamental-rug.svg"
+    },
+    {
+      "id": "royal-dais",
+      "name": "Throne and stepped dais",
+      "category": "Manor & castle",
+      "tags": "castle throne royal dais authority",
+      "battleShape": true,
+      "file": "svg/royal-dais.svg"
+    },
+    {
+      "id": "armor-stand",
+      "name": "Display suit of armor",
+      "category": "Manor & castle",
+      "tags": "castle armory armor stand guard",
+      "battleShape": true,
+      "file": "svg/armor-stand.svg"
+    },
+    {
+      "id": "war-table",
+      "name": "Campaign planning table",
+      "category": "Manor & castle",
+      "tags": "castle war room map campaign table",
+      "battleShape": true,
+      "file": "svg/war-table.svg"
+    },
+    {
+      "id": "arrow-barrel",
+      "name": "Arrow barrel",
+      "category": "Manor & castle",
+      "tags": "castle arrows ammunition barrel archery",
+      "battleShape": true,
+      "file": "svg/arrow-barrel.svg"
+    },
+    {
+      "id": "portcullis-frame",
+      "name": "Portcullis assembly",
+      "category": "Manor & castle",
+      "tags": "castle gatehouse portcullis furnishing not a door",
+      "battleShape": true,
+      "file": "svg/portcullis-frame.svg"
+    },
+    {
+      "id": "supply-rack",
+      "name": "Garrison supply rack",
+      "category": "Manor & castle",
+      "tags": "castle storage supplies rack armory",
+      "battleShape": true,
+      "file": "svg/supply-rack.svg"
+    },
+    {
+      "id": "banner-stand",
+      "name": "Heraldic banner stand",
+      "category": "Manor & castle",
+      "tags": "castle banner heraldry standard mansion",
+      "battleShape": true,
+      "file": "svg/banner-stand.svg"
+    },
+    {
+      "id": "guard-bunk",
+      "name": "Garrison bunk",
+      "category": "Manor & castle",
+      "tags": "castle barracks servants bed bunk",
+      "battleShape": true,
+      "file": "svg/guard-bunk.svg"
     }
   ]
 }

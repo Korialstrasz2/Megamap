@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Button-led wizard and six encounter expansion
+
+- Added the English/Italian New wizard entry beside the title, complete generator sections, numeric buttons, exact editing, randomization, Back/Skip and immediate generation with sidebar handoff.
+- Added forest-road, mountain-path, marsh-causeway and coastal-cove generators with no room program. Dry routes and encounter clearings are reserved before water and collision-aware cover placement; actual terrain polygons are clipped to rectangular and hex envelopes.
+- Added mansion and castle interiors with separate 13-room programs, role-sized halls, independent service entrances, 13 new room roles and thematic furnishing footprints.
+- Added 32 original palette-aware vector props: 278 assets in 14 categories. Runtime assets, standalone SVGs and the searchable catalogue share the same definitions.
+- Added outdoor Landscape controls and live preview to the sidebar and wizard, English/Italian text, a reproducible six-map example atlas, geometric regression tests and a dedicated browser/export suite.
+- Preserved previous themes and stored atlas geometry. Outdoor scenery does not automatically add VTT visibility walls or elevation/movement rules.
+
+### Earlier workbench changes (historical notes)
+
 - New battle encounters default to **Hex · flat top** movement cells (was square). The outer play-area shape still defaults to a rectangle.
 - Replaced the random "target rooms" battle generator with an ordered **zone program** per preset. Rooms are planned in explicit steps: entrance on a map edge, later zones grown outward and biased deeper, a connected corridor spine with loops, doors cut where corridors meet rooms, and per-role furnishings. Caves label chambers by walking depth; outdoor themes mark zones along the trail.
 - Added a zone editor under **Build → Battle → Encounter**: add, remove, re-role or reset the plan, with per-preset defaults from the encounter type. An empty program generates a single entrance room.
