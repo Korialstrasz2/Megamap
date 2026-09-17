@@ -41,7 +41,7 @@ with sync_playwright() as p:
             page.set_content(html, wait_until='load')
         else:
             page.goto((ROOT / 'index.html').as_uri(), wait_until='load')
-        page.wait_for_function('window.MegamapApp && MegamapApp.getScene()')
+        page.wait_for_function('()=>window.MegamapApp && MegamapApp.getScene()')
         page.wait_for_selector('#busy', state='hidden')
         page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
         check('Italian launch label', page.locator('#newWizard').inner_text() == 'Nuova procedura guidata')
@@ -51,7 +51,7 @@ with sync_playwright() as p:
         page.click('#settingsBtn')
         page.select_option('#setLanguage', 'en')
         page.click('#settingsDone')
-        page.wait_for_function("document.querySelector('#newWizard').textContent==='New wizard'")
+        page.wait_for_function("()=>document.querySelector('#newWizard').textContent==='New wizard'")
 
         def field(selector):
             return page.locator(selector).first.locator('xpath=ancestor::div[contains(concat(" ", normalize-space(@class), " "), " wizard-field ")][1]')
@@ -75,7 +75,7 @@ with sync_playwright() as p:
         def finish():
             before = page.evaluate('MegamapApp.getAtlas().maps.length')
             page.click('#wizardNext')
-            page.wait_for_function('!document.querySelector("#newWizardDialog").open')
+            page.locator('#newWizardDialog').wait_for(state='hidden')
             check('generation adds exactly one map', page.evaluate('MegamapApp.getAtlas().maps.length') == before + 1)
             check('sidebar restored without wizard wrappers', page.locator('#leftPanel #generatorOptions').count() == 1 and page.locator('.wizard-field').count() == 0)
             return page.evaluate('MegamapApp.getScene()')
@@ -158,6 +158,31 @@ with sync_playwright() as p:
         check('full atlas refusal retains wizard', page.locator('#newWizardDialog').evaluate('(x)=>x.open') and page.locator('#wizardError').is_visible())
         page.evaluate("document.querySelector('#generate').classList.remove('atlas-full')")
         page.click('#wizardClose')
+
+        open_wizard('local')
+        page.click('#wizardNext')
+        pick('[data-opt="water"]', 'none')
+        check('dependent water field hides its entire button group', not field('[data-opt="riverWidth"]').is_visible())
+        pick('[data-opt="water"]', 'river')
+        check('dependent water field returns with its buttons', field('[data-opt="riverWidth"]').is_visible())
+        page.click('#wizardNext')
+        pick('[data-opt="homesteads"]', '0')
+        check('dependent farm spacing hides its entire button group', not field('[data-opt="minSeparationKm"]').is_visible())
+        page.click('#wizardSections>summary')
+        page.locator('#wizardSections nav button').nth(1).click()
+        check('section menu revisits previous settings', page.locator('#wizardTitle').inner_text() == 'Terrain' and page.locator('[data-opt="water"]').input_value() == 'river')
+        page.click('#wizardClose')
+
+        open_wizard('region')
+        page.click('#wizardNext')
+        page.click('#wizardNext')
+        before_failure = page.evaluate('MegamapApp.getAtlas().maps.length')
+        page.evaluate("()=>{window.savedGenerator=MegamapEngine.generate;MegamapEngine.generate=()=>{throw new Error('Wizard test failure')};}")
+        page.click('#wizardNext')
+        page.locator('#wizardError').wait_for(state='visible')
+        check('generation error retains wizard and re-enables controls', page.locator('#newWizardDialog').is_visible() and page.locator('#wizardNext').is_enabled() and page.evaluate('MegamapApp.getAtlas().maps.length') == before_failure)
+        page.evaluate('()=>{MegamapEngine.generate=window.savedGenerator;delete window.savedGenerator;}')
+        finish()
 
         page.click('#settingsBtn')
         page.select_option('#setLanguage', 'it')

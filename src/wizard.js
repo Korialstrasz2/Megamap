@@ -89,6 +89,7 @@
   }
   function renderField(r){
    const {x,ui,wrap}=r,title=name(x),values=x.tagName==='SELECT'?[...x.options].map(o=>[o.value,o.textContent.trim(),o.disabled||o.hidden||o.parentElement.disabled]):null;
+   wrap.hidden=Boolean(r.anchor.hidden);
    const signature=JSON.stringify([I?.getLang(),x.value,x.checked,x.disabled,values,x.min,x.max,x.step,title]);
    // Do not recreate the focused exact-value editor on each keystroke.
    if(r.signature===signature)return;r.signature=signature;wrap.setAttribute('aria-label',title);
