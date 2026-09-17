@@ -1,3 +1,11 @@
+## New: City Studio — fantasy settlements, separately from legacy cities
+
+**Build → City Studio** adds a terrain-led, street-first settlement engine with ten curated fantasy presets: from **four huts and three boats** to a **Golden River capital with an armada**, a **Nordic council town on slopes**, canals, an oasis, a giant tree or a crater. Actual courtyard/L-shaped footprints, connected street-facing access, neighborhood character, civic compounds, quays, ships and optional older remains replace uniform parcel subdivision in this new tool.
+
+Choose a preset and a size; customization and exact overrides are optional. **HQ** retains the existing cartographic palettes with richer roof, ground, water and foliage rendering, and can be switched off without changing geometry. Optional rooftop/underground views are route overlays, not interiors or battle maps. **No people, NPCs, population simulation or generated stories.**
+
+The original tool is retained as **City · legacy**. Existing geometry is not automatically converted. Open **examples/City-Studio.megamap.json** for six editable examples. Read the [offline City Studio guide](docs/city-studio.html) or [English/Italian source guide](docs/city-studio.md) for controls, scale, editing, verification and limits.
+
 ARENA AND HQ BATTLE MAPS
 19 battle themes; HQ on by default for newly generated battle maps. Open examples/Arena-HQ.megamap.json and see docs/arena-hq.md for English and Italian guidance.
 

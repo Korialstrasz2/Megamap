@@ -35,7 +35,7 @@ with sync_playwright() as p:
         html=re.sub(r'<meta http-equiv="Content-Security-Policy"[^>]+>','',html)
         for css in ['src/style.css']:
             html=html.replace('<link rel="stylesheet" href="'+css+'">','<style>'+(ROOT/css).read_text(encoding='utf-8')+'</style>')
-        for name in ['battle-arena.js','battle-materials.js','battle-hq.js','app.js','assets.js','encounter-content.js','battle-landscapes.js','battle.js','battle-render.js','battle-ui.js','engine.js','editor-core.js','render.js','i18n.js']:
+        for name in ['city-studio.js','city-render.js','city-ui.js','battle-arena.js','battle-materials.js','battle-hq.js','app.js','assets.js','encounter-content.js','battle-landscapes.js','battle.js','battle-render.js','battle-ui.js','engine.js','editor-core.js','render.js','i18n.js']:
             html=html.replace('<script src="src/'+name+'"></script>','<script>'+(ROOT/'src'/name).read_text(encoding='utf-8')+'</script>')
         page.set_content(html,wait_until='load')
     else:page.goto((ROOT/args.entry).as_uri(),wait_until='load')

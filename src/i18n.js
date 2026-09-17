@@ -1434,5 +1434,5 @@ function apply(root){
  setLang(lang);
  watch();
 }
-window.MegamapI18n={t,setLang,apply,getLang:()=>lang,isTranslated:text=>IT[text]!=null};
+window.MegamapI18n={t,setLang,apply,register:values=>Object.assign(IT,values),getLang:()=>lang,isTranslated:text=>IT[text]!=null};
 })();

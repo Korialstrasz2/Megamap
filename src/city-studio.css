@@ -1,0 +1,12 @@
+/* City Studio stays in the existing workbench; advanced settings are folded. */
+.mode-tabs [data-mode="fantasy"] { grid-column: 1 / -1; }
+.mode-tabs [data-mode="city"] { font-size: .74rem; }
+.city-summary { display: grid; gap: .45rem; margin: .1rem 0 1rem; padding: .9rem; border: 1px solid var(--line, #44534d); border-radius: 10px; background: var(--panel-2, rgba(128,150,128,.07)); }
+.city-summary strong { font-size: 1.04rem; line-height: 1.3; }
+.city-summary p { font-size: .79rem; line-height: 1.5; margin: 0; opacity: .85; }
+.city-summary-facts { display: flex; flex-wrap: wrap; gap: .35rem; font-size: .7rem; }
+.city-summary-facts span { padding: .22rem .45rem; border-radius: 4px; background: rgba(128,150,128,.13); }
+.city-exact { margin-top: .7rem; border-top: 1px solid var(--line, #44534d); padding-top: .7rem; }
+.city-exact summary { cursor: pointer; font-size: .83rem; font-weight: 600; margin-bottom: .55rem; }
+#cityLevelControl .micro { display: block; font-weight: normal; margin-top: .35rem; }
+.new-map-wizard .city-summary { max-width: 100%; }

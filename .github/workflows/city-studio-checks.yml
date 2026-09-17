@@ -1,0 +1,68 @@
+name: Fantasy City Studio checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  city-studio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: City geometry, physical access, legacy and editor regressions
+        shell: bash
+        run: |
+          set -o pipefail
+          node --test tests/*.test.cjs | tee "$RUNNER_TEMP/city-studio-tests.tap"
+      - name: Verify reproducible city atlas
+        run: |
+          node scripts/build-city-studio-examples.cjs --check
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser test dependencies
+        run: |
+          python -m pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Fantasy settlements, HQ, layers, Italian, save and exports with shipped CSP
+        run: python tests/browser_city_studio.py --output "$RUNNER_TEMP/city-studio-qa"
+      - name: Package matching source for reproduction
+        if: always()
+        run: git archive --format=tar.gz -o "$RUNNER_TEMP/city-studio-source.tar.gz" HEAD
+      - name: Publish verification summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP'])
+          lines = ['## Fantasy City Studio verification', '', 'Browser tests open the actual local index.html with the shipped CSP intact.', '']
+          tap = root / 'city-studio-tests.tap'
+          if tap.exists():
+              lines += [line for line in tap.read_text().splitlines() if line.startswith(('# tests ', '# pass ', '# fail '))]
+          report = root / 'city-studio-qa' / 'report.json'
+          if report.exists():
+              data = json.loads(report.read_text())
+              lines += ['', f"Browser: {data.get('browser', '?')}; {data.get('passed', '?')} assertions passed; inline: {data.get('inline', '?')}; errors: {data.get('errors', [])}."]
+          else:
+              lines += ['', 'No success report; inspect job logs and retained artifacts.']
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
+              output.write('\n'.join(lines) + '\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: city-studio-qa-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/city-studio-tests.tap
+            ${{ runner.temp }}/city-studio-qa/
+            ${{ runner.temp }}/city-studio-source.tar.gz
+          retention-days: 7
