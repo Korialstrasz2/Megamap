@@ -1,0 +1,65 @@
+name: Assemble verified battle overhaul
+on:
+  push:
+    branches: [battle-map-overhaul]
+    paths:
+      - '.github/battle-overhaul-*.xz'
+      - '.github/workflows/assemble-battle-overhaul.yml'
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify and apply exact source delta
+        run: |
+          python - <<'PY'
+          import hashlib, json, lzma
+          from pathlib import Path
+          allowed = set('README.md index.html src/app.js src/editor-core.js src/engine.js src/i18n.js src/render.js src/style.css tests/browser_smoke.py tests/browser_v12.py docs/battle-architecture.html docs/battle-architecture.md src/battle-render.js src/battle-ui.js src/battle.js tests/battle-architecture.test.cjs tests/browser_battle.py'.split())
+          chunks = [Path(f'.github/battle-overhaul-{n}.xz') for n in range(1, 7)]
+          packed = b''.join(p.read_bytes() for p in chunks)
+          assert hashlib.sha256(packed).hexdigest() == 'd97cd342beddba1d435eb618a9a7a76462f179841e988f72adff2b53e3314537', 'Transport hash mismatch'
+          manifest = json.loads(lzma.decompress(packed))
+          assert manifest['format'] == 'megamap-source-delta-v1'
+          entries = manifest['files']
+          assert len(entries) == len(allowed) and {e['path'] for e in entries} == allowed, 'Unexpected source path'
+          updates = {}
+          for entry in entries:
+              path = Path(entry['path'])
+              if entry['before'] is None:
+                  assert not path.exists(), f'New file already exists: {path}'
+                  text = entry['content']
+              else:
+                  before = path.read_bytes()
+                  assert hashlib.sha256(before).hexdigest() == entry['before'], f'Base changed: {path}'
+                  text = before.decode('utf-8')
+                  end = len(text)
+                  for start, stop, replacement in reversed(entry['edits']):
+                      assert 0 <= start <= stop <= end, f'Invalid edit: {path}'
+                      text = text[:start] + replacement + text[stop:]
+                      end = start
+              output = text.encode('utf-8')
+              assert hashlib.sha256(output).hexdigest() == entry['after'], f'Result hash mismatch: {path}'
+              updates[path] = output
+          for path, output in updates.items():
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_bytes(output)
+              print(f'Verified {path}: {hashlib.sha256(output).hexdigest()}')
+          PY
+      - name: Check all source regressions
+        run: node --test tests/*.test.cjs
+      - name: Commit on overhaul branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- README.md index.html src/app.js src/editor-core.js src/engine.js src/i18n.js src/render.js src/style.css tests/browser_smoke.py tests/browser_v12.py docs/battle-architecture.html docs/battle-architecture.md src/battle-render.js src/battle-ui.js src/battle.js tests/battle-architecture.test.cjs tests/browser_battle.py
+          git commit -m 'feat: overhaul battle architecture, room planner and top-down rendering'
+          git push origin HEAD:refs/heads/battle-map-overhaul
