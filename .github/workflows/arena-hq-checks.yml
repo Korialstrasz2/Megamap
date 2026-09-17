@@ -1,0 +1,71 @@
+name: Arena HQ checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  arena-hq:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Geometry, materials, legacy and editor regressions
+        shell: bash
+        run: |
+          set -o pipefail
+          node --test tests/*.test.cjs | tee "$RUNNER_TEMP/arena-hq-tests.tap"
+      - name: Verify reproducible shipped assets and examples
+        run: |
+          node scripts/build-assets.cjs
+          git diff --exit-code -- assets/
+          node scripts/build-encounter-examples.cjs --check
+          node scripts/build-arena-example.cjs --check
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser test dependencies
+        run: |
+          python -m pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Arena, HQ toggle, Italian, save and exports with shipped CSP
+        run: python tests/browser_arena_hq.py --output "$RUNNER_TEMP/arena-hq-qa"
+      - name: Package matching source for reproduction
+        if: always()
+        run: git archive --format=tar.gz -o "$RUNNER_TEMP/arena-hq-source.tar.gz" HEAD
+      - name: Publish verification summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP'])
+          lines = ['## Arena and HQ verification', '', 'Browser tests open the actual local index.html with the shipped CSP intact.', '']
+          tap = root / 'arena-hq-tests.tap'
+          if tap.exists():
+              lines += [line for line in tap.read_text().splitlines() if line.startswith(('# tests ', '# pass ', '# fail '))]
+          report = root / 'arena-hq-qa' / 'report.json'
+          if report.exists():
+              data = json.loads(report.read_text())
+              lines += ['', f"Browser: {data.get('browser', '?')}; {data.get('passed', '?')} assertions passed; inline: {data.get('inline', '?')}; errors: {data.get('errors', [])}."]
+          else:
+              lines += ['', 'No success report; inspect job logs and retained artifacts.']
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
+              output.write('\n'.join(lines) + '\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: arena-hq-qa-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/arena-hq-tests.tap
+            ${{ runner.temp }}/arena-hq-qa/
+            ${{ runner.temp }}/arena-hq-source.tar.gz
+          retention-days: 7
