@@ -14,19 +14,54 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Apply locally reproduced and checked regressions
+      - name: Apply readable repairs and verify against locally tested files
         shell: bash
         run: |
           python - <<'PY'
-          import base64, hashlib, zlib
           from pathlib import Path
-          encoded = 'eNrtWFtz27gVfvevQB42JCMQJnWxbCqKN+s427TZ3Uy8O52ORpOBSFDCmiIYAHKsKv7vPQekqIvdzLTTTqcz+yAR1wPgO7cPyGSekzCcS0v4qdHpaSrtOjR2lUnFfjdk9kTjiSwzcU/6aTSLowFjcW940buISRxFZ/3+SRiGT8o66XQ6T8v7/nsSdrvn9IJ08BPHBFryVZlaqUoyW8kie6tVaflcGN9QVRbrcbkCqrF55UwVmSuGmxSVRpLjB0bhkvcuBXo3dhYpk/Iw8lOqJXl+kZYW4ilKK1vvj1XGFXciYzOsTbXalVmVI91OfcNM0JkHS9crKzxAvqF6wwHlULOFzOlF0plZhJNR4WwBCZaAfJzwe0KhLIckPTz8auc2XUlxuOxpxXPvOfPc7eHj6pwjQUvBcguxxGV9+NS2C9K375DJcDGqUrTVSUBAwTKbptHJ4ScnpI3opAzobkVxZrActIKkquVxv2SCgQTDt/F2siUF8TAn6Dki7QLcie0zEEs4WkqjGEnIUzUfg3T5J6upyonk0lvMKD9bjSlk340oGfdAZQGvQHtXWDbAHrhB6XuRUQHfSz1zgZ0GEfTabCRuV++Gt+xFBC1wUwLfjuqFygF12P8A/V+BExA7W7NgPJyDqhg1+VP3C4Yt7zs+lhnlZKlncTTcE336tE0vA86buyHd6fdJKKVAgPSIrW+k0n9s472gxcxGwSnd2wprNDmg9C/AVrUP3d93cc9biPBCM7wLFfKVhoW+xHUDVvFBUBVrWqCAE4FJrcSI4CxPmE+FksJlkc9Z+CynHt0gxPnqkycANibs6cE/7ZGQz+vuIZtJF6qlkuQ5NHt/L+ANSWeWfD01qNb+0n2xGPb1apAMQmAXpeakSpPvDmfFaIe9rZQSpskrivofEmXahxVftejohB3HP3op2SBhm5fW3++VVDBZ6JIPI+WygoDhYdgtAWC8Szz3eE2zXmSHLoBFDQF0NnWD3Nccly7gVu+sQtRZmOnVidl4oZNHd4T31U6cfAdVlkhyrldTCkodWSsFgKxnuzsgoKoKfVq6/bokG5wrR8asJKcyYzWgQDnJm4ieie2P9IKnOGh7HRGJ50/nOTfdpKvX585E9j5SgdD2K8L4U5Kcp4KIg0R2VyQvwutEmKhr1AYukoxB4u8E+GalEovocUdzBCrUFFupFMfCH3SlKLGjGJnMrS2i/Ejg6nbPyA4qdJaZqBuxljdTIfuqK21L6Q1/m4GZTEeMtPr97IU4DHNLNearrSGVPRXCNX6qoBVAaK9qVFwgMv/aQyJ/osxpENaN29w/c8598Hae1rZ1GUnEIa5EECQaLh49rJ12mMK49hL0xuWmKwfTrJjKiYyaZUOwczEjoodNjZUrMvTbpoBFRuc94CW5Y+p2NG0HRU76kAqFkd0SDruf5+H8aoCmHiZih1d4sBmdu1fv24eRloAZiXZAAZzcI+biqdoV8vk59USmAiT5q2jIT5nB/3B5TVLC76sjjuoi0pLfu8zCJ5AuJCknMaDKKBxFIB5wUpgzJrL8o00wGnWyQQpU5Yq4DAe9VpL86ZMlmmxykAHnB3OCS6PW5J9IQtZFOAVmUg4a8vPxuOcF0bgDhafEyCDS5U5xjbjSC09cOtn+3QyeP7cR6YHSQHEfHYjFTgYL71LbEgMUxXu1FzW3VavRECRM4CM9+IOnGJfHojjrO2q+aPKraoMcMhWFts2fv16NBp4rNA1nz2YsNeOuOwW98xKYxj2KLgbhD1/fzeXm93A/9W+HpLNQ4D6wGAJPNeAvrbFBk9qxb2j3wlqvC62mnSBB3vqwr6GwSQgsSW/zH6HpMiAbCyvS6sl2FLTJJrqm+u3r397/+un96//dv3xJgDTrXx/ckvvpsH4FXxbC6glXrLJ7fTIFOoeaE9gUgDRYXQUHyAqWnNwj8IWlro48c87t1e3/sV5lKeMZb1hP+8OD+PFN6bXceMbA9xVLqZncJOLj+LHXCjgBnp9tRDpLYYQwJRwY4S2/hXbS4p1ujWQ8qj32sVXiOx8bQiM8dzFxpEsvFHJcTySL7czGs43kp1OLb1Jk47KXLE2X2/HT2QI2X5Xw/IXmdnFC3buEgrZY3OWIJXDEMRi+HXh1wemQNkZZUP4nMPvAn8X0210rMaTg6WAY3T2Fsd6eDwgeGHpYVt8NCk+nhTjpOmogfLZNQQ5IzPhV3TGGjIABOOaYZbDrFUgzhWdgP+2A3ZDJ0g6X7Ioilv0U61AtiHAZoj60tzIITaTmQB8gFcJni6wjiQrg6SfEK8zg5QIrNipYYciMCLEUd4zuLnrtcvjQQDJEjrYHS9WAqaB17nZuxM1ezPvSiSXSEodAcBJTkK71RmwwVu4tM7WsIV9mbXdPLjsjEbaH+A7Q6d/RmNnpmjBvvceWGS6dtGWwGW9gkuyFkvICSB5bUUIsAIHQ75plTttpUVYRz/gk3MA1qM+ePnmZGt7ZnzN5qJ0V3DfQ8GQkQq3TLjnQWGKXgHsLZPAYmRqgTedt6zMQEZbqJUB6R4wE7EtW7GsIM1MH9zpariYAHZX+KleV1axFHRjxZ+4WfjI6rqDMy9gqyrD3fz55pefGa4GG8/X4JEBy+Tc4bAQ9x6AOpyJYT8SECLSKO73eSzyQZ+LXj7sx2mcizhOMzG4GPTO025+Ibqz3iDq9fJ+1OdDcTEU4K1bHR6kQeQ76GAHoO94BIG8S8xCQgNo0qVSwm3B0QYzBfweImD6eSXB9K5QU40CILpwOBjfqmD/LoaJ2Tmwp8UcqQDd6qJJ1a3THigMpwGNbHcW1po71FP3YXfMWsUuKXlEluQKedUBcwrQKbYEfiPuRfpWFuJmXaYPY3zPglP5XgnrJuBTRfap0sqR2IBWwIOOhmCTFxxeO02qZVVHq5q3h2AxJQ/FPUdrwTDtNReGUJSOggq97TWuexrs78tvtsCw8QOsSCe47vZZzP/0KZO65EtAirHTenlYoi6AFYWNcU/pxlhQVOJVshJezdm3oC/5LRwqlwYDSWs3jTE/RnGX+2mb+1Ge84QdFhXCcMU+fLy+uf71JnD2VkE06HgJOHaFvpGF+ILXZifqbonNoxfFJ7LUPRG2Nml2Hr6HOYpwiH/mYQTwwifetyl3PFyZbh4ojg5Gx/lw5KS3tcai2hCAh67z26uDJ8r2dbK+TbyAlFSfkKwM3sXIWooiO0b0QAJkVwvmLFPDZopD5q3qrwvfDtHaUd8CiyL40OnAsAu4OxFzC7QEGsAXwYRS9EzMFtArNbgmuglw7hqhFrpwL4FHkMB7UZ2znzYGhMxxcaiEXkceHeUJhGj/afzAXiDnzMavZmz/wovkq77yBo9g2nurLcBP6tdahx1oy01EALx25d6x6dYr/ah5tXB2q5aVKsWOrcDt/8kgySDQl7jxZlwdNv7A7V/H7ZGjHVk17HJBmpCPRFVClsFHrCXcU9ErRrXx4pAVZPgC+MGCl3OxvXXWIaN2iqpQ9skIUdXhAX00lQVEiFZL3pLrW2ExWjQIZEJU1w6FOmwEtPm2GEEKfHM0yGkb7wgCn5EA2K0GtpPbBgTgHzIt7Tg='
-          patch = zlib.decompress(base64.b64decode(encoded, validate=True))
-          assert hashlib.sha256(patch).hexdigest() == 'c7cc7ed49a2678842f058524ae40be6914e39ecf364d0fd07d10f88161a93a4d'
-          Path('/tmp/fixes.patch').write_bytes(patch)
+          import hashlib
+          def replace(text, old, new):
+              assert text.count(old) == 1, ('Unexpected replacement count', old)
+              return text.replace(old, new)
+          def write(path, text, expected):
+              raw = text.encode()
+              assert hashlib.sha256(raw).hexdigest() == expected, path
+              Path(path).write_bytes(raw)
+          path = 'src/city-studio.js'
+          source = Path(path).read_text()
+          start = source.index('function tinySettlement(s)')
+          end = source.index('/** Civic compounds', start)
+          fixed = '''function tinySettlement(s){const st=s.cityStudio,v=st.resolved,g=st.ground,r=rng(s.seed+'-huts'),ward=st.neighborhoods[0];let route=s.features.find(f=>f.type==='road'&&f.cityRole==='lane'),n=0,ix=networkIndex(s),occupied=builtIndex(s);
+           // Deliberately finite four-hut plan at physical scale, with verified access.
+           for(const [x,y]of [[355,420],[405,625],[535,390],[555,555],[290,545],[365,710]]){if(n>=v.count)break;const near=nearestRoad(s,[x,y]),angle=near?Math.atan2(near.point[1]-y,near.point[0]-x)+Math.PI/2:0,poly=rect([x,y],(6+r()*1.5)/v.metersPerUnit,(8+r()*2)/v.metersPerUnit,angle);if(!footprintGood(s,poly,ix,occupied)||!near)continue;
+           // The near face is edge zero: the local negative-y normal points toward the road.
+           const end=point(poly[0],poly[1],.5),access=[near.point,end],accessPoly=corridor(...access,7);if(occupied.hits(accessPoly,.1)||!dryLine(g,access,1)||!currentWaterClear(s,accessPoly,0))continue;
+           const f=emit(s,'building',{polygon:poly,x,y,ward:ward.feature,quarter:'commons',buildingKind:'shack',cityRole:'building',cityCulture:v.culture,cityRoof:'gable',cityFloors:1,cityFront:0,roof:n%3,elevationM:heightAt(g,[x,y]),label:'',notes:''});occupied.add(poly,{feature:f});
+           street(s,access,'access',7,{cityBuilding:f.id,cityStreet:near.road.id,ward:ward.feature});occupied.add(accessPoly,{access:f.id});n++;
+           }
+           if(n<v.count)buildFrontages(s,null,v.count-n);
+          }
+          '''
+          write(path, source[:start]+fixed+source[end:], 'eb1b8e868826b01b14be11aa205592c44c5c13a926f26f20ceea19d998881648')
+          path = 'src/editor-core.js'
+          source = replace(Path(path).read_text(), " cityLevel:s.cityStudio&&(a.cityLevel==='rooftops'&&s.options.rooftops||a.cityLevel==='underground'&&s.options.underground)?a.cityLevel:'surface',", " ...(s.cityStudio?{cityLevel:(a.cityLevel==='rooftops'&&s.options.rooftops||a.cityLevel==='underground'&&s.options.underground)?a.cityLevel:'surface'}:{}),")
+          write(path, source, '31aafdabe5c114a077c6dc667f43049b6f61511097cb1f7bf695f94cfbbd8007')
+          path = 'tests/city-studio.test.cjs'
+          source = Path(path).read_text()
+          marker = '   const poly=C.corridor(a.points[i-1],a.points[i],a.width*.8);'
+          source = replace(source, marker, marker+'''\n   for(const t of [.05,.15,.25,.4,.5,.6,.75,.85,.95,.99]){const p=[a.points[i-1][0]+(a.points[i][0]-a.points[i-1][0])*t,a.points[i-1][1]+(a.points[i][1]-a.points[i-1][1])*t];assert(!E.inside(p,b.polygon)||E.nearPolyline(p,[...b.polygon,b.polygon[0]])<.001,'Access crosses its own building before reaching the door: '+b.id);}''')
+          marker = "for(const p of C.PRESETS)test(p.id+': repeated-seed geometry, road access, placement and ships',()=>{"
+          source = replace(source, marker, '''test('Legacy appearance and shipped battle atlases do not acquire City Studio metadata',()=>{
+           for(const mode of ['region','city','battle']){const s=E.generate(mode,'appearance-legacy',{districts:12});assert(!('cityLevel' in Core.appearance(s)));}
+           const {execFileSync}=require('node:child_process'),path=require('node:path');
+           for(const script of ['build-arena-example.cjs','build-encounter-examples.cjs'])execFileSync(process.execPath,[path.resolve(__dirname,'../scripts',script),'--check'],{stdio:'pipe'});
+           const s=make('fishing');assert.equal(Core.appearance(s).cityLevel,'surface');
+          });
+          '''+marker)
+          source = replace(source, 'assert(!s.cityStudio.warnings.length);}', 'assert(!s.cityStudio.warnings.length);geometryCheck(s);}')
+          write(path, source, 'ea7b67b9fbfc781c0cd477fce9105b3e6196a535c4f242d44cfbbb47a55d9c75')
           PY
-          git apply --index /tmp/fixes.patch
-          git diff --cached --check
+          git diff --check
       - name: Verify legacy examples without modifying their geometry
         run: |
           node scripts/build-arena-example.cjs --check
