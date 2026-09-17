@@ -1,0 +1,36 @@
+name: Battle map checks
+on:
+  push:
+    branches: [main, battle-map-overhaul]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Existing regression tests
+        run: node --test tests/*.test.cjs
+      - name: Source snapshot for offline verification
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-source
+          path: |
+            src/
+            assets/
+            tests/
+            tools/
+            vendor/
+            examples/
+            docs/
+            index.html
+            README.md
+            VERSION.json
+          retention-days: 1
