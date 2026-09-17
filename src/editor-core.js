@@ -22,9 +22,13 @@ function validateAtlas(data){
  return {format:'megamap-atlas',version:1,appVersion:E.VERSION,active:E.clamp(Number.isInteger(data.active)?data.active:0,0,data.maps.length-1),maps:data.maps,library};
 }
 function center(f){return Number.isFinite(f.x)&&Number.isFinite(f.y)?[f.x,f.y]:E.center(f.polygon||f.points||[[0,0]]);}
-function translate(f,dx,dy){if(f.x!=null)f.x+=dx;if(f.y!=null)f.y+=dy;if(Number.isFinite(f.roofCx))f.roofCx+=dx;if(Number.isFinite(f.roofCy))f.roofCy+=dy;for(const k of ['polygon','points'])if(f[k])f[k]=f[k].map(p=>[p[0]+dx,p[1]+dy]);}
-function rotate(f,degrees){if(Number.isFinite(f.roofAngle))f.roofAngle=(f.roofAngle+degrees)%360;const c=center(f),a=degrees*Math.PI/180,cs=Math.cos(a),sn=Math.sin(a);if(Number.isFinite(f.roofCx)&&Number.isFinite(f.roofCy)){const x=f.roofCx-c[0],y=f.roofCy-c[1];f.roofCx=c[0]+x*cs-y*sn;f.roofCy=c[1]+x*sn+y*cs;}if(f.polygon||f.points){for(const k of ['polygon','points'])if(f[k])f[k]=f[k].map(p=>{const x=p[0]-c[0],y=p[1]-c[1];return [c[0]+x*cs-y*sn,c[1]+x*sn+y*cs];});}else f.rotation=((f.rotation||0)+degrees)%360;}
-function scale(f,factor){const c=center(f);for(const k of ['polygon','points'])if(f[k])f[k]=f[k].map(p=>[c[0]+(p[0]-c[0])*factor,c[1]+(p[1]-c[1])*factor]);if(Number.isFinite(f.roofCx))f.roofCx=c[0]+(f.roofCx-c[0])*factor;if(Number.isFinite(f.roofCy))f.roofCy=c[1]+(f.roofCy-c[1])*factor;if(f.size)f.size*=factor;if(f.width)f.width*=factor;if(f.roofWidth)f.roofWidth*=factor;if(f.roofHeight)f.roofHeight*=factor;}
+function refreshBattleProp(f){if(!f.battleProp)return;
+ const scale=f.size/(Math.max(f.propWidth,f.propHeight)*.55),w=f.propWidth*scale,h=f.propHeight*scale,a=(f.rotation||0)*Math.PI/180,cs=Math.cos(a),sn=Math.sin(a);
+ f.battleFootprint=[[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]].map(([x,y])=>[f.x+x*cs-y*sn,f.y+x*sn+y*cs]);
+}
+function translate(f,dx,dy){if(f.x!=null)f.x+=dx;if(f.y!=null)f.y+=dy;if(Number.isFinite(f.roofCx))f.roofCx+=dx;if(Number.isFinite(f.roofCy))f.roofCy+=dy;for(const k of ['polygon','points'])if(f[k])f[k]=f[k].map(p=>[p[0]+dx,p[1]+dy]);refreshBattleProp(f);}
+function rotate(f,degrees){if(Number.isFinite(f.roofAngle))f.roofAngle=(f.roofAngle+degrees)%360;const c=center(f),a=degrees*Math.PI/180,cs=Math.cos(a),sn=Math.sin(a);if(Number.isFinite(f.roofCx)&&Number.isFinite(f.roofCy)){const x=f.roofCx-c[0],y=f.roofCy-c[1];f.roofCx=c[0]+x*cs-y*sn;f.roofCy=c[1]+x*sn+y*cs;}if(f.polygon||f.points){for(const k of ['polygon','points'])if(f[k])f[k]=f[k].map(p=>{const x=p[0]-c[0],y=p[1]-c[1];return [c[0]+x*cs-y*sn,c[1]+x*sn+y*cs];});}else f.rotation=((f.rotation||0)+degrees)%360;refreshBattleProp(f);}
+function scale(f,factor){const c=center(f);for(const k of ['polygon','points'])if(f[k])f[k]=f[k].map(p=>[c[0]+(p[0]-c[0])*factor,c[1]+(p[1]-c[1])*factor]);if(Number.isFinite(f.roofCx))f.roofCx=c[0]+(f.roofCx-c[0])*factor;if(Number.isFinite(f.roofCy))f.roofCy=c[1]+(f.roofCy-c[1])*factor;if(f.size)f.size*=factor;if(f.width)f.width*=factor;if(f.roofWidth)f.roofWidth*=factor;if(f.roofHeight)f.roofHeight*=factor;refreshBattleProp(f);}
 function smooth(points){if(points.length<3)return clone(points);const out=[points[0].slice()];for(let i=0;i<points.length-1;i++){const a=points[i],b=points[i+1];out.push([a[0]*.75+b[0]*.25,a[1]*.75+b[1]*.25],[a[0]*.25+b[0]*.75,a[1]*.25+b[1]*.75]);}out.push(points.at(-1).slice());return out;}
 function canPlace(s,p,radius=0){if(p[0]<radius||p[1]<radius||p[0]>s.width-radius||p[1]>s.height-radius)return false;
  if(s.battle?.boundary&&!E.pointOnOrInside(p,s.battle.boundary))return false;
@@ -110,5 +114,5 @@ function clipSegmentToBoundary(line,poly){let a=line[0].slice(),b=line[1].slice(
  }return E.dist(a,b)>.001?[a,b]:null;
 }
 
-return {gridSpec,hexCenters,hexPolygon,snapPoint,heightCSV,gridMetadata,clipSegmentToBoundary,clone,appearance,validateAtlas,center,translate,rotate,scale,smooth,canPlace,contours,mergeWalls,cutDoor,vttData,history,DEFAULT_LAYERS,PALETTES};
+return {gridSpec,hexCenters,hexPolygon,snapPoint,heightCSV,gridMetadata,clipSegmentToBoundary,clone,appearance,validateAtlas,center,translate,rotate,scale,refreshBattleProp,smooth,canPlace,contours,mergeWalls,cutDoor,vttData,history,DEFAULT_LAYERS,PALETTES};
 });
