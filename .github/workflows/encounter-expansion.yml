@@ -15,14 +15,53 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Engine and editor regressions
-        run: node --test tests/*.test.cjs
+      - name: Engine, geometry, assets and compatibility regressions
+        run: |
+          set -o pipefail
+          node --test tests/*.test.cjs | tee "$RUNNER_TEMP/encounter-tests.tap"
+      - name: Verify reproducible shipped assets and example atlas
+        run: |
+          node scripts/build-assets.cjs
+          git diff --exit-code -- assets/
+          node scripts/build-encounter-examples.cjs --check
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser test dependencies
+        run: |
+          python -m pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Six encounters, wizard, Italian and exports with CSP intact
+        run: python tests/browser_encounters.py --output "$RUNNER_TEMP/encounter-qa"
       - name: Package matching source for reproducibility
         if: always()
         run: git archive --format=tar.gz -o "$RUNNER_TEMP/encounter-source.tar.gz" HEAD
+      - name: Publish verification summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP'])
+          lines = ['## Six-encounter verification', '', 'Browser tests use the actual local application with CSP intact.', '']
+          tap = root / 'encounter-tests.tap'
+          if tap.exists():
+              lines += [s for s in tap.read_text().splitlines() if s.startswith(('# tests ', '# pass ', '# fail '))]
+          report = root / 'encounter-qa' / 'report.json'
+          if report.exists():
+              data = json.loads(report.read_text())
+              lines += ['', f"Browser: {data['passed']} checks passed; Chromium {data['browser']}; {len(data['errors'])} unhandled errors."]
+          else:
+              lines += ['', 'No browser success report; inspect failure artifacts.']
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
+              output.write('\n'.join(lines) + '\n')
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: encounter-source-${{ github.run_id }}
-          path: ${{ runner.temp }}/encounter-source.tar.gz
+          name: encounter-qa-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/encounter-source.tar.gz
+            ${{ runner.temp }}/encounter-tests.tap
+            ${{ runner.temp }}/encounter-qa/
           retention-days: 7
