@@ -16,6 +16,7 @@ const state={expanded:false,search:'',group:'recommended',detail:-1,selected:-1,
 function option(value,label,current){return `<option value="${esc(value)}"${String(value)===String(current)?' selected':''}>${esc(label)}</option>`;}
 function roles(current){return Object.entries(B.GROUPS).map(([id,name])=>`<optgroup label="${esc(name)}">${Object.entries(B.ZONES).filter(([,z])=>z.group===id).map(([id,z])=>option(id,z.name,current)).join('')}</optgroup>`).join('');}
 function render(input){const o=B.normalize(input),full=o.zones.length>=B.MAX_ZONES;
+ if(o.theme==='arena')return `<section class="arena-workspace" aria-label="Arena preview"><h3>Arena</h3><p class="hint">An open fighting floor, stepped spectator stands, opposing entrances and optional tactical cover.</p><p class="micro">Use Arena layout to choose the fighting floor, tiers and obstacles.</p><div data-arena-preview class="zone-plan-preview"></div><p data-arena-report class="micro" role="status"></p></section>`;
  if(B.isRoomless(o.theme)){const p=B.EXTRA_PRESETS.find(p=>p.id===o.theme);return `<section class="outdoor-workspace" aria-label="Outdoor encounter preview"><div class="section-heading"><span class="eyebrow">OPEN TERRAIN</span><span class="tag">No rooms</span></div><h3>${esc(p.name)}</h3><p class="hint">${esc(p.hint)}</p><p class="micro">Use Landscape for route width, clearing size and cover. Use Grid &amp; size for the play area.</p><div data-outdoor-preview class="zone-plan-preview" aria-label="Outdoor encounter preview"></div><p data-outdoor-report class="micro" role="status"></p></section>`;}
 
  return `<section class="battle-workspace" aria-label="Battle zone planner">
@@ -40,6 +41,8 @@ function read(host,input){const o={...input},rows=[...host.querySelectorAll('[da
  o.zones=rows.map(x=>x.value);o.zoneDetails=rows.map((_,i)=>({label:host.querySelector(`[data-zone-label="${i}"]`)?.value||'',size:host.querySelector(`[data-zone-size="${i}"]`)?.value||'auto',access:host.querySelector(`[data-zone-access="${i}"]`)?.value||'auto',near:host.querySelector(`[data-zone-near="${i}"]`)?.value===''?null:Number(host.querySelector(`[data-zone-near="${i}"]`)?.value)}));return o;
 }
 function mount(host,{get,set,engine,seed,seedInput,translate=s=>s}){
+ const arena=host.querySelector('.arena-workspace');
+ if(arena){let timer,disposed=false;function preview(){if(disposed||!arena.isConnected)return;try{const s=engine.generate('battle',seed()||'megamap',get());arena.querySelector('[data-arena-preview]').innerHTML=globalThis.MegamapRender.render(s,{hq:get().hq,grid:'none',furniture:false,layers:{labels:false}});arena.querySelector('[data-arena-report]').textContent=translate('Arena obstacles')+': '+s.battle.arena.coverPlaced+' · '+translate('Spectator tiers')+': '+s.battle.arena.tiers;}catch(e){arena.querySelector('[data-arena-report]').textContent=translate('Preview unavailable: ')+e.message;}}function refresh(){clearTimeout(timer);timer=setTimeout(preview,150);}seedInput?.addEventListener('input',refresh);preview();return{refresh,dispose(){disposed=true;clearTimeout(timer);seedInput?.removeEventListener('input',refresh);}};}
  const outdoor=host.querySelector('.outdoor-workspace');
  if(outdoor){let timer,disposed=false;
   function preview(){if(disposed||!outdoor.isConnected)return;try{

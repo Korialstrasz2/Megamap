@@ -24,7 +24,7 @@ function dryRoute(s){
  for(const f of s.features.filter(f=>f.polygon))assert(f.polygon.every(p=>E.pointOnOrInside(p,b.boundary,.001)),'terrain escapes boundary');
  const vtt=C.vttData(s,100,'');assert.equal(vtt.portals.length,0);assert.equal(vtt.line_of_sight.length,0);
 }
-test('Six additional selectable presets retain all twelve original battle types',()=>{assert.equal(P.presets.length,6);assert.equal(Object.keys(B.PLANS).length,18);assert.equal(outdoors.length,4);for(const p of P.presets){const o=E.options('battle',{theme:p.id});assert.equal(o.theme,p.id);assert.equal(o.cols,p.cols);assert.equal(o.rows,p.rows);assert.deepEqual(o.zones,p.zones);}});
+test('Six additional selectable presets retain all twelve original battle types',()=>{assert.equal(P.presets.length,6);assert.equal(Object.keys(B.PLANS).length,19);assert.equal(outdoors.length,4);for(const p of P.presets){const o=E.options('battle',{theme:p.id});assert.equal(o.theme,p.id);assert.equal(o.cols,p.cols);assert.equal(o.rows,p.rows);assert.deepEqual(o.zones,p.zones);}});
 for(const p of P.presets)test(p.id+': deterministic default, valid editable atlas and export',()=>{
  const s=make(p.id);E.validateScene(s);assert.deepEqual(make(p.id),s);propsSafe(s);
  const restored=C.validateAtlas({format:'megamap-atlas',version:1,active:0,maps:[JSON.parse(JSON.stringify(s))],library:[]}).maps[0];assert.deepEqual(restored.battle,s.battle);

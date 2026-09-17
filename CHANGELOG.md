@@ -1,5 +1,11 @@
 # Megamap changelog
 
+## Arena and HQ battle maps
+
+- Added Arena: open fighting floor, configurable tiers/cover, opposing open entrances and editable VTT barrier walls.
+- HQ defaults on for new battle maps: procedural material tiles, natural top-down foliage and rock detail, contact shadows, worn routes and furnishing/light accents. Geometry and VTT rules are unchanged.
+- Added per-map HQ controls in the wizard/sidebar and Style, English/Italian labels, legacy appearance preservation, deterministic examples and automated source/browser/export checks.
+
 ## Unreleased
 
 ### Button-led wizard and six encounter expansion

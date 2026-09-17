@@ -15,6 +15,10 @@ The library now contains **278 vector assets in 14 categories**, including **32 
 
 Outdoor trees and rocks are visual cover, not automatic VTT line-of-sight walls. Add wall segments where required. Imported older atlases retain their stored geometry; they are not regenerated automatically. The sections below describe the original v1.2 release and its historical verification counts.
 
+## Arena and HQ battle maps
+
+The battle library now has **19 themes**, including an open **Arena** with editable spectator tiers, opposing entrances, barriers and optional obstacles. **HQ** is enabled by default for new battle maps: textured grass/soil/sand/stone/wood/water/snow, natural top-down foliage, depth and lighting. Toggle it per map under **Style** without changing geometry. The wizard and sidebar include English/Italian controls; old saved maps preserve their original appearance. See [Arena & HQ guide](docs/arena-hq.md) and open `examples/Arena-HQ.megamap.json` for an editable example. All rendering and exports remain offline.
+
 ## Start here
 
 1. Extract the **entire ZIP** into a normal folder. Keep `index.html`, `src/`, `assets/` and the launchers together.

@@ -1,3 +1,6 @@
+ARENA AND HQ BATTLE MAPS
+19 battle themes; HQ on by default for newly generated battle maps. Open examples/Arena-HQ.megamap.json and see docs/arena-hq.md for English and Italian guidance.
+
 # Megamap 1.2
 ## An offline mapmaking workbench for campaign, landscape, city and encounter maps
 
