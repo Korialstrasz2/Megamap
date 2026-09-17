@@ -1,3 +1,7 @@
+## City Studio addition
+
+The new **Build → City Studio** tool is independent. **City · legacy** keeps the previous generator, and old saved geometry is never regenerated on load. New Studio maps use additive `cityStudio.version: 1` metadata with the existing atlas format. Older builds do not understand Studio rendering. Save an atlas backup and extract the complete updated package before using the new tool. See `docs/city-studio.html`.
+
 # Upgrading to Megamap 1.2
 
 1. In the older application, **Save atlas**. Keep this file and the old folder untouched.

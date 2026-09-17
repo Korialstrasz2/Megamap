@@ -5,6 +5,14 @@
 
 **Scope:** a portable **2D procedural generator and editor**, launched from a Windows `.bat` into a browser. This is the complete source-and-runtime package for the features below. It builds on the supplied Megamap v1; it is not a signed native executable, a GIS survey system, or a full fork of Watabou's current private engine.
 
+## New: City Studio — fantasy settlements, separately from legacy cities
+
+**Build → City Studio** adds a terrain-led, street-first settlement engine with ten curated fantasy presets: from **four huts and three boats** to a **Golden River capital with an armada**, a **Nordic council town on slopes**, canals, an oasis, a giant tree or a crater. Actual courtyard/L-shaped footprints, connected street-facing access, neighborhood character, civic compounds, quays, ships and optional older remains replace uniform parcel subdivision in this new tool.
+
+Choose a preset and a size; customization and exact overrides are optional. **HQ** retains the existing cartographic palettes with richer roof, ground, water and foliage rendering, and can be switched off without changing geometry. Optional rooftop/underground views are route overlays, not interiors or battle maps. **No people, NPCs, population simulation or generated stories.**
+
+The original tool is retained as **City · legacy**. Existing geometry is not automatically converted. Open **examples/City-Studio.megamap.json** for six editable examples. Read the [offline City Studio guide](docs/city-studio.html) or [English/Italian source guide](docs/city-studio.md) for controls, scale, editing, verification and limits.
+
 ## Wizard and six additional battle encounters
 
 The large **New wizard / Nuova procedura guidata** button beside the title offers button-led creation without removing the original sidebar tabs. Choices, numeric shortcuts, individual and section randomization, Back and Skip are available; generation returns to the sidebar with the chosen settings.

@@ -13,3 +13,6 @@ desktop.ini
 # Node (project has no deps today, but keep it clean)
 node_modules/
 npm-debug.log*
+
+# City Studio developer browser reports
+docs/qa-city-studio/

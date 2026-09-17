@@ -1,6 +1,6 @@
 /* Megamap 1.2.0 — GPL-3.0. City parcel subdivision derives from
  * Watabou's Ward.createAlleys; see vendor/watabou/README.md. */
-(function(root,factory){const assets=typeof module==='object'&&module.exports?require('./assets.js'):root.MegamapAssets;const battle=typeof module==='object'&&module.exports?require('./battle.js'):root.MegamapBattle;const api=factory(assets,battle);if(typeof module==='object'&&module.exports)module.exports=api;else root.MegamapEngine=api;})(typeof globalThis!=='undefined'?globalThis:this,function(AssetPack,Battle){
+(function(root,factory){const assets=typeof module==='object'&&module.exports?require('./assets.js'):root.MegamapAssets;const battle=typeof module==='object'&&module.exports?require('./battle.js'):root.MegamapBattle;const studio=typeof module==='object'&&module.exports?require('./city-studio.js'):root.MegamapCityStudio;const api=factory(assets,battle,studio);if(typeof module==='object'&&module.exports)module.exports=api;else root.MegamapEngine=api;})(typeof globalThis!=='undefined'?globalThis:this,function(AssetPack,Battle,Studio){
 'use strict';
 const VERSION='1.2.0',SIZE=1000;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -37,6 +37,7 @@ const last=['bridge','brook','cross','dale','fell','ford','gate','haven','hold',
 function name(r){return pick(r,first)+pick(r,last);}
 const ASSETS=AssetPack.catalog.map(a=>a.id);
 const defaults={
+ fantasy:{...Studio.DEFAULTS},
  region:{sizeKm:20,terrain:'valley',water:.36,ruggedness:.55,forest:.5,settlements:9,poi:14},
  city:{sizeKm:2.4,districts:55,density:.7,chaos:.45,river:true,walls:true,coast:false,layout:'organic',shape:'random',shapeGuidance:65,rotation:0,quarterDetail:.7,
   quarters:['market','commons','oldtown','artisans','temple','noble','gardens','docks','military','merchants'],buildings:[]},
@@ -44,6 +45,7 @@ const defaults={
  local:{sizeKm:20,biome:'woodland',averageHeight:350,heightDiversity:500,forest:.65,water:'stream',riverWidth:18,roads:'none',homesteads:0,minSeparationKm:2,caves:4,detail:.7}
 };
 function options(mode,o={}){
+ if(mode==='fantasy')return Studio.normalize(o);
  if(!defaults[mode])throw Error('Unknown map mode');const d=defaults[mode],v={...d,...o};
  const number=(k,a,b)=>{const n=Number(v[k]);v[k]=Number.isFinite(n)?clamp(n,a,b):d[k];};
  const integer=(k,a,b)=>{number(k,a,b);v[k]=Math.round(v[k]);};
@@ -711,6 +713,7 @@ function districtDiagnostics(s,d,ctx,buildings,props){
   props};
 }
 function regenerateDistrict(s,id,quarter){
+ if(s.cityStudio)return Studio.regenerateDistrict(s,id,quarter);
  const d=s.features.find(f=>f.id===id&&f.type==='district');if(!d)throw Error('Select a district first.');if(d.locked)throw Error('Unlock the district first.');
  if(quarter&&!QUARTERS.some(q=>q.id===quarter))throw Error('Unknown quarter.');
  if(quarter)d.quarter=quarter;if(!d.quarter)d.quarter=QUARTERS.find(q=>q.name.toLowerCase()===String(d.ward).toLowerCase())?.id||'commons';
@@ -981,7 +984,7 @@ function wallSegments(s){
  }
  return lines;
 }
-function generate(mode,seed,config){return mode==='region'?region(seed,config):mode==='local'?localRegion(seed,config):mode==='city'?guidedCity(seed,config):mode==='battle'?finalizeBattle(battle(seed,config)):(()=>{throw Error('Unknown map mode');})();}
+function generate(mode,seed,config){return mode==='fantasy'?Studio.generate(seed,config):mode==='region'?region(seed,config):mode==='local'?localRegion(seed,config):mode==='city'?guidedCity(seed,config):mode==='battle'?finalizeBattle(battle(seed,config)):(()=>{throw Error('Unknown map mode');})();}
 /** Validate a loaded document before exposing it to the editor or renderer.
  * Local coordinates only. No HTML, scripts or remote image URLs are accepted.
  */
@@ -996,7 +999,8 @@ function validateScene(s){
  s.metadata=s.metadata&&typeof s.metadata==='object'&&!Array.isArray(s.metadata)?s.metadata:{};
  // Pre-HQ saved maps keep their original look. New generation supplies hq:true.
  if(s.mode==='battle'&&s.options?.hq==null&&s.appearance?.hq==null){s.appearance={...s.appearance,hq:false};}
- s.options=options(s.mode,s.options&&typeof s.options==='object'?s.options:{});
+ s.options=options(s.cityStudio?'fantasy':s.mode,s.options&&typeof s.options==='object'?s.options:{});
+ if(s.cityStudio)Studio.validate(s);
  const types=new Set(['river','water','settlement','road','poi','decoration','district','plaza','asset','building','wall','room','label','paint','image','area','portal','light']);
  const paths=new Set(['river','road','wall','paint','portal']),polygons=new Set(['water','district','plaza','building','area']);
  const ids=new Set();
@@ -1032,5 +1036,5 @@ function validateScene(s){
  return s;
 }
 
-return{VERSION,SIZE,defaults,ASSETS,CITY_SHAPES,QUARTERS,BUILDING_TYPES,LOCAL_BIOMES,GRID_TYPES,BATTLE_ZONES:ZONE_ROLES,BATTLE_PLANS:THEME_ZONES,BATTLE_TEMPLATES:Battle.TEMPLATES,BATTLE_EXTRA_PRESETS:Battle.EXTRA_PRESETS,isRoomlessBattle:Battle.isRoomless,battleEstimate:Battle.estimate,options,cityEnvelope,triangulate,cleanPolygon,pointOnOrInside,clipToEnvelope,regenerateDistrict,localElevation,mapBoundary,hash,rng,noise,fbm,area,center,clip,inset,inside,hull,voronoi,createAlleys,astar,wallSegments,generate,validateScene,nearPolyline,dist,clamp,EPS,PLACE_CLEARANCE,RIVER_BANK_GAP,SHORE_SETBACK,STREET_SETBACK,segmentsIntersect,segmentDistance,polygonsIntersect,polygonDistance,polygonsClearOf,polygonInsidePolygon,polygonPolylineDistance,symbolFootprint,convexQuality,capsulePolygon,subtractConvex,subtractAll,shapeOf,boundsOf,sceneReservations,cityOccupancy,convexParts,districtContext,districtDiagnostics,cleanFootprint,repairBuildingFootprint,buildingShapeReason,buildingRejection,waterProximity,waterKindOk,planOpenSpaces,reserveCompactGround,sampleConvex,waterfrontBBox,MAX_BUILD_ASPECT,MIN_BUILD_WIDTH,TIP_ANGLE,TIP_EXTENSION,TIP_TRIM,MAX_TIP_TRIMS,FOOTPRINT_TOL,WATERFRONT_GAP,OPEN_SPACE_FRACTION,MIN_OPEN_SPACE,OPEN_MATERIALS,WATER_KINDS,WATER_PROPS,PROP_MIN_SIZE,MAX_PROP_ATTEMPTS};
+return{VERSION,SIZE,defaults,ASSETS,CITY_STUDIO:Studio,CITY_SHAPES,QUARTERS,BUILDING_TYPES,LOCAL_BIOMES,GRID_TYPES,BATTLE_ZONES:ZONE_ROLES,BATTLE_PLANS:THEME_ZONES,BATTLE_TEMPLATES:Battle.TEMPLATES,BATTLE_EXTRA_PRESETS:Battle.EXTRA_PRESETS,isRoomlessBattle:Battle.isRoomless,battleEstimate:Battle.estimate,options,cityEnvelope,triangulate,cleanPolygon,pointOnOrInside,clipToEnvelope,regenerateDistrict,localElevation,mapBoundary,hash,rng,noise,fbm,area,center,clip,inset,inside,hull,voronoi,createAlleys,astar,wallSegments,generate,validateScene,nearPolyline,dist,clamp,EPS,PLACE_CLEARANCE,RIVER_BANK_GAP,SHORE_SETBACK,STREET_SETBACK,segmentsIntersect,segmentDistance,polygonsIntersect,polygonDistance,polygonsClearOf,polygonInsidePolygon,polygonPolylineDistance,symbolFootprint,convexQuality,capsulePolygon,subtractConvex,subtractAll,shapeOf,boundsOf,sceneReservations,cityOccupancy,convexParts,districtContext,districtDiagnostics,cleanFootprint,repairBuildingFootprint,buildingShapeReason,buildingRejection,waterProximity,waterKindOk,planOpenSpaces,reserveCompactGround,sampleConvex,waterfrontBBox,MAX_BUILD_ASPECT,MIN_BUILD_WIDTH,TIP_ANGLE,TIP_EXTENSION,TIP_TRIM,MAX_TIP_TRIMS,FOOTPRINT_TOL,WATERFRONT_GAP,OPEN_SPACE_FRACTION,MIN_OPEN_SPACE,OPEN_MATERIALS,WATER_KINDS,WATER_PROPS,PROP_MIN_SIZE,MAX_PROP_ATTEMPTS};
 });

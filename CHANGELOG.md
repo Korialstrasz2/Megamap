@@ -1,3 +1,9 @@
+## City Studio · independent fantasy settlement engine
+
+- Added the separate City Studio tool, ten terrain-led fantasy presets, compact sidebar/wizard controls, physical street-frontage parcels, real courts and L-shaped buildings, civic landmarks, fleets, terrain relief and optional historic remains.
+- Added standard/HQ city rendering in all existing palettes and optional roof/underground route views, without people or narrative generation.
+- Retained the legacy city engine unchanged; added saved-map validation, locked neighborhood regeneration, six reproducible examples, English/Italian guides and source/browser acceptance tests.
+
 # Megamap changelog
 
 ## Arena and HQ battle maps
