@@ -1,0 +1,83 @@
+/* Battle program editor. GPL-3.0. Indexed operations preserve room identity;
+ * the browser workspace is a single DOM tree, including when expanded. */
+(function(root,factory){const B=typeof module==='object'&&module.exports?require('./battle.js'):root.MegamapBattle;const api=factory(B);if(typeof module==='object'&&module.exports)module.exports=api;else root.MegamapBattleUI=api;})(typeof globalThis!=='undefined'?globalThis:this,function(B){
+'use strict';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function rearrange(input,order){
+ const o=B.normalize(input),map=new Map();order.forEach((old,i)=>{if(!map.has(old))map.set(old,i);});
+ const zones=order.map(i=>o.zones[i]),zoneDetails=order.map(i=>({...o.zoneDetails[i],near:map.get(o.zoneDetails[i].near)??null}));
+ return B.normalize({...o,zones,zoneDetails});
+}
+function move(input,from,to){const o=B.normalize(input),order=o.zones.map((_,i)=>i);if(!Number.isInteger(from)||!Number.isInteger(to)||from<0||to<0||from>=order.length||to>=order.length)return o;order.splice(to,0,order.splice(from,1)[0]);return rearrange(o,order);}
+function remove(input,index){const o=B.normalize(input);return rearrange(o,o.zones.map((_,i)=>i).filter(i=>i!==index));}
+function duplicate(input,index){const o=B.normalize(input);if(o.zones.length>=B.MAX_ZONES||!o.zones[index])return o;const order=o.zones.map((_,i)=>i);order.splice(index+1,0,index);return rearrange(o,order);}
+function add(input,role){const o=B.normalize(input);if(o.zones.length>=B.MAX_ZONES||!Object.hasOwn(B.ZONES,role))return o;return B.normalize({...o,zones:[...o.zones,role],zoneDetails:[...o.zoneDetails,{}]});}
+const state={expanded:false,search:'',group:'recommended',detail:-1,selected:-1,catalog:false};
+function option(value,label,current){return `<option value="${esc(value)}"${String(value)===String(current)?' selected':''}>${esc(label)}</option>`;}
+function roles(current){return Object.entries(B.GROUPS).map(([id,name])=>`<optgroup label="${esc(name)}">${Object.entries(B.ZONES).filter(([,z])=>z.group===id).map(([id,z])=>option(id,z.name,current)).join('')}</optgroup>`).join('');}
+function render(input){const o=B.normalize(input),full=o.zones.length>=B.MAX_ZONES;
+ return `<section class="battle-workspace" aria-label="Battle zone planner">
+  <div class="section-heading"><span class="eyebrow">ZONE PROGRAM</span><span class="tag">${o.zones.length} / ${B.MAX_ZONES}</span><button type="button" data-zone-expand title="Expand zone planner">Expand planner</button></div>
+  <div class="zone-template-row"><label>Working plan<select data-zone-template>${option('','Choose a template…','')}${B.TEMPLATES.map(t=>option(t.id,t.name,'')).join('')}</select></label></div>
+  <p class="micro zone-instructions">First is the arrival; last is the objective. Related rooms share a wing. Move, duplicate and customise rooms, or add them from the catalogue.</p>
+  <div class="zone-workspace-grid">
+   <div class="zone-program-pane"><div class="zone-panel-title">Rooms in this plan</div><ol class="zone-list">${o.zones.map((id,i)=>{const z=B.ZONES[id],d=o.zoneDetails[i];return `<li class="zone-card" data-zone-card="${i}"${state.selected===i?' data-current="true"':''}>
+    <div class="zone-row"><button type="button" class="zone-order" draggable="true" data-zone-drag="${i}" title="Drag to reorder; use arrow buttons or Alt + arrow keys" aria-label="Move room ${i+1}">${i+1}</button><select data-zone aria-label="Zone ${i+1}">${roles(id)}</select><button type="button" data-zone-remove="${i}" title="Remove zone" aria-label="Remove zone ${i+1}">×</button></div>
+    <div class="zone-card-tools"><span class="zone-access">${i===0?'Arrival':i===o.zones.length-1?'Objective':esc(d.access==='auto'?z.access:d.access)}</span><button type="button" data-zone-up="${i}" ${i===0?'disabled':''} aria-label="Move zone ${i+1} up" title="Move up">↑</button><button type="button" data-zone-down="${i}" ${i===o.zones.length-1?'disabled':''} aria-label="Move zone ${i+1} down" title="Move down">↓</button><button type="button" data-zone-copy="${i}" ${full?'disabled':''} title="Duplicate room">Duplicate</button></div>
+    <details data-zone-detail="${i}"${state.detail===i?' open':''}><summary>${d.label?esc(d.label):'Room settings'}<span>${d.size==='auto'?'Role-sized':d.size==='small'?'Small':'Large'}</span></summary><div class="zone-detail-fields"><label>Room name<input data-zone-label="${i}" value="${esc(d.label)}" placeholder="${esc(z.label)}" maxlength="80"></label><div class="two-col"><label>Room size<select data-zone-size="${i}">${[['auto','Role-sized'],['small','Small'],['large','Large']].map(([v,t])=>option(v,t,d.size)).join('')}</select></label><label>Access<select data-zone-access="${i}">${[['auto','By role'],['public','Public'],['service','Service'],['private','Private'],['secure','Secure']].map(([v,t])=>option(v,t,d.access)).join('')}</select></label></div><label>Prefer adjoining room<select data-zone-near="${i}">${option('','Automatic',d.near??'')}${o.zones.map((id,j)=>j===i?'':option(j,`${j+1}. ${o.zoneDetails[j].label||B.ZONES[id].name}`,d.near??'')).join('')}</select></label><p class="micro">An adjacency preference, not a forced corridor through another room. The preview reports preferences that could not be met.</p></div></details>
+   </li>`;}).join('')||'<li class="zone-empty">No zones: generation creates a single entrance room.</li>'}</ol>
+    <div class="zone-actions"><button type="button" data-zone-add ${full?'disabled':''}>Add zone</button><button type="button" data-zone-reset>Reset plan</button><button type="button" data-zone-clear ${o.zones.length?'':'disabled'}>Clear</button></div>
+    <p class="micro">At most 24 zones. Duplicate a guest room or cell to request a separate room, not extra furniture.</p>
+   </div>
+   <div class="zone-catalog-pane"><details class="zone-catalog"${state.catalog||state.expanded?' open':''}><summary>Room catalogue</summary><label class="zone-search-label">Find a room<input type="search" data-zone-search value="${esc(state.search)}" placeholder="Search rooms, uses, furnishings…"></label><label>Room family<select data-zone-group>${option('recommended','Recommended for this encounter',state.group)}${option('all','All rooms',state.group)}${Object.entries(B.GROUPS).map(([id,name])=>option(id,name,state.group)).join('')}</select></label><div data-zone-catalog class="zone-catalog-grid"></div><p data-zone-catalog-count class="micro" role="status"></p></details></div>
+   <div class="zone-preview-pane"><div class="zone-panel-title">Live floor plan</div><div data-zone-preview class="zone-plan-preview" aria-label="Live floor plan preview"></div><div data-zone-report class="zone-plan-report" role="status" aria-live="polite"></div><button type="button" data-zone-fit class="full">Fit map to program</button><p class="micro">Preview uses the current seed and settings. Numbers identify requested rooms; unplaced rooms are reported, never silently discarded. Grid and furnishings are hidden in this schematic.</p></div>
+  </div>
+ </section>`;
+}
+function read(host,input){const o={...input},rows=[...host.querySelectorAll('[data-zone]')];if(!host.matches?.('.battle-workspace')&&!host.querySelector('.battle-workspace'))return o;
+ o.zones=rows.map(x=>x.value);o.zoneDetails=rows.map((_,i)=>({label:host.querySelector(`[data-zone-label="${i}"]`)?.value||'',size:host.querySelector(`[data-zone-size="${i}"]`)?.value||'auto',access:host.querySelector(`[data-zone-access="${i}"]`)?.value||'auto',near:host.querySelector(`[data-zone-near="${i}"]`)?.value===''?null:Number(host.querySelector(`[data-zone-near="${i}"]`)?.value)}));return o;
+}
+function mount(host,{get,set,engine,seed,seedInput,translate=s=>s}){
+ const root=host.querySelector('.battle-workspace');if(!root)return {dispose(){},refresh(){}};
+ const $=selector=>root.querySelector(selector),all=selector=>[...root.querySelectorAll(selector)];let timer,disposed=false,dialog=null,placeholder=null,dragIndex=null,previousFocus=null;
+ const mutate=(o,focus)=>{state.selected=focus??state.selected;set(o,focus);};
+ const current=()=>B.normalize(read(root,get()));
+ const focusRoom=i=>{state.selected=i;all('[data-zone-card]').forEach(c=>c.toggleAttribute('data-current',Number(c.dataset.zoneCard)===i));const row=$(`[data-zone-card="${i}"]`);row?.scrollIntoView({block:'nearest'});row?.querySelector('select')?.focus();};
+ function catalogue(){const o=current(),needle=state.search.trim().toLowerCase(),recommended=new Set(B.PLANS[o.theme]||[]),matches=Object.entries(B.ZONES).filter(([id,z])=>(state.group==='all'||state.group==='recommended'&&recommended.has(id)||z.group===state.group)&&(!needle||[id,z.name,z.label,translate(z.name),...z.props].join(' ').toLowerCase().includes(needle)));
+  $('[data-zone-catalog]').innerHTML=matches.map(([id,z])=>`<button type="button" class="zone-catalog-card" data-zone-insert="${id}"${o.zones.length>=B.MAX_ZONES?' disabled':''}><span class="zone-size-badge">${z.size.toUpperCase()}</span><span><strong>${esc(z.name)}</strong><small>${esc(z.props.slice(0,3).join(' · ').replace(/-/g,' '))}</small></span><span aria-hidden="true">+</span></button>`).join('')||'<p class="zone-empty">No matching rooms. Try another family or search term.</p>';
+  $('[data-zone-catalog-count]').textContent=matches.length+' / '+Object.keys(B.ZONES).length;
+  all('[data-zone-insert]').forEach(b=>b.onclick=()=>{const o=current();mutate(add(o,b.dataset.zoneInsert),o.zones.length);});
+ }
+ function preview(){if(disposed||!root.isConnected)return;try{const o=current(),s=engine.generate('battle',seed()||'megamap',{...o,furnishing:0}),b=s.battle,g=s.gridSize,pts=p=>p.map(v=>v.map(n=>Number(n.toFixed(2))).join(',')).join(' '),rooms=b.rooms||[],paths=engine.wallSegments(s),selected=state.selected;
+   $('[data-zone-preview]').innerHTML=`<svg viewBox="-12 -12 ${s.width+24} ${s.height+24}" role="img" aria-label="Room layout; numbered in program order"><polygon class="zone-preview-envelope" points="${pts(b.boundary)}"/><path class="zone-preview-floor" d="${b.cells.map((v,i)=>v?`M${i%b.cols*g},${Math.floor(i/b.cols)*g}h${g}v${g}h${-g}z`:'').join('')}"/>${rooms.map(q=>`<g data-preview-room="${q.index}" class="zone-preview-room${q.index===selected?' current':''}" role="button" tabindex="0" aria-label="${esc((q.index+1)+'. '+q.label)}"><title>${esc((q.index+1)+'. '+q.label)}</title><rect x="${q.x*g}" y="${q.y*g}" width="${q.w*g}" height="${q.h*g}" class="zone-preview-${esc(q.access||'public')}"/><text x="${(q.x+q.w/2)*g}" y="${(q.y+q.h/2)*g}" font-size="${g*.8}">${q.index+1}</text></g>`).join('')}<path class="zone-preview-walls" stroke-width="${g*.12}" d="${paths.map(p=>'M'+pts(p).replace(' ','L')).join('')}"/>${s.features.filter(f=>f.type==='portal').map(f=>`<path class="zone-preview-door" stroke-width="${g*.2}" d="M${pts(f.points).replace(' ','L')}"/>`).join('')}</svg>`;
+   const d=b.diagnostics,report=$('[data-zone-report]');report.replaceChildren();
+   const strong=document.createElement('strong');strong.textContent=`${d.placed} / ${d.requested} `+translate('zones placed');report.append(strong);
+   const info=document.createElement('p');info.textContent=translate(d.layout)+' · '+translate(d.entrySide)+' · '+d.doors+' '+translate('doors');report.append(info);
+   for(const warning of d.warnings){const p=document.createElement('p');p.className='zone-warning';p.textContent=warning;report.append(p);}
+   if(B.estimate(o).crowded&&!d.unplaced.length){const p=document.createElement('p');p.className='micro';p.textContent=translate('This program is dense. A larger map gives rooms more usable space.');report.append(p);}
+   all('[data-preview-room]').forEach(el=>{el.onclick=()=>focusRoom(Number(el.dataset.previewRoom));el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();focusRoom(Number(el.dataset.previewRoom));}};});
+  }catch(e){$('[data-zone-report]').textContent=translate('Preview unavailable: ')+e.message;}
+ }
+ function refresh(){clearTimeout(timer);timer=setTimeout(preview,120);}
+ function closeExpanded(preserve=false){if(!dialog)return;if(!preserve)state.expanded=false;dialog.close();placeholder?.replaceWith(root);dialog.remove();dialog=null;placeholder=null;if(!preserve)previousFocus?.focus();}
+ function expand(){if(dialog)return;state.expanded=true;previousFocus=document.activeElement;placeholder=document.createComment('zone planner');root.before(placeholder);dialog=document.createElement('dialog');dialog.className='zone-planner-dialog';dialog.setAttribute('aria-label',translate('Battle zone planner'));const header=document.createElement('header'),title=document.createElement('h2'),close=document.createElement('button');title.textContent=translate('Battle zone planner');close.textContent=translate('Close planner');close.type='button';close.onclick=()=>closeExpanded();header.append(title,close);dialog.append(header,root);document.body.append(dialog);dialog.addEventListener('cancel',e=>{e.preventDefault();closeExpanded();});dialog.addEventListener('click',e=>{if(e.target===dialog)closeExpanded();});$('.zone-catalog').open=true;dialog.showModal();close.focus();}
+ $('[data-zone-expand]').onclick=expand;
+ $('[data-zone-search]').oninput=e=>{state.search=e.target.value;catalogue();};$('[data-zone-group]').onchange=e=>{state.group=e.target.value;catalogue();};$('.zone-catalog').ontoggle=e=>{state.catalog=e.target.open;};
+ all('[data-zone-detail]').forEach(el=>el.ontoggle=()=>{if(el.open)state.detail=Number(el.dataset.zoneDetail);else if(state.detail===Number(el.dataset.zoneDetail))state.detail=-1;});
+ all('[data-zone]').forEach(el=>el.onchange=()=>{set(current(),null,true);catalogue();refresh();});
+ all('[data-zone-label],[data-zone-size],[data-zone-access],[data-zone-near]').forEach(el=>el.onchange=()=>{set(current(),null,true);refresh();});
+ all('[data-zone-remove]').forEach(b=>b.onclick=()=>{const i=Number(b.dataset.zoneRemove);state.detail=-1;mutate(remove(current(),i),Math.max(0,i-1));});
+ all('[data-zone-copy]').forEach(b=>b.onclick=()=>{const i=Number(b.dataset.zoneCopy);mutate(duplicate(current(),i),i+1);});
+ all('[data-zone-up],[data-zone-down]').forEach(b=>b.onclick=()=>{const from=Number(b.dataset.zoneUp??b.dataset.zoneDown),to=from+(b.dataset.zoneUp!=null?-1:1);state.detail=-1;mutate(move(current(),from,to),to);});
+ all('[data-zone-drag]').forEach(el=>{el.ondragstart=e=>{dragIndex=Number(el.dataset.zoneDrag);e.dataTransfer.setData('text/plain',String(dragIndex));e.dataTransfer.effectAllowed='move';};el.ondragend=()=>{dragIndex=null;all('[data-drop]').forEach(x=>x.removeAttribute('data-drop'));};el.onkeydown=e=>{if(e.altKey&&['ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();const from=Number(el.dataset.zoneDrag),to=Math.max(0,Math.min(current().zones.length-1,from+(e.key==='ArrowUp'?-1:1)));mutate(move(current(),from,to),to);}};});
+ all('[data-zone-card]').forEach(el=>{el.ondragover=e=>{if(dragIndex===null)return;e.preventDefault();all('[data-drop]').forEach(x=>x.removeAttribute('data-drop'));el.setAttribute('data-drop','true');};el.ondrop=e=>{if(dragIndex===null)return;e.preventDefault();const to=Number(el.dataset.zoneCard);mutate(move(current(),dragIndex,to),to);};});
+ $('[data-zone-add]').onclick=()=>{const o=current(),plan=B.PLANS[o.theme],used=new Set(o.zones),cycle=plan.slice(1,-1);const role=plan.find(z=>!used.has(z))||cycle[o.zones.length%cycle.length]||plan[0];mutate(add(o,role),o.zones.length);};
+ $('[data-zone-reset]').onclick=()=>{state.detail=-1;mutate(B.normalize({...current(),zones:B.PLANS[current().theme],zoneDetails:[]}),0);};
+ $('[data-zone-clear]').onclick=()=>{state.detail=-1;mutate(B.normalize({...current(),zones:[],zoneDetails:[]}),0);};
+ $('[data-zone-template]').onchange=e=>{const t=B.TEMPLATES.find(t=>t.id===e.target.value);if(t){state.detail=-1;mutate(B.normalize({...current(),theme:t.theme,zones:t.zones,zoneDetails:[],layout:t.layout||'auto',cols:t.cols||current().cols,rows:t.rows||current().rows}),0);}};
+ $('[data-zone-fit]').onclick=()=>{let o=current();o={...o,...B.estimate(o).recommended};for(let i=0;i<32;i++){const s=engine.generate('battle',seed(),{...o,furnishing:0});if(!s.battle.diagnostics.unplaced.length&&!B.estimate(o).crowded)break;if(o.cols===80&&o.rows===80)break;o.cols=Math.min(80,o.cols+2);o.rows=Math.min(80,o.rows+2);}mutate(o,state.selected);};
+ seedInput?.addEventListener('input',refresh);catalogue();preview();if(state.expanded)expand();
+ return {refresh,focus:focusRoom,dispose(){disposed=true;clearTimeout(timer);seedInput?.removeEventListener('input',refresh);closeExpanded(true);}};
+}
+return {render,read,mount,move,remove,duplicate,add};
+});

@@ -35,7 +35,7 @@ with sync_playwright() as p:
         html=re.sub(r'<meta http-equiv="Content-Security-Policy"[^>]+>','',html)
         for css in ['src/style.css']:
             html=html.replace('<link rel="stylesheet" href="'+css+'">','<style>'+(ROOT/css).read_text(encoding='utf-8')+'</style>')
-        for name in ['app.js','assets.js','engine.js','editor-core.js','render.js','i18n.js']:
+        for name in ['app.js','assets.js','battle.js','battle-render.js','battle-ui.js','engine.js','editor-core.js','render.js','i18n.js']:
             html=html.replace('<script src="src/'+name+'"></script>','<script>'+(ROOT/'src'/name).read_text(encoding='utf-8')+'</script>')
         page.set_content(html,wait_until='load')
     else:page.goto((ROOT/args.entry).as_uri(),wait_until='load')
@@ -126,7 +126,7 @@ with sync_playwright() as p:
         check('Tavern preset builds a populated battle map',lambda:(generate('battle','tavern'),expect(s()['options']['theme']=='tavern'),expect(any(f.get('asset')=='round-table' for f in s()['features']))))
         page.screenshot(path=str(OUT/'battle.png'))
         def floors():
-            tool('paint');page.select_option('#paintType','land');before=s()['battle']['cells'];drag((35,35),(150,35));after=s()['battle']['cells'];expect(sum(after)>sum(before));page.click('#undo');expect(s()['battle']['cells']==before)
+            tool('paint');page.select_option('#paintType','mountain');original=s()['battle']['cells'];drag((35,35),(150,35));filled=s()['battle']['cells'];expect(sum(filled)<sum(original));page.select_option('#paintType','land');drag((35,35),(150,35));after=s()['battle']['cells'];expect(sum(after)>sum(filled));page.click('#undo');expect(s()['battle']['cells']==filled);page.click('#undo');expect(s()['battle']['cells']==original)
         check('Battle floor painting changes geometry and supports undo',floors)
         # Use a clear area of an open battle map for explicit LOS/door testing.
         generate('battle','forest')

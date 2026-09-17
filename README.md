@@ -137,3 +137,10 @@ The other generators, shape guidance, district programming, local elevation mode
 | `tests/`, `scripts/` | Optional developer tests and reproducible asset/example builders. |
 
 Developer tests: **TEST_MEGAMAP.bat** with Node installed, or `npm test`. Browser tests additionally require Python, Playwright and Chromium. **None of those developer tools are needed to use the application.**
+
+
+## Architectural battle-map overhaul
+
+Battle generation now plans usable rooms, shared walls, circulation and doorways before role-specific furniture. The expanded zone planner includes 52 roles, nine working-plan templates, search, reordering, duplication, per-room settings, a live blueprint and explicit fit/adjacency diagnostics. Compact dwellings, branching dungeons, courtyard strongholds, axial temples, natural caves and outdoor encounters have separate planning logic.
+
+New top-down props and material surfaces remain offline and editable. Existing saved geometry is preserved; regenerating an old seed uses the new algorithm. See [the battle-map guide](docs/battle-architecture.md) or open [the local HTML guide](docs/battle-architecture.html) for controls, compatibility and verification details.

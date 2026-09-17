@@ -1,6 +1,6 @@
 /* Megamap 1.2.0 — GPL-3.0. City parcel subdivision derives from
  * Watabou's Ward.createAlleys; see vendor/watabou/README.md. */
-(function(root,factory){const assets=typeof module==='object'&&module.exports?require('./assets.js'):root.MegamapAssets;const api=factory(assets);if(typeof module==='object'&&module.exports)module.exports=api;else root.MegamapEngine=api;})(typeof globalThis!=='undefined'?globalThis:this,function(AssetPack){
+(function(root,factory){const assets=typeof module==='object'&&module.exports?require('./assets.js'):root.MegamapAssets;const battle=typeof module==='object'&&module.exports?require('./battle.js'):root.MegamapBattle;const api=factory(assets,battle);if(typeof module==='object'&&module.exports)module.exports=api;else root.MegamapEngine=api;})(typeof globalThis!=='undefined'?globalThis:this,function(AssetPack,Battle){
 'use strict';
 const VERSION='1.2.0',SIZE=1000;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -40,7 +40,7 @@ const defaults={
  region:{sizeKm:20,terrain:'valley',water:.36,ruggedness:.55,forest:.5,settlements:9,poi:14},
  city:{sizeKm:2.4,districts:55,density:.7,chaos:.45,river:true,walls:true,coast:false,layout:'organic',shape:'random',shapeGuidance:65,rotation:0,quarterDetail:.7,
   quarters:['market','commons','oldtown','artisans','temple','noble','gardens','docks','military','merchants'],buildings:[]},
- battle:{cols:40,rows:30,roomCount:12,theme:'dungeon',gridType:'hex-flat',mapShape:'rectangle'},
+ battle:{...Battle.DEFAULTS},
  local:{sizeKm:20,biome:'woodland',averageHeight:350,heightDiversity:500,forest:.65,water:'stream',riverWidth:18,roads:'none',homesteads:0,minSeparationKm:2,caves:4,detail:.7}
 };
 function options(mode,o={}){
@@ -58,12 +58,7 @@ function options(mode,o={}){
  }else if(mode==='local'){
   number('sizeKm',.5,40);choose('biome',LOCAL_BIOMES.map(x=>x[0]));number('averageHeight',-500,6000);number('heightDiversity',0,5000);number('forest',0,1);number('riverWidth',2,120);choose('water',['none','stream','river','lake','coast']);choose('roads',['none','footpath','road','network']);integer('homesteads',0,12);number('minSeparationKm',.2,20);integer('caves',0,20);number('detail',0,1);
  }else{
-  integer('cols',16,80);integer('rows',16,80);integer('roomCount',3,25);choose('theme',['dungeon','forest','cave','ruins','tavern','temple','sewer','bridge','desert','ice-cave']);choose('gridType',GRID_TYPES);choose('mapShape',['rectangle','hex-pointy','hex-flat']);
-  // The zone program is an ordered list of role ids. Unknown ids are dropped,
-  // duplicates are kept (they mean repeated rooms), and an absent list falls
-  // back to the preset default for the selected theme.
-  const zone=z=>typeof z==='string'&&Object.prototype.hasOwnProperty.call(ZONE_ROLES,z);
-  v.zones=Array.isArray(v.zones)?v.zones.filter(zone).slice(0,24):(THEME_ZONES[v.theme]||THEME_ZONES.dungeon).slice();
+  return Battle.normalize(o);
  }return v;
 }
 function base(mode,seed,o){return{format:'megamap',version:1,engineVersion:VERSION,mode,seed:String(seed),options:o,title:name(rng(String(seed)+'title'))+(mode==='region'?' Reach':mode==='city'?'':' Depths'),width:SIZE,height:SIZE,units:mode==='battle'?'ft':'km',scale:mode==='battle'?o.cols*5:o.sizeKm,features:[],terrain:null,notes:'',metadata:{coordinateSystem:'local map units; not georeferenced'}};}
@@ -927,159 +922,14 @@ function localRegion(seed,config){
  * and GM notes. THEME_ZONES lists the default plan per encounter preset, in
  * placement order: the first zone is the way in, the last is the objective.
  * Size classes: s = 3×3 cells, m = 5×4, l = 7×5 (before seed jitter). */
-const ZONE_ROLES={
- entrance:{name:'Entrance hall',label:'Entrance',size:'m',props:['stairs','brazier','crate','barrel'],notes:['The way in. Dust and fresh footprints lead deeper.','A cold draught suggests at least one other opening.']},
- guard:{name:'Guard post',label:'Guard post',size:'s',props:['weapon-rack','bench','table','lantern','crossed-swords'],notes:['A watch rotation is chalked on the wall.','The post is manned in shifts; the roster is missing one name.']},
- mess:{name:'Mess hall',label:'Mess hall',size:'l',props:['long-table','bench','fireplace','barrel','sacks'],notes:['Long tables still carry the last meal.','The hearth is banked, but not cold.']},
- kitchen:{name:'Kitchen',label:'Kitchen',size:'m',props:['stove','cauldron','barrel','sacks','counter'],notes:['Ash and grease. Something is simmering.','Knives are racked in a neat, well-kept row.']},
- storage:{name:'Storeroom',label:'Storeroom',size:'s',props:['crate','barrel','sacks','handcart'],notes:['Spare timber, lamp oil and rope.','Every crate carries an old owner\u2019s mark.']},
- armory:{name:'Armory',label:'Armory',size:'s',props:['weapon-rack','crossed-swords','chest','bench'],notes:['Racks are half empty; the rest is oiled and ready.','A tally of missing blades is scratched into the door.']},
- prison:{name:'Cells',label:'Cells',size:'m',props:['cage','chain','bedroll','bones','barrel'],notes:['Straw, rust and old scratches.','One cell has been opened from the inside.']},
- barracks:{name:'Barracks',label:'Barracks',size:'m',props:['bunk-bed','weapon-rack','chest','bench'],notes:['Bedrolls and kit are stacked in threes.','A locked footlocker sits apart from the rest.']},
- library:{name:'Library',label:'Library',size:'m',props:['bookshelf','desk','chair','lantern','rug'],notes:['Shelves are indexed; the index is not here.','A reading desk is still lit.']},
- shrine:{name:'Shrine',label:'Shrine',size:'m',props:['altar','brazier','statue','column'],notes:['Offerings have been left recently.','The icon has been deliberately defaced.']},
- workshop:{name:'Workshop',label:'Workshop',size:'m',props:['anvil','loom','desk','timber-rack','barrel'],notes:['Tools are laid out for a job left unfinished.','Sawdust and filings mark a recent project.']},
- crypt:{name:'Crypt',label:'Crypt',size:'m',props:['sarcophagus','gravestone','bones','skull','brazier'],notes:['Names are carved in a script older than the walls.','One lid has been shifted and not replaced.']},
- treasury:{name:'Vault',label:'Vault',size:'s',props:['chest','treasure-pile','sacks','lantern'],notes:['The strongbox is chained to the floor.','A counting ledger lists more than is present.']},
- sanctum:{name:'Sanctum',label:'Sanctum',size:'l',props:['throne','pentagram','brazier','statue','treasure-pile'],notes:['The air is still and deliberately kept.','Whatever this room was built around is not visible from the door.']},
- 'common-room':{name:'Common room',label:'Common room',size:'l',props:['round-table','long-table','bench','counter','fireplace'],notes:['Sawdust on the boards, tankards still out.','A chalk board lists rooms and prices.']},
- bar:{name:'Bar',label:'Bar',size:'m',props:['counter','barrel','round-table','lantern'],notes:['The tap is dry; the cellar key is not on its hook.']},
- guest:{name:'Guest rooms',label:'Guest rooms',size:'s',props:['bed','bunk-bed','desk','lantern','chest'],notes:['Beds are made, but not all of them are empty.','A traveller\u2019s kit is stacked by the door.']},
- cellar:{name:'Cellar',label:'Cellar',size:'m',props:['barrel','crate','sacks','lantern'],notes:['Cool, damp and stacked to the ceiling.','A brick at the back wall sounds hollow.']},
- narthex:{name:'Narthex',label:'Narthex',size:'m',props:['brazier','column','bench','lantern'],notes:['Worshippers left their marks at the threshold.']},
- nave:{name:'Nave',label:'Nave',size:'l',props:['column','bench','statue','brazier'],notes:['Rows of seating face a raised dais.','The ceiling is lost above the columns.']},
- vestry:{name:'Vestry',label:'Vestry',size:'s',props:['bookshelf','desk','chest','lantern'],notes:['Vestments are hung in careful order.']},
- cloister:{name:'Cloister',label:'Cloister',size:'m',props:['cloister-garden','column','statue','bench'],notes:['A covered walk rings a small garden.']},
- cells:{name:'Monastic cells',label:'Monastic cells',size:'s',props:['bed','desk','bookshelf','lantern'],notes:['Each cell holds one bed and one book.']},
- reliquary:{name:'Reliquary',label:'Reliquary',size:'s',props:['altar','treasure-pile','brazier','lantern'],notes:['The relic case is locked, waxed and watched.']},
- altar:{name:'Inner sanctum',label:'Sanctum',size:'l',props:['altar','pentagram','statue','brazier','column'],notes:['The innermost chamber. The floor is cut with ritual marks.','A single seat faces the altar.']},
- outfall:{name:'Outfall',label:'Outfall',size:'m',water:true,props:['reeds','barrel','bones','lantern'],notes:['Daylight and river smell reach this far.']},
- junction:{name:'Drain junction',label:'Junction',size:'m',water:true,props:['reeds','barrel','crate','lantern'],notes:['Three channels meet beneath a cracked lintel.']},
- cistern:{name:'Cistern',label:'Cistern',size:'l',water:true,props:['lily-pads','reeds','fountain'],notes:['Still water fills the room to the lip.']},
- cache:{name:'Hidden cache',label:'Cache',size:'s',props:['chest','crate','sacks','lantern'],notes:['Someone keeps supplies where the patrols do not go.']},
- lair:{name:'Lair',label:'Lair',size:'l',water:true,props:['bones','skull','treasure-pile','chain'],notes:['The channel runs foul here. Something lives at the junction.']},
- courtyard:{name:'Courtyard',label:'Courtyard',size:'l',props:['broken-column','fern','boulder','statue'],notes:['Saplings split the paving.']},
- hall:{name:'Collapsed hall',label:'Collapsed hall',size:'l',props:['broken-column','boulder','bones','gravestone'],notes:['Half the roof is open to the sky.']},
- 'cave-mouth':{name:'Cave mouth',label:'Cave mouth',size:'m',props:['boulder','mushroom','bones','crystal'],notes:['Daylight stops a few paces in.']},
- cavern:{name:'Cavern',label:'Cavern',size:'l',props:['boulder','crystal','mushroom','bones'],notes:['The ceiling is lost in darkness.']},
- pool:{name:'Pool',label:'Pool',size:'m',water:true,props:['lily-pads','crystal','mushroom','reeds'],notes:['Water drips into a still black pool.']},
- grotto:{name:'Crystal grotto',label:'Crystal grotto',size:'m',props:['crystal','ice-shards','boulder'],notes:['Facets catch every torch.']},
- deep:{name:'Deep cavern',label:'Deep cavern',size:'l',props:['bones','skull','crystal','boulder'],notes:['The floor is strewn with old bones.','The passage here is worn smooth by something large.']},
- trailhead:{name:'Trailhead',label:'Trailhead',size:'m',props:['signpost','waypoint','wagon','fallen-log'],notes:['Wagon ruts end here.']},
- grove:{name:'Grove',label:'Grove',size:'l',props:['tree','oak','bush','fern','stump'],notes:['The canopy closes overhead.']},
- clearing:{name:'Camp clearing',label:'Camp',size:'l',props:['campfire-ring','tent','camp','fallen-log'],notes:['A ring of stones marks an old fire.']},
- ruins:{name:'Old ruins',label:'Ruins',size:'m',props:['ruin','broken-column','gravestone','bones'],notes:['Foundations show a building older than the road.']},
- ambush:{name:'Ambush point',label:'Ambush point',size:'m',props:['rock-cluster','boulder','fallen-log','danger'],notes:['Cover on both sides of the trail.']},
- camp:{name:'Caravan camp',label:'Caravan camp',size:'l',props:['camp','tent','wagon','campfire-ring'],notes:['The fire is out, but the ash is warm.']},
- approach:{name:'Approach',label:'Approach',size:'m',props:['signpost','wagon','fallen-log','rock-cluster'],notes:['The road narrows toward the crossing.']},
- crossing:{name:'Crossing',label:'Crossing',size:'m',props:['bridge-marker','raft','fishing-net','reeds'],notes:['The current is fast and the far bank is screened by reeds.']},
- 'far-bank':{name:'Far bank',label:'Far bank',size:'m',props:['reeds','raft','waypoint','boulder'],notes:['Tracks scatter here; some are not human.']}
-};
-const THEME_ZONES={
- dungeon:['entrance','guard','mess','kitchen','storage','barracks','armory','prison','workshop','library','shrine','crypt','treasury','sanctum'],
- tavern:['common-room','bar','kitchen','guest','guest','cellar'],
- temple:['narthex','nave','vestry','cloister','cells','reliquary','altar'],
- sewer:['outfall','junction','cistern','workshop','cache','lair'],
- ruins:['courtyard','hall','storage','shrine','crypt','treasury'],
- cave:['cave-mouth','cavern','pool','grotto','deep'],
- 'ice-cave':['cave-mouth','cavern','grotto','pool','deep'],
- forest:['trailhead','grove','clearing','ruins','ambush'],
- desert:['trailhead','ambush','camp'],
- bridge:['approach','crossing','far-bank']
-};
-function zoneDims(role,r){const size=(ZONE_ROLES[role]||ZONE_ROLES.cavern).size,base=size==='s'?[3,3]:size==='l'?[7,5]:[5,4];return[base[0]+(r()<.4?1:0),base[1]+(r()<.4?1:0)];}
-function addDoor(s,cell,dir,x,y){const t0=.22,t1=.78;
- if(dir===0)add(s,'portal',{points:[[(x+t0)*cell,y*cell],[(x+t1)*cell,y*cell]]});
- else if(dir===1)add(s,'portal',{points:[[(x+t0)*cell,(y+1)*cell],[(x+t1)*cell,(y+1)*cell]]});
- else if(dir===2)add(s,'portal',{points:[[x*cell,(y+t0)*cell],[x*cell,(y+t1)*cell]]});
- else add(s,'portal',{points:[[(x+1)*cell,(y+t0)*cell],[(x+1)*cell,(y+t1)*cell]]});
-}
-function carveCorridor(carve,r,a,b){const ax=Math.floor(a.x+a.w/2),ay=Math.floor(a.y+a.h/2),bx=Math.floor(b.x+b.w/2),by=Math.floor(b.y+b.h/2);let x=ax,y=ay;
- const walk=(tx,ty)=>{while(x!==tx){x+=Math.sign(tx-x);carve(x,y);}while(y!==ty){y+=Math.sign(ty-y);carve(x,y);}};
- if(r()<.5){walk(bx,y);walk(bx,by);}else{walk(x,by);walk(bx,by);}}
-function furnishZone(s,r,room,cell){const zone=ZONE_ROLES[room.role]||ZONE_ROLES.cavern,props=(zone.props||[]).filter(a=>ASSETS.includes(a)),entrance=room.role==='entrance';
- add(s,'room',{x:(room.x+room.w/2)*cell,y:(room.y+room.h/2)*cell,label:zone.label,role:room.role,notes:pick(r,zone.notes)});
- if(entrance)add(s,'asset',{x:(room.x+.8)*cell,y:(room.y+.8)*cell,asset:'stairs',size:cell*.7,rotation:0});
- else if(props.length)add(s,'asset',{x:(room.x+.5+(room.w>2?r()*(room.w-1.6):0))*cell,y:(room.y+.5+(room.h>2?r()*(room.h-1.6):0))*cell,asset:props[0],size:cell*.66,rotation:pick(r,[0,90,180,270])});
- if(zone.water&&room.w>3&&room.h>3)add(s,'water',{polygon:[[(room.x+1)*cell,(room.y+1)*cell],[(room.x+room.w-1)*cell,(room.y+1)*cell],[(room.x+room.w-1)*cell,(room.y+room.h-1)*cell],[(room.x+1)*cell,(room.y+room.h-1)*cell]]});
- const extra=clamp(Math.round(room.w*room.h/10),0,3);
- for(let k=0;k<extra&&props.length>1;k++)add(s,'asset',{x:(room.x+.65+r()*(room.w-1.3))*cell,y:(room.y+.65+r()*(room.h-1.3))*cell,asset:pick(r,props.slice(1)),size:cell*.6,rotation:pick(r,[0,90,180,270])});
-}
-/** Steps 1–5 of the room-complex plan: entrance on an edge, zones grown in
- * program order and pushed deeper from the entrance, corridors joining the
- * spine with a few loops, doors where corridors meet rooms, then furnishing. */
-function planRoomComplex(s,r,cols,rows,cell,zones,carve,cells){const rooms=[],roles=zones.length?zones:['entrance'];
- const overlaps=(x,y,w,h)=>rooms.some(q=>x<q.x+q.w+1&&x+w+1>q.x&&y<q.y+q.h+1&&y+h+1>q.y);
- const inBounds=(x,y,w,h)=>x>=1&&y>=1&&x+w<=cols-1&&y+h<=rows-1,span=(limit,size)=>1+Math.floor(r()*Math.max(1,limit-size-2));
- const [ew,eh]=zoneDims(roles[0],r),side=Math.floor(r()*4);
- const entrance=side===0?{x:span(cols,ew),y:1,w:ew,h:eh,role:roles[0]}:side===1?{x:cols-1-ew,y:span(rows,eh),w:ew,h:eh,role:roles[0]}:side===2?{x:span(cols,ew),y:rows-1-eh,w:ew,h:eh,role:roles[0]}:{x:1,y:span(rows,eh),w:ew,h:eh,role:roles[0]};
- rooms.push(entrance);
- for(let i=1;i<roles.length;i++){const [w,h]=zoneDims(roles[i],r);let best=null,bestScore=-Infinity;
-  for(let t=0;t<360;t++){const base=rooms[Math.floor(r()*rooms.length)],dir=Math.floor(r()*4);
-   const x=dir===0?base.x+base.w+1:dir===1?base.x-w-1:base.x+Math.round((r()-.5)*4);
-   const y=dir===2?base.y+base.h+1:dir===3?base.y-h-1:base.y+Math.round((r()-.5)*4);
-   if(!inBounds(x,y,w,h)||overlaps(x,y,w,h))continue;
-   const cx=x+w/2,cy=y+h/2,d=dist([cx,cy],[entrance.x+entrance.w/2,entrance.y+entrance.h/2]);
-   const near=rooms.filter(q=>dist([cx,cy],[q.x+q.w/2,q.y+q.h/2])<Math.max(cols,rows)*.5).length;
-   const score=d*(.35+.65*i/Math.max(1,roles.length-1))+near*5+r()*9;
-   if(score>bestScore){bestScore=score;best={x,y,w,h,role:roles[i]};}}
-  if(best)rooms.push(best);}
- for(const room of rooms)for(let y=room.y;y<room.y+room.h;y++)for(let x=room.x;x<room.x+room.w;x++)carve(x,y);
- for(let i=1;i<rooms.length;i++)carveCorridor(carve,r,rooms[i-1],rooms[i]);
- for(let k=0;k<Math.floor(rooms.length/4);k++){const a=Math.floor(r()*rooms.length),b=Math.floor(r()*rooms.length);if(a!==b&&Math.abs(a-b)>1)carveCorridor(carve,r,rooms[a],rooms[b]);}
- const roomAt=(x,y)=>rooms.find(q=>x>=q.x&&x<q.x+q.w&&y>=q.y&&y<q.y+q.h);
- for(const room of rooms){const byDir=[[],[],[],[]];
-  for(let y=room.y;y<room.y+room.h;y++)for(let x=room.x;x<room.x+room.w;x++){
-   if(y>0&&!roomAt(x,y-1)&&cells[(y-1)*cols+x])byDir[0].push([x,y]);
-   if(y<rows-1&&!roomAt(x,y+1)&&cells[(y+1)*cols+x])byDir[1].push([x,y]);
-   if(x>0&&!roomAt(x-1,y)&&cells[y*cols+x-1])byDir[2].push([x,y]);
-   if(x<cols-1&&!roomAt(x+1,y)&&cells[y*cols+x+1])byDir[3].push([x,y]);}
-  for(const dir of [0,1,2,3].filter(d=>byDir[d].length).sort((a,b)=>byDir[b].length-byDir[a].length).slice(0,2)){const [x,y]=byDir[dir][Math.floor(r()*byDir[dir].length)];addDoor(s,cell,dir,x,y);}}
- const outer=side===0?[0,entrance.x,entrance.y]:side===1?[3,entrance.x+entrance.w-1,entrance.y]:side===2?[1,entrance.x,entrance.y+entrance.h-1]:[2,entrance.x,entrance.y];
- addDoor(s,cell,outer[0],outer[1],outer[2]);
- for(const room of rooms)furnishZone(s,r,room,cell);
- s.battle.rooms=rooms;s.battle.plan=rooms.map(q=>q.role);
- s.metadata.program=rooms.map(q=>(ZONE_ROLES[q.role]||{}).name||q.role).join(' → ');
-}
-/** Caves: label the carved chambers by depth from the entrance instead of
- * inventing rectangular rooms the cave shape would contradict. */
-function planCaveZones(s,r,cols,rows,cell,zones,cells){if(!zones.length)return;
- let entrance=-1,best=Infinity;
- for(let i=0;i<cells.length;i++){if(!cells[i])continue;const x=i%cols,y=Math.floor(i/cols),d=Math.min(x,y,cols-1-x,rows-1-y);if(d<best){best=d;entrance=i;}}
- if(entrance<0)return;
- const dist=new Int32Array(cells.length).fill(-1);dist[entrance]=0;const queue=[entrance];
- for(let k=0;k<queue.length;k++){const i=queue[k],x=i%cols,y=Math.floor(i/cols);for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy,j=yy*cols+xx;if(xx<0||yy<0||xx>=cols||yy>=rows||!cells[j]||dist[j]>=0)continue;dist[j]=dist[i]+1;queue.push(j);}}
- const maxDist=queue.reduce((n,i)=>Math.max(n,dist[i]),1),chosen=[],sep=Math.max(4,Math.round(Math.min(cols,rows)/5));
- for(let z=0;z<zones.length;z++){const target=(z+1)/(zones.length+1)*maxDist;let pick=-1,pickScore=-Infinity;
-  for(let i=0;i<cells.length;i++){if(!cells[i]||dist[i]<0)continue;const x=i%cols,y=Math.floor(i/cols);if(chosen.some(c=>Math.abs(c.x-x)+Math.abs(c.y-y)<sep))continue;
-   const score=-Math.abs(dist[i]-target)+r()*1.5;if(score>pickScore){pickScore=score;pick=i;}}
-  if(pick<0)break;chosen.push({x:pick%cols,y:Math.floor(pick/cols),role:zones[z]});}
- for(const c of chosen){const zone=ZONE_ROLES[c.role]||ZONE_ROLES.cavern,props=(zone.props||[]).filter(a=>ASSETS.includes(a));
-  add(s,'room',{x:(c.x+.5)*cell,y:(c.y+.5)*cell,label:zone.label,role:c.role,notes:pick(r,zone.notes)});
-  if(c.role==='cave-mouth')add(s,'asset',{x:(c.x+.5)*cell,y:(c.y+.5)*cell,asset:'cave-mouth',size:cell*.8});
-  for(let k=0;k<2&&props.length;k++){let px,py,tries=0;
-   do{px=clamp(c.x+Math.round((r()-.5)*6),0,cols-1);py=clamp(c.y+Math.round((r()-.5)*6),0,rows-1);tries++;}while(tries<12&&!cells[py*cols+px]);
-   if(cells[py*cols+px])add(s,'asset',{x:(px+.5)*cell,y:(py+.5)*cell,asset:pick(r,props),size:cell*.6,rotation:pick(r,[0,90,180,270])});}}
- s.battle.rooms=chosen.map(c=>({x:c.x,y:c.y,w:1,h:1,role:c.role,label:(ZONE_ROLES[c.role]||ZONE_ROLES.cavern).label}));
- s.battle.plan=chosen.map(c=>c.role);s.metadata.program=chosen.map(c=>(ZONE_ROLES[c.role]||{}).name||c.role).join(' → ');
-}
-/** Open themes: zone markers are placed in program order along the trail. */
-function planRouteZones(s,r,route,cell,zones,crossing){if(!zones.length)return;
- const lengths=[];let total=0;for(let i=1;i<route.length;i++){const d=dist(route[i-1],route[i]);lengths.push(d);total+=d;}
- const at=t=>{let d=t*total;for(let i=0;i<lengths.length;i++){if(d<=lengths[i])return[lerp(route[i][0],route[i+1][0],lengths[i]?d/lengths[i]:0),lerp(route[i][1],route[i+1][1],lengths[i]?d/lengths[i]:0)];d-=lengths[i];}return route.at(-1).slice();};
- for(let z=0;z<zones.length;z++){const t=zones.length===1?.5:z/(zones.length-1),p=at(t),zone=ZONE_ROLES[zones[z]]||ZONE_ROLES.ambush,props=(zone.props||[]).filter(a=>ASSETS.includes(a));
-  add(s,'room',{x:clamp(p[0],30,s.width-30),y:clamp(p[1],30,s.height-30),label:zone.label,role:zones[z],notes:pick(r,zone.notes)});
-  for(let k=0;k<2&&props.length;k++){let px,py,tries=0;
-   do{px=clamp(p[0]+(r()-.5)*cell*8,20,s.width-20);py=clamp(p[1]+(r()-.5)*cell*8,20,s.height-20);tries++;}while(tries<10&&crossing&&px>380&&px<620);
-   add(s,'asset',{x:px,y:py,asset:pick(r,props),size:cell*.8,rotation:pick(r,[0,90,180,270])});}}
- s.battle.plan=zones.slice();s.metadata.program=zones.map(z=>(ZONE_ROLES[z]||{}).name||z).join(' → ');
-}
+const ZONE_ROLES=Battle.ZONES,THEME_ZONES=Battle.PLANS;
 function mapBoundary(s){if(s.mode!=='battle'||!['hex-pointy','hex-flat'].includes(s.options.mapShape))return[[0,0],[s.width,0],[s.width,s.height],[0,s.height]];
  const pointy=s.options.mapShape==='hex-pointy',r=pointy?Math.min(s.width/Math.sqrt(3),s.height/2):Math.min(s.width/2,s.height/Math.sqrt(3)),angle=pointy?-Math.PI/2:0;
  return Array.from({length:6},(_,i)=>[s.width/2+r*Math.cos(angle+i*Math.PI/3),s.height/2+r*Math.sin(angle+i*Math.PI/3)]);
 }
 function finalizeBattle(s){
  s.appearance={grid:s.options.gridType};s.battle.boundary=mapBoundary(s);
+ if(s.battle.generatorVersion===2)return s;
  if(s.options.mapShape==='rectangle')return s;
  const poly=s.battle.boundary,g=s.gridSize,{cols,rows,cells}=s.battle,outdoor=['forest','desert','bridge'].includes(s.options.theme);
  if(!outdoor){
@@ -1103,27 +953,34 @@ function finalizeBattle(s){
 }
 
 defaults.city.buildings=BUILDING_TYPES.map(t=>t.id);
-function battle(seed,config){const o=options('battle',config),s=base('battle',seed,o),r=rng(seed),cols=Math.round(o.cols),rows=Math.round(o.rows),cell=SIZE/cols;s.height=rows*cell;s.scale=cols*5;s.gridSize=cell;s.battle={cols,rows,cells:new Array(cols*rows).fill(0),rooms:[]};const cells=s.battle.cells,zones=o.zones||[];
- const carve=(x,y)=>{if(x>0&&y>0&&x<cols-1&&y<rows-1)cells[y*cols+x]=1;};
- if(['forest','desert','bridge'].includes(o.theme)){cells.fill(1);for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){if(r()<.16)add(s,'asset',{x:(x+.5)*cell,y:(y+.5)*cell,asset:pick(r,o.theme==='desert'?['cactus','dunes','rock-cluster','boulder']:['tree','pine','boulder','fern']),size:cell*.72,rotation:r()*360});}const trail=[[0,s.height*.8],[250,s.height*.58],[560,s.height*.6],[1000,s.height*.18]];add(s,'road',{points:trail,width:cell*1.4,roadType:'trail'});add(s,'asset',{x:480,y:s.height*.5,asset:'camp',size:cell*1.2});}
- else if(o.theme==='cave'||o.theme==='ice-cave'){for(let y=1;y<rows-1;y++)for(let x=1;x<cols-1;x++)cells[y*cols+x]=r()>.44?1:0;for(let t=0;t<5;t++){const next=cells.slice();for(let y=1;y<rows-1;y++)for(let x=1;x<cols-1;x++){let total=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)total+=cells[(y+dy)*cols+x+dx];next[y*cols+x]=total>=5?1:0;}cells.splice(0,cells.length,...next);}
- // Keep the largest connected cave rather than shipping inaccessible islands.
- const seen=new Set(),groups=[];for(let i=0;i<cells.length;i++){if(!cells[i]||seen.has(i))continue;const group=[i];seen.add(i);for(let k=0;k<group.length;k++){const u=group[k],x=u%cols,y=Math.floor(u/cols);for(const [dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy,v=yy*cols+xx;if(xx<0||yy<0||xx>=cols||yy>=rows||seen.has(v)||!cells[v])continue;seen.add(v);group.push(v);}}groups.push(group);}groups.sort((a,b)=>b.length-a.length);cells.fill(0);for(const i of groups[0]||[])cells[i]=1;if(!groups.length)for(let y=3;y<rows-3;y++)for(let x=3;x<cols-3;x++)carve(x,y);
-  for(let k=0;k<Math.floor(cols*rows/24);k++){const x=Math.floor(r()*cols),y=Math.floor(r()*rows);if(cells[y*cols+x])add(s,'asset',{x:(x+.5)*cell,y:(y+.5)*cell,asset:pick(r,o.theme==='ice-cave'?['ice-shards','crystal','boulder']:['crystal','boulder','mushroom','bones']),size:cell*.6});}
-  planCaveZones(s,r,cols,rows,cell,zones,cells);}
- else planRoomComplex(s,r,cols,rows,cell,zones,carve,cells);
- if(o.theme==='bridge'){
-    const mid=s.height/2,half=cell*2.6;
-    s.features=s.features.filter(f=>f.type!=='road'&&!(f.x>380&&f.x<620));
-    add(s,'water',{polygon:[[410,0],[590,0],[590,s.height],[410,s.height]]});
-    add(s,'road',{points:[[0,mid],[1000,mid]],width:cell*2,roadType:'cobble'});
-    add(s,'asset',{x:500,y:mid,asset:'bridge',size:cell*4});
-    add(s,'asset',{x:340,y:mid-half,asset:'wagon',size:cell});
+function battle(seed,config){const o=options('battle',config),s=base('battle',seed,o);return Battle.generate(s,{rng,add,mapBoundary,pointOnOrInside,inside,ASSETS});}
+function wallSegments(s){
+ if(!s.battle||['forest','desert','bridge'].includes(s.options.theme))return[];
+ const {cols,rows,cells}=s.battle,g=s.gridSize,lines=[],exterior=new Set(s.battle.exterior||[]);
+ for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
+  const i=y*cols+x;if(!cells[i])continue;
+  if(exterior.has(i)){
+   // No walls on the map edge outdoors; painted rock still creates real boundaries.
+   if(y>0&&!cells[i-cols]&&exterior.has(i-cols))lines.push([[x*g,y*g],[(x+1)*g,y*g]]);
+   if(y<rows-1&&!cells[i+cols]&&exterior.has(i+cols))lines.push([[x*g,(y+1)*g],[(x+1)*g,(y+1)*g]]);
+   if(x>0&&!cells[i-1]&&exterior.has(i-1))lines.push([[x*g,y*g],[x*g,(y+1)*g]]);
+   if(x<cols-1&&!cells[i+1]&&exterior.has(i+1))lines.push([[(x+1)*g,y*g],[(x+1)*g,(y+1)*g]]);
+   continue;
   }
-  if(['forest','desert','bridge'].includes(o.theme))planRouteZones(s,r,o.theme==='bridge'?[[0,s.height/2],[1000,s.height/2]]:[[0,s.height*.8],[250,s.height*.58],[560,s.height*.6],[1000,s.height*.18]],cell,zones,o.theme==='bridge');
-  return s;
+  if(y===0||!cells[(y-1)*cols+x])lines.push([[x*g,y*g],[(x+1)*g,y*g]]);
+  if(y===rows-1||!cells[(y+1)*cols+x])lines.push([[x*g,(y+1)*g],[(x+1)*g,(y+1)*g]]);
+  if(x===0||!cells[y*cols+x-1])lines.push([[x*g,y*g],[x*g,(y+1)*g]]);
+  if(x===cols-1||!cells[y*cols+x+1])lines.push([[(x+1)*g,y*g],[(x+1)*g,(y+1)*g]]);
+ }
+ // Shared walls exist even when both neighbouring floor cells are walkable.
+ // Keep only surviving interfaces after floor painting; new solid cells already
+ // receive a raster boundary above. Old documents need no partition metadata.
+ for(const edge of s.battle.partitions||[]){const [a,b]=edge,m=[(a[0]+b[0])/2,(a[1]+b[1])/2],dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy)||1,n=[-dy/len*g*.1,dx/len*g*.1];
+  const floor=p=>{const x=Math.floor(p[0]/g),y=Math.floor(p[1]/g);return x>=0&&y>=0&&x<cols&&y<rows&&cells[y*cols+x];};
+  if(floor([m[0]+n[0],m[1]+n[1]])&&floor([m[0]-n[0],m[1]-n[1]]))lines.push(edge);
+ }
+ return lines;
 }
-function wallSegments(s){if(!s.battle||['forest','desert','bridge'].includes(s.options.theme))return[];const {cols,rows,cells}=s.battle,g=s.gridSize,lines=[];for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){if(!cells[y*cols+x])continue;if(y===0||!cells[(y-1)*cols+x])lines.push([[x*g,y*g],[(x+1)*g,y*g]]);if(y===rows-1||!cells[(y+1)*cols+x])lines.push([[x*g,(y+1)*g],[(x+1)*g,(y+1)*g]]);if(x===0||!cells[y*cols+x-1])lines.push([[x*g,y*g],[x*g,(y+1)*g]]);if(x===cols-1||!cells[y*cols+x+1])lines.push([[(x+1)*g,y*g],[(x+1)*g,(y+1)*g]]);}return lines;}
 function generate(mode,seed,config){return mode==='region'?region(seed,config):mode==='local'?localRegion(seed,config):mode==='city'?guidedCity(seed,config):mode==='battle'?finalizeBattle(battle(seed,config)):(()=>{throw Error('Unknown map mode');})();}
 /** Validate a loaded document before exposing it to the editor or renderer.
  * Local coordinates only. No HTML, scripts or remote image URLs are accepted.
@@ -1169,8 +1026,9 @@ function validateScene(s){
  const validBoundary=p=>Array.isArray(p)&&p.length>=3&&p.length<=400&&p.every(v=>Array.isArray(v)&&v.length===2&&v.every(Number.isFinite)&&v[0]>=-.001&&v[1]>=-.001&&v[0]<=s.width+.001&&v[1]<=s.height+.001)&&area(p)>1;
  if(s.city&&!validBoundary(s.city.boundary))throw Error('Invalid city envelope.');
  if(s.battle?.boundary&&!validBoundary(s.battle.boundary))throw Error('Invalid battle boundary.');
+ Battle.validateMetadata(s);
  return s;
 }
 
-return{VERSION,SIZE,defaults,ASSETS,CITY_SHAPES,QUARTERS,BUILDING_TYPES,LOCAL_BIOMES,GRID_TYPES,BATTLE_ZONES:ZONE_ROLES,BATTLE_PLANS:THEME_ZONES,options,cityEnvelope,triangulate,cleanPolygon,pointOnOrInside,clipToEnvelope,regenerateDistrict,localElevation,mapBoundary,hash,rng,noise,fbm,area,center,clip,inset,inside,hull,voronoi,createAlleys,astar,wallSegments,generate,validateScene,nearPolyline,dist,clamp,EPS,PLACE_CLEARANCE,RIVER_BANK_GAP,SHORE_SETBACK,STREET_SETBACK,segmentsIntersect,segmentDistance,polygonsIntersect,polygonDistance,polygonsClearOf,polygonInsidePolygon,polygonPolylineDistance,symbolFootprint,convexQuality,capsulePolygon,subtractConvex,subtractAll,shapeOf,boundsOf,sceneReservations,cityOccupancy,convexParts,districtContext,districtDiagnostics,cleanFootprint,repairBuildingFootprint,buildingShapeReason,buildingRejection,waterProximity,waterKindOk,planOpenSpaces,reserveCompactGround,sampleConvex,waterfrontBBox,MAX_BUILD_ASPECT,MIN_BUILD_WIDTH,TIP_ANGLE,TIP_EXTENSION,TIP_TRIM,MAX_TIP_TRIMS,FOOTPRINT_TOL,WATERFRONT_GAP,OPEN_SPACE_FRACTION,MIN_OPEN_SPACE,OPEN_MATERIALS,WATER_KINDS,WATER_PROPS,PROP_MIN_SIZE,MAX_PROP_ATTEMPTS};
+return{VERSION,SIZE,defaults,ASSETS,CITY_SHAPES,QUARTERS,BUILDING_TYPES,LOCAL_BIOMES,GRID_TYPES,BATTLE_ZONES:ZONE_ROLES,BATTLE_PLANS:THEME_ZONES,BATTLE_TEMPLATES:Battle.TEMPLATES,battleEstimate:Battle.estimate,options,cityEnvelope,triangulate,cleanPolygon,pointOnOrInside,clipToEnvelope,regenerateDistrict,localElevation,mapBoundary,hash,rng,noise,fbm,area,center,clip,inset,inside,hull,voronoi,createAlleys,astar,wallSegments,generate,validateScene,nearPolyline,dist,clamp,EPS,PLACE_CLEARANCE,RIVER_BANK_GAP,SHORE_SETBACK,STREET_SETBACK,segmentsIntersect,segmentDistance,polygonsIntersect,polygonDistance,polygonsClearOf,polygonInsidePolygon,polygonPolylineDistance,symbolFootprint,convexQuality,capsulePolygon,subtractConvex,subtractAll,shapeOf,boundsOf,sceneReservations,cityOccupancy,convexParts,districtContext,districtDiagnostics,cleanFootprint,repairBuildingFootprint,buildingShapeReason,buildingRejection,waterProximity,waterKindOk,planOpenSpaces,reserveCompactGround,sampleConvex,waterfrontBBox,MAX_BUILD_ASPECT,MIN_BUILD_WIDTH,TIP_ANGLE,TIP_EXTENSION,TIP_TRIM,MAX_TIP_TRIMS,FOOTPRINT_TOL,WATERFRONT_GAP,OPEN_SPACE_FRACTION,MIN_OPEN_SPACE,OPEN_MATERIALS,WATER_KINDS,WATER_PROPS,PROP_MIN_SIZE,MAX_PROP_ATTEMPTS};
 });
