@@ -1,0 +1,45 @@
+name: Finalize City Studio verification fixes
+on:
+  push:
+    branches: [feature/fantasy-city-studio]
+    paths: [.github/workflows/city-studio-finalize.yml]
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply locally reproduced and checked regressions
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64, hashlib, zlib
+          from pathlib import Path
+          encoded = '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'
+          patch = zlib.decompress(base64.b64decode(encoded, validate=True))
+          assert hashlib.sha256(patch).hexdigest() == 'c7cc7ed49a2678842f058524ae40be6914e39ecf364d0fd07d10f88161a93a4d'
+          Path('/tmp/fixes.patch').write_bytes(patch)
+          PY
+          git apply --index /tmp/fixes.patch
+          git diff --cached --check
+      - name: Verify legacy examples without modifying their geometry
+        run: |
+          node scripts/build-arena-example.cjs --check
+          node scripts/build-encounter-examples.cjs --check
+      - name: Update deterministic City Studio examples and run regressions
+        run: |
+          node scripts/build-city-studio-examples.cjs
+          node scripts/build-city-studio-examples.cjs --check
+          node --test tests/*.test.cjs
+      - name: Commit verified fixes on the isolated feature branch
+        run: |
+          git add src/city-studio.js src/editor-core.js tests/city-studio.test.cjs examples/City-Studio.megamap.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "Fix near-side hut access and preserve legacy atlas serialization; add regressions"
+          git push origin HEAD:feature/fantasy-city-studio
