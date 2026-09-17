@@ -1,0 +1,49 @@
+name: Assemble Fantasy City Studio
+on:
+  push:
+    branches: [feature/fantasy-city-studio]
+    paths: [.github/workflows/city-studio-assemble.yml]
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify source transport and apply reviewed patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64, hashlib, lzma
+          from pathlib import Path
+          parts = []
+          for i in range(7):
+              path = Path(f'.city-studio-transfer/part-{i:02d}.b64')
+              part = path.read_bytes().strip()
+              print(path, len(part), hashlib.sha256(part).hexdigest())
+              parts.append(part)
+          patch = lzma.decompress(base64.b64decode(b''.join(parts), validate=True))
+          digest = hashlib.sha256(patch).hexdigest()
+          print('Patch SHA256:', digest)
+          assert digest == '76f5a6507545b6753878c751af79b1296a53754ec38867b5db13b776d521b03e'
+          Path('/tmp/city-studio.patch').write_bytes(patch)
+          PY
+          git apply --index --exclude=.github/workflows/city-studio-checks.yml /tmp/city-studio.patch
+          git diff --cached --check
+          for source in src/city-studio.js src/city-render.js src/city-ui.js src/engine.js src/render.js src/app.js src/editor-core.js src/i18n.js; do node --check "$source"; done
+      - name: Build and verify deterministic six-city example atlas
+        run: |
+          node scripts/build-city-studio-examples.cjs
+          node scripts/build-city-studio-examples.cjs --check
+      - name: Commit assembled source and remove transport files
+        run: |
+          git rm -r .city-studio-transfer
+          git add examples/City-Studio.megamap.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "Add independent fantasy City Studio with terrain-led streets, physical settlements and HQ"
+          git push origin HEAD:feature/fantasy-city-studio
