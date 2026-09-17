@@ -1,0 +1,40 @@
+name: Map wizard checks
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  wizard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Numeric shortcuts and localization
+        run: node --test tests/wizard.test.cjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser test dependencies
+        run: |
+          python -m pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Wizard flows with shipped CSP intact
+        run: python tests/browser_wizard.py --output wizard-qa
+      - name: Retain wizard checks and matching runtime for reproduction
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wizard-qa-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            wizard-qa/
+            index.html
+            src/
+            tests/browser_wizard.py
+            tests/wizard.test.cjs
+          retention-days: 7
