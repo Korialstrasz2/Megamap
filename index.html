@@ -4,11 +4,12 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Megamap 1.2 — offline procedural maps and editing for tabletop campaigns.">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file:; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data: blob:; connect-src 'none'; object-src 'none'; base-uri 'none'">
-<title>Megamap 1.2 · Map workbench</title><link rel="icon" href="assets/app-icon.svg" type="image/svg+xml"><link rel="stylesheet" href="src/style.css">
+<title>Megamap 1.2 · Map workbench</title><link rel="icon" href="assets/app-icon.svg" type="image/svg+xml"><link rel="stylesheet" href="src/style.css"><link rel="stylesheet" href="src/wizard.css">
 </head>
 <body>
 <header class="topbar">
  <div class="brand"><svg viewBox="0 0 36 36" width="34" height="34" aria-hidden="true"><path d="M3 28L12 8L20 24L26 12L34 28M8 19H17M22 21H30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/></svg><div>MEGAMAP<small>YOUR WORLD, AT EVERY SCALE</small></div><span class="version">1.2</span></div>
+ <button id="newWizard" class="primary" type="button" aria-haspopup="dialog" aria-controls="newWizardDialog">New wizard</button>
  <div class="top-actions"><div class="command-box"><input id="commandSearch" type="search" placeholder="Search tools, maps, settings…" aria-label="Command search" autocomplete="off"><div id="commandResults" class="command-results" hidden></div></div><span class="offline"><i></i>Offline workspace</span><button id="openBtn" title="Open or import an atlas">Open</button><button id="saveBtn" class="accent" title="Download an editable backup (Ctrl+S)"><span data-icon="save"></span> Save atlas <span id="dirtyMark" hidden>•</span></button><button id="uiTheme" class="icon-button" title="Toggle light / dark interface" aria-label="Toggle interface theme"><span data-icon="sun"></span></button><button id="settingsBtn" class="icon-button" title="Open settings" aria-label="Open settings"><span data-icon="gear"></span></button><button id="helpBtn" class="icon-button" title="Help and keyboard shortcuts (?)" aria-label="Open help"><span data-icon="help"></span></button></div>
 </header>
 <main id="mainLayout">
@@ -40,7 +41,7 @@
    </div>
    <div class="tool-group" data-group="objects">
     <button type="button" class="group-trigger" data-group-trigger="objects" aria-haspopup="true" aria-expanded="false" title="Objects: stamp, scatter, label, light"><span data-icon="stamp"></span><small>Objects</small></button>
-    <div class="group-menu" role="group" aria-label="Object tools"><button data-tool="asset" title="Stamp an asset (A)"><span data-icon="stamp"></span><small>Stamp</small></button><button data-tool="scatter" title="Scatter the selected asset (S)"><span data-icon="scatter"></span><small>Scatter</small></button><button data-tool="label" title="Add a label (L)"><span data-icon="text"></span><small>Label</small></button><button data-tool="light" title="Add VTT light (battle maps)"><span data-icon="sun"></span><small>Light</small></button></div>
+    <div class="group-menu" role="group" aria-label="Object tools"><button data-tool="asset" title="Stamp an asset (A)"><span data-icon="stamp"></span><small>Stamp</small></button><button data-tool="scatter" title="Scatter the active asset (S)"><span data-icon="scatter"></span><small>Scatter</small></button><button data-tool="label" title="Add a label (L)"><span data-icon="text"></span><small>Label</small></button><button data-tool="light" title="Add VTT light (battle maps)"><span data-icon="sun"></span><small>Light</small></button></div>
    </div>
    <button data-tool="measure" title="Measure distance (M)"><span data-icon="measure"></span><small>Measure</small></button><span class="divider"></span><button id="undo" title="Undo (Ctrl+Z)" aria-label="Undo"><span data-icon="undo"></span></button><button id="redo" title="Redo (Ctrl+Y)" aria-label="Redo"><span data-icon="redo"></span></button>
   </div>
@@ -95,5 +96,5 @@
  <div class="row"><button id="settingsDone" class="primary">Done</button></div>
 </dialog>
 <script src="src/i18n.js"></script><script src="src/assets.js"></script><script src="src/battle.js"></script><script src="src/engine.js"></script><script src="src/editor-core.js"></script><script src="src/battle-render.js"></script><script src="src/render.js"></script><script src="src/battle-ui.js"></script>
-<script src="src/app.js"></script>
+<script src="src/app.js"></script><script src="src/wizard.js"></script>
 </body></html>
