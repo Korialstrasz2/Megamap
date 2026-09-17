@@ -1,0 +1,1070 @@
+
+> megamap@1.2.0 test
+> node --test tests/engine.test.cjs tests/v1.test.cjs tests/v12.test.cjs
+
+TAP version 13
+# Subtest: region: deterministic scene and SVG
+ok 1 - region: deterministic scene and SVG
+  ---
+  duration_ms: 411.270149
+  type: 'test'
+  ...
+# Subtest: region: seed variation
+ok 2 - region: seed variation
+  ---
+  duration_ms: 170.578203
+  type: 'test'
+  ...
+# Subtest: region: JSON roundtrip
+ok 3 - region: JSON roundtrip
+  ---
+  duration_ms: 56.46945
+  type: 'test'
+  ...
+# Subtest: region: 12 seed stress test
+ok 4 - region: 12 seed stress test
+  ---
+  duration_ms: 1263.107579
+  type: 'test'
+  ...
+# Subtest: city: deterministic scene and SVG
+ok 5 - city: deterministic scene and SVG
+  ---
+  duration_ms: 409.664048
+  type: 'test'
+  ...
+# Subtest: city: seed variation
+ok 6 - city: seed variation
+  ---
+  duration_ms: 490.554166
+  type: 'test'
+  ...
+# Subtest: city: JSON roundtrip
+ok 7 - city: JSON roundtrip
+  ---
+  duration_ms: 210.153919
+  type: 'test'
+  ...
+# Subtest: city: 12 seed stress test
+ok 8 - city: 12 seed stress test
+  ---
+  duration_ms: 2849.094649
+  type: 'test'
+  ...
+# Subtest: battle: deterministic scene and SVG
+ok 9 - battle: deterministic scene and SVG
+  ---
+  duration_ms: 6.21065
+  type: 'test'
+  ...
+# Subtest: battle: seed variation
+ok 10 - battle: seed variation
+  ---
+  duration_ms: 0.504822
+  type: 'test'
+  ...
+# Subtest: battle: JSON roundtrip
+ok 11 - battle: JSON roundtrip
+  ---
+  duration_ms: 0.762862
+  type: 'test'
+  ...
+# Subtest: battle: 12 seed stress test
+ok 12 - battle: 12 seed stress test
+  ---
+  duration_ms: 26.569295
+  type: 'test'
+  ...
+# Subtest: Watabou-derived subdivision preserves area bounds
+ok 13 - Watabou-derived subdivision preserves area bounds
+  ---
+  duration_ms: 27.941339
+  type: 'test'
+  ...
+# Subtest: Subdivision handles degenerate input
+ok 14 - Subdivision handles degenerate input
+  ---
+  duration_ms: 0.210307
+  type: 'test'
+  ...
+# Subtest: Convex clipping and inset
+ok 15 - Convex clipping and inset
+  ---
+  duration_ms: 0.299041
+  type: 'test'
+  ...
+# Subtest: Voronoi covers the original bounding box
+ok 16 - Voronoi covers the original bounding box
+  ---
+  duration_ms: 4.309738
+  type: 'test'
+  ...
+# Subtest: Default region is 20 km square
+ok 17 - Default region is 20 km square
+  ---
+  duration_ms: 160.608104
+  type: 'test'
+  ...
+# Subtest: Every regional landform remains valid
+ok 18 - Every regional landform remains valid
+  ---
+  duration_ms: 2446.839403
+  type: 'test'
+  ...
+# Subtest: Region road endpoints meet generated settlements
+ok 19 - Region road endpoints meet generated settlements
+  ---
+  duration_ms: 93.76939
+  type: 'test'
+  ...
+# Subtest: Region naming does not duplicate settlements
+ok 20 - Region naming does not duplicate settlements
+  ---
+  duration_ms: 532.940955
+  type: 'test'
+  ...
+# Subtest: City options toggle water and walls
+ok 21 - City options toggle water and walls
+  ---
+  duration_ms: 150.327523
+  type: 'test'
+  ...
+# Subtest: City density affects building count
+ok 22 - City density affects building count
+  ---
+  duration_ms: 464.247812
+  type: 'test'
+  ...
+# Subtest: City river avoids building centers
+ok 23 - City river avoids building centers
+  ---
+  duration_ms: 197.290104
+  type: 'test'
+  ...
+# Subtest: dungeon: connected floor for 15 seeds
+ok 24 - dungeon: connected floor for 15 seeds
+  ---
+  duration_ms: 8.714242
+  type: 'test'
+  ...
+# Subtest: cave: connected floor for 15 seeds
+ok 25 - cave: connected floor for 15 seeds
+  ---
+  duration_ms: 27.566612
+  type: 'test'
+  ...
+# Subtest: forest: connected floor for 15 seeds
+ok 26 - forest: connected floor for 15 seeds
+  ---
+  duration_ms: 11.030575
+  type: 'test'
+  ...
+# Subtest: ruins: connected floor for 15 seeds
+ok 27 - ruins: connected floor for 15 seeds
+  ---
+  duration_ms: 4.605175
+  type: 'test'
+  ...
+# Subtest: Battle map dimensions and wall bounds
+ok 28 - Battle map dimensions and wall bounds
+  ---
+  duration_ms: 0.559745
+  type: 'test'
+  ...
+# Subtest: Forest VTT has no implicit room walls
+ok 29 - Forest VTT has no implicit room walls
+  ---
+  duration_ms: 0.232972
+  type: 'test'
+  ...
+# Subtest: All 246 built-in assets can be rendered independently
+ok 30 - All 246 built-in assets can be rendered independently
+  ---
+  duration_ms: 75.231012
+  type: 'test'
+  ...
+# Subtest: Text export escapes markup
+ok 31 - Text export escapes markup
+  ---
+  duration_ms: 1.748817
+  type: 'test'
+  ...
+# Subtest: Import rejects invalid dimensions and formats
+ok 32 - Import rejects invalid dimensions and formats
+  ---
+  duration_ms: 0.385631
+  type: 'test'
+  ...
+# Subtest: Import rejects active SVG image payloads
+ok 33 - Import rejects active SVG image payloads
+  ---
+  duration_ms: 0.49734
+  type: 'test'
+  ...
+# Subtest: Import rejects duplicate feature IDs
+ok 34 - Import rejects duplicate feature IDs
+  ---
+  duration_ms: 196.110907
+  type: 'test'
+  ...
+# Subtest: Out-of-range generation inputs are bounded
+ok 35 - Out-of-range generation inputs are bounded
+  ---
+  duration_ms: 286.759289
+  type: 'test'
+  ...
+# Subtest: Every palette and grid produces finite SVG
+ok 36 - Every palette and grid produces finite SVG
+  ---
+  duration_ms: 903.861833
+  type: 'test'
+  ...
+# Subtest: Version is 1.2.0
+ok 37 - Version is 1.2.0
+  ---
+  duration_ms: 0.995551
+  type: 'test'
+  ...
+# Subtest: Catalog has 246 unique IDs and twelve categories
+ok 38 - Catalog has 246 unique IDs and twelve categories
+  ---
+  duration_ms: 0.626785
+  type: 'test'
+  ...
+# Subtest: New drawings are distinct, resolved and self-contained
+ok 39 - New drawings are distinct, resolved and self-contained
+  ---
+  duration_ms: 71.346653
+  type: 'test'
+  ...
+# Subtest: All six palettes render every asset
+ok 40 - All six palettes render every asset
+  ---
+  duration_ms: 603.448017
+  type: 'test'
+  ...
+# Subtest: organic: city generation is repeatable
+ok 41 - organic: city generation is repeatable
+  ---
+  duration_ms: 404.855267
+  type: 'test'
+  ...
+# Subtest: organic: ward links and IDs survive filtering
+ok 42 - organic: ward links and IDs survive filtering
+  ---
+  duration_ms: 1406.32473
+  type: 'test'
+  ...
+# Subtest: planned: city generation is repeatable
+ok 43 - planned: city generation is repeatable
+  ---
+  duration_ms: 339.658357
+  type: 'test'
+  ...
+# Subtest: planned: ward links and IDs survive filtering
+ok 44 - planned: ward links and IDs survive filtering
+  ---
+  duration_ms: 919.655961
+  type: 'test'
+  ...
+# Subtest: radial: city generation is repeatable
+ok 45 - radial: city generation is repeatable
+  ---
+  duration_ms: 257.77659
+  type: 'test'
+  ...
+# Subtest: radial: ward links and IDs survive filtering
+ok 46 - radial: ward links and IDs survive filtering
+  ---
+  duration_ms: 897.415824
+  type: 'test'
+  ...
+# Subtest: City layout preferences change actual geometry
+ok 47 - City layout preferences change actual geometry
+  ---
+  duration_ms: 373.15358
+  type: 'test'
+  ...
+# Subtest: dungeon: connected floor at 16, 32 and 80 columns
+ok 48 - dungeon: connected floor at 16, 32 and 80 columns
+  ---
+  duration_ms: 10.434948
+  type: 'test'
+  ...
+# Subtest: forest: connected floor at 16, 32 and 80 columns
+ok 49 - forest: connected floor at 16, 32 and 80 columns
+  ---
+  duration_ms: 6.702473
+  type: 'test'
+  ...
+# Subtest: cave: connected floor at 16, 32 and 80 columns
+ok 50 - cave: connected floor at 16, 32 and 80 columns
+  ---
+  duration_ms: 10.314216
+  type: 'test'
+  ...
+# Subtest: ruins: connected floor at 16, 32 and 80 columns
+ok 51 - ruins: connected floor at 16, 32 and 80 columns
+  ---
+  duration_ms: 6.225086
+  type: 'test'
+  ...
+# Subtest: tavern: connected floor at 16, 32 and 80 columns
+ok 52 - tavern: connected floor at 16, 32 and 80 columns
+  ---
+  duration_ms: 7.26349
+  type: 'test'
+  ...
+# Subtest: temple: connected floor at 16, 32 and 80 columns
+ok 53 - temple: connected floor at 16, 32 and 80 columns
+  ---
+  duration_ms: 6.362699
+  type: 'test'
+  ...
+# Subtest: sewer: connected floor at 16, 32 and 80 columns
+ok 54 - sewer: connected floor at 16, 32 and 80 columns
+  ---
+  duration_ms: 5.380475
+  type: 'test'
+  ...
+# Subtest: bridge: connected floor at 16, 32 and 80 columns
+ok 55 - bridge: connected floor at 16, 32 and 80 columns
+  ---
+  duration_ms: 4.319894
+  type: 'test'
+  ...
+# Subtest: desert: connected floor at 16, 32 and 80 columns
+ok 56 - desert: connected floor at 16, 32 and 80 columns
+  ---
+  duration_ms: 14.646599
+  type: 'test'
+  ...
+# Subtest: ice-cave: connected floor at 16, 32 and 80 columns
+ok 57 - ice-cave: connected floor at 16, 32 and 80 columns
+  ---
+  duration_ms: 8.220544
+  type: 'test'
+  ...
+# Subtest: Open terrain themes have no implicit LOS walls
+ok 58 - Open terrain themes have no implicit LOS walls
+  ---
+  duration_ms: 0.544503
+  type: 'test'
+  ...
+# Subtest: Regional extent 2, 20, 100 km and contours remain finite
+ok 59 - Regional extent 2, 20, 100 km and contours remain finite
+  ---
+  duration_ms: 432.124383
+  type: 'test'
+  ...
+# Subtest: Per-map appearance is sanitized and survives atlas roundtrip
+ok 60 - Per-map appearance is sanitized and survives atlas roundtrip
+  ---
+  duration_ms: 2.010676
+  type: 'test'
+  ...
+# Subtest: Standalone scene becomes a one-map atlas
+ok 61 - Standalone scene becomes a one-map atlas
+  ---
+  duration_ms: 0.299713
+  type: 'test'
+  ...
+# Subtest: Atlas rejects zero maps, too many maps and unknown versions
+ok 62 - Atlas rejects zero maps, too many maps and unknown versions
+  ---
+  duration_ms: 0.393975
+  type: 'test'
+  ...
+# Subtest: Atlas validates imported raster library and rejects remote/active URLs
+ok 63 - Atlas validates imported raster library and rejects remote/active URLs
+  ---
+  duration_ms: 1.294124
+  type: 'test'
+  ...
+# Subtest: Atlas rejects duplicate library IDs and malformed aspects
+ok 64 - Atlas rejects duplicate library IDs and malformed aspects
+  ---
+  duration_ms: 0.401235
+  type: 'test'
+  ...
+# Subtest: Invalid path geometry is rejected
+ok 65 - Invalid path geometry is rejected
+  ---
+  duration_ms: 0.385702
+  type: 'test'
+  ...
+# Subtest: Invalid polygon geometry is rejected
+ok 66 - Invalid polygon geometry is rejected
+  ---
+  duration_ms: 0.293052
+  type: 'test'
+  ...
+# Subtest: Invalid point geometry is rejected
+ok 67 - Invalid point geometry is rejected
+  ---
+  duration_ms: 0.28465
+  type: 'test'
+  ...
+# Subtest: Invalid portal geometry is rejected
+ok 68 - Invalid portal geometry is rejected
+  ---
+  duration_ms: 0.209947
+  type: 'test'
+  ...
+# Subtest: Invalid width geometry is rejected
+ok 69 - Invalid width geometry is rejected
+  ---
+  duration_ms: 0.312873
+  type: 'test'
+  ...
+# Subtest: Invalid coordinate geometry is rejected
+ok 70 - Invalid coordinate geometry is rejected
+  ---
+  duration_ms: 0.30462
+  type: 'test'
+  ...
+# Subtest: Non-finite roof/z geometry is rejected
+ok 71 - Non-finite roof/z geometry is rejected
+  ---
+  duration_ms: 0.379483
+  type: 'test'
+  ...
+# Subtest: Battle grid dimensions must agree with rendered geometry
+ok 72 - Battle grid dimensions must agree with rendered geometry
+  ---
+  duration_ms: 0.235446
+  type: 'test'
+  ...
+# Subtest: A region must retain its heightmap
+ok 73 - A region must retain its heightmap
+  ---
+  duration_ms: 52.117038
+  type: 'test'
+  ...
+# Subtest: Unknown asset falls back to a bundled rock
+ok 74 - Unknown asset falls back to a bundled rock
+  ---
+  duration_ms: 0.386984
+  type: 'test'
+  ...
+# Subtest: Invalid light colors are normalized
+ok 75 - Invalid light colors are normalized
+  ---
+  duration_ms: 0.411762
+  type: 'test'
+  ...
+# Subtest: Contour extraction handles an entirely empty grid
+ok 76 - Contour extraction handles an entirely empty grid
+  ---
+  duration_ms: 0.197118
+  type: 'test'
+  ...
+# Subtest: Contour extraction closes a full-grid boundary
+ok 77 - Contour extraction closes a full-grid boundary
+  ---
+  duration_ms: 0.21203
+  type: 'test'
+  ...
+# Subtest: Contour extraction preserves a lake-sized hole
+ok 78 - Contour extraction preserves a lake-sized hole
+  ---
+  duration_ms: 0.249888
+  type: 'test'
+  ...
+# Subtest: Saddle contours have finite coordinates and closed paths
+ok 79 - Saddle contours have finite coordinates and closed paths
+  ---
+  duration_ms: 0.220363
+  type: 'test'
+  ...
+# Subtest: Translation moves point, line and polygon geometry
+ok 80 - Translation moves point, line and polygon geometry
+  ---
+  duration_ms: 0.201865
+  type: 'test'
+  ...
+# Subtest: Rotation preserves polygon area
+ok 81 - Rotation preserves polygon area
+  ---
+  duration_ms: 0.234875
+  type: 'test'
+  ...
+# Subtest: Scaling geometry multiplies area and symbol size
+ok 82 - Scaling geometry multiplies area and symbol size
+  ---
+  duration_ms: 0.168214
+  type: 'test'
+  ...
+# Subtest: Path smoothing retains exact endpoints
+ok 83 - Path smoothing retains exact endpoints
+  ---
+  duration_ms: 0.113622
+  type: 'test'
+  ...
+# Subtest: Scatter rejects outside and occupied floor cells
+ok 84 - Scatter rejects outside and occupied floor cells
+  ---
+  duration_ms: 0.269206
+  type: 'test'
+  ...
+# Subtest: Wall merging joins only collinear adjacent intervals
+ok 85 - Wall merging joins only collinear adjacent intervals
+  ---
+  duration_ms: 0.128284
+  type: 'test'
+  ...
+# Subtest: Door subtraction preserves both remaining wall sections
+ok 86 - Door subtraction preserves both remaining wall sections
+  ---
+  duration_ms: 0.175295
+  type: 'test'
+  ...
+# Subtest: Offset and external doors do not erase walls
+ok 87 - Offset and external doors do not erase walls
+  ---
+  duration_ms: 0.108263
+  type: 'test'
+  ...
+# Subtest: Reversed doors cut the same opening
+ok 88 - Reversed doors cut the same opening
+  ---
+  duration_ms: 0.081864
+  type: 'test'
+  ...
+# Subtest: UVTT exports wall openings, portals and independent light metadata
+ok 89 - UVTT exports wall openings, portals and independent light metadata
+  ---
+  duration_ms: 0.533365
+  type: 'test'
+  ...
+# Subtest: Player UVTT omits hidden and GM-only walls, portals and lights
+ok 90 - Player UVTT omits hidden and GM-only walls, portals and lights
+  ---
+  duration_ms: 0.305401
+  type: 'test'
+  ...
+# Subtest: UVTT rejects regional maps
+ok 91 - UVTT rejects regional maps
+  ---
+  duration_ms: 43.147272
+  type: 'test'
+  ...
+# Subtest: Player SVG omits GM-only labels and hidden labels
+ok 92 - Player SVG omits GM-only labels and hidden labels
+  ---
+  duration_ms: 5.113272
+  type: 'test'
+  ...
+# Subtest: Portal labels and editor lights render without NaN
+ok 93 - Portal labels and editor lights render without NaN
+  ---
+  duration_ms: 1.690273
+  type: 'test'
+  ...
+# Subtest: History undo/redo follows edits and clears redo on branching
+ok 94 - History undo/redo follows edits and clears redo on branching
+  ---
+  duration_ms: 0.249668
+  type: 'test'
+  ...
+# Subtest: History respects entry limit
+ok 95 - History respects entry limit
+  ---
+  duration_ms: 0.086191
+  type: 'test'
+  ...
+# Subtest: History respects memory budget while preserving one undo
+ok 96 - History respects memory budget while preserving one undo
+  ---
+  duration_ms: 0.076986
+  type: 'test'
+  ...
+# Subtest: Imported old city ward references are repaired by containment
+ok 97 - Imported old city ward references are repaired by containment
+  ---
+  duration_ms: 288.813823
+  type: 'test'
+  ...
+# Subtest: HTML references all local runtime files and uses no network sources
+ok 98 - HTML references all local runtime files and uses no network sources
+  ---
+  duration_ms: 0.7812
+  type: 'test'
+  ...
+# Subtest: The actual supplied v0.1 city file opens under the v1 validator
+ok 99 - The actual supplied v0.1 city file opens under the v1 validator
+  ---
+  duration_ms: 24.258616
+  type: 'test'
+  ...
+# Subtest: Every shipped example atlas validates with distinct map IDs
+ok 100 - Every shipped example atlas validates with distinct map IDs
+  ---
+  duration_ms: 24.152375
+  type: 'test'
+  ...
+# Subtest: Envelope random: 100 guidance confines buildings for three seeds
+ok 101 - Envelope random: 100 guidance confines buildings for three seeds
+  ---
+  duration_ms: 493.857737
+  type: 'test'
+  ...
+# Subtest: Envelope random: guidance 1 ignores selected shape
+ok 102 - Envelope random: guidance 1 ignores selected shape
+  ---
+  duration_ms: 1.808918
+  type: 'test'
+  ...
+# Subtest: Envelope circle: 100 guidance confines buildings for three seeds
+ok 103 - Envelope circle: 100 guidance confines buildings for three seeds
+  ---
+  duration_ms: 570.047923
+  type: 'test'
+  ...
+# Subtest: Envelope circle: guidance 1 ignores selected shape
+ok 104 - Envelope circle: guidance 1 ignores selected shape
+  ---
+  duration_ms: 0.49074
+  type: 'test'
+  ...
+# Subtest: Envelope ellipse: 100 guidance confines buildings for three seeds
+ok 105 - Envelope ellipse: 100 guidance confines buildings for three seeds
+  ---
+  duration_ms: 375.487518
+  type: 'test'
+  ...
+# Subtest: Envelope ellipse: guidance 1 ignores selected shape
+ok 106 - Envelope ellipse: guidance 1 ignores selected shape
+  ---
+  duration_ms: 0.872636
+  type: 'test'
+  ...
+# Subtest: Envelope square: 100 guidance confines buildings for three seeds
+ok 107 - Envelope square: 100 guidance confines buildings for three seeds
+  ---
+  duration_ms: 713.618822
+  type: 'test'
+  ...
+# Subtest: Envelope square: guidance 1 ignores selected shape
+ok 108 - Envelope square: guidance 1 ignores selected shape
+  ---
+  duration_ms: 0.51675
+  type: 'test'
+  ...
+# Subtest: Envelope rectangle: 100 guidance confines buildings for three seeds
+ok 109 - Envelope rectangle: 100 guidance confines buildings for three seeds
+  ---
+  duration_ms: 314.207249
+  type: 'test'
+  ...
+# Subtest: Envelope rectangle: guidance 1 ignores selected shape
+ok 110 - Envelope rectangle: guidance 1 ignores selected shape
+  ---
+  duration_ms: 1.119278
+  type: 'test'
+  ...
+# Subtest: Envelope triangle: 100 guidance confines buildings for three seeds
+ok 111 - Envelope triangle: 100 guidance confines buildings for three seeds
+  ---
+  duration_ms: 269.65465
+  type: 'test'
+  ...
+# Subtest: Envelope triangle: guidance 1 ignores selected shape
+ok 112 - Envelope triangle: guidance 1 ignores selected shape
+  ---
+  duration_ms: 0.93504
+  type: 'test'
+  ...
+# Subtest: Envelope diamond: 100 guidance confines buildings for three seeds
+ok 113 - Envelope diamond: 100 guidance confines buildings for three seeds
+  ---
+  duration_ms: 181.772227
+  type: 'test'
+  ...
+# Subtest: Envelope diamond: guidance 1 ignores selected shape
+ok 114 - Envelope diamond: guidance 1 ignores selected shape
+  ---
+  duration_ms: 0.296257
+  type: 'test'
+  ...
+# Subtest: Envelope hexagon: 100 guidance confines buildings for three seeds
+ok 115 - Envelope hexagon: 100 guidance confines buildings for three seeds
+  ---
+  duration_ms: 336.516573
+  type: 'test'
+  ...
+# Subtest: Envelope hexagon: guidance 1 ignores selected shape
+ok 116 - Envelope hexagon: guidance 1 ignores selected shape
+  ---
+  duration_ms: 0.330118
+  type: 'test'
+  ...
+# Subtest: Envelope octagon: 100 guidance confines buildings for three seeds
+ok 117 - Envelope octagon: 100 guidance confines buildings for three seeds
+  ---
+  duration_ms: 466.93849
+  type: 'test'
+  ...
+# Subtest: Envelope octagon: guidance 1 ignores selected shape
+ok 118 - Envelope octagon: guidance 1 ignores selected shape
+  ---
+  duration_ms: 0.494066
+  type: 'test'
+  ...
+# Subtest: Envelope l-shape: 100 guidance confines buildings for three seeds
+ok 119 - Envelope l-shape: 100 guidance confines buildings for three seeds
+  ---
+  duration_ms: 301.315212
+  type: 'test'
+  ...
+# Subtest: Envelope l-shape: guidance 1 ignores selected shape
+ok 120 - Envelope l-shape: guidance 1 ignores selected shape
+  ---
+  duration_ms: 0.354655
+  type: 'test'
+  ...
+# Subtest: Envelope t-shape: 100 guidance confines buildings for three seeds
+ok 121 - Envelope t-shape: 100 guidance confines buildings for three seeds
+  ---
+  duration_ms: 230.351772
+  type: 'test'
+  ...
+# Subtest: Envelope t-shape: guidance 1 ignores selected shape
+ok 122 - Envelope t-shape: guidance 1 ignores selected shape
+  ---
+  duration_ms: 0.339082
+  type: 'test'
+  ...
+# Subtest: Envelope ribbon: 100 guidance confines buildings for three seeds
+ok 123 - Envelope ribbon: 100 guidance confines buildings for three seeds
+  ---
+  duration_ms: 107.28255
+  type: 'test'
+  ...
+# Subtest: Envelope ribbon: guidance 1 ignores selected shape
+ok 124 - Envelope ribbon: guidance 1 ignores selected shape
+  ---
+  duration_ms: 0.569019
+  type: 'test'
+  ...
+# Subtest: Enforced square and L have the exact expected area
+ok 125 - Enforced square and L have the exact expected area
+  ---
+  duration_ms: 286.668533
+  type: 'test'
+  ...
+# Subtest: Shape strength and seed vary the silhouette; pure target is seed-independent
+ok 126 - Shape strength and seed vary the silhouette; pure target is seed-independent
+  ---
+  duration_ms: 0.754439
+  type: 'test'
+  ...
+# Subtest: Intermediate concave shapes remain valid under rotation
+ok 127 - Intermediate concave shapes remain valid under rotation
+  ---
+  duration_ms: 690.001814
+  type: 'test'
+  ...
+# Subtest: Guidance and other generator inputs are bounded and sanitized
+ok 128 - Guidance and other generator inputs are bounded and sanitized
+  ---
+  duration_ms: 0.25818
+  type: 'test'
+  ...
+# Subtest: Every enabled quarter appears; disabled quarters never appear
+ok 129 - Every enabled quarter appears; disabled quarters never appear
+  ---
+  duration_ms: 54.882474
+  type: 'test'
+  ...
+# Subtest: All fifteen requested quarters fit even with target 12 blocks
+ok 130 - All fifteen requested quarters fit even with target 12 blocks
+  ---
+  duration_ms: 76.044604
+  type: 'test'
+  ...
+# Subtest: Building whitelist applies inside all quarter programs
+ok 131 - Building whitelist applies inside all quarter programs
+  ---
+  duration_ms: 46.284751
+  type: 'test'
+  ...
+# Subtest: An empty quarter selection generates a blank plot plan
+ok 132 - An empty quarter selection generates a blank plot plan
+  ---
+  duration_ms: 11.682938
+  type: 'test'
+  ...
+# Subtest: An empty building selection excludes every building but retains districts
+ok 133 - An empty building selection excludes every building but retains districts
+  ---
+  duration_ms: 9.603864
+  type: 'test'
+  ...
+# Subtest: Quarter detail at zero places no quarter props
+ok 134 - Quarter detail at zero places no quarter props
+  ---
+  duration_ms: 42.944235
+  type: 'test'
+  ...
+# Subtest: All procedural roof and quarter assets exist in the shipped library
+ok 135 - All procedural roof and quarter assets exist in the shipped library
+  ---
+  duration_ms: 0.241194
+  type: 'test'
+  ...
+# Subtest: Quarter programs produce distinct roof sets with valid district links
+ok 136 - Quarter programs produce distinct roof sets with valid district links
+  ---
+  duration_ms: 44.68886
+  type: 'test'
+  ...
+# Subtest: Quarter regeneration preserves other districts and locked geometry
+ok 137 - Quarter regeneration preserves other districts and locked geometry
+  ---
+  duration_ms: 95.374116
+  type: 'test'
+  ...
+# Subtest: Regenerating an imported city repeatedly never duplicates IDs
+ok 138 - Regenerating an imported city repeatedly never duplicates IDs
+  ---
+  duration_ms: 131.670241
+  type: 'test'
+  ...
+# Subtest: Roof details follow building rotation and scale
+ok 139 - Roof details follow building rotation and scale
+  ---
+  duration_ms: 163.192327
+  type: 'test'
+  ...
+# Subtest: Local woodland: deterministic, 20 km, true mean and relief
+ok 140 - Local woodland: deterministic, 20 km, true mean and relief
+  ---
+  duration_ms: 319.704654
+  type: 'test'
+  ...
+# Subtest: Local plains: deterministic, 20 km, true mean and relief
+ok 141 - Local plains: deterministic, 20 km, true mean and relief
+  ---
+  duration_ms: 192.732038
+  type: 'test'
+  ...
+# Subtest: Local mountains: deterministic, 20 km, true mean and relief
+ok 142 - Local mountains: deterministic, 20 km, true mean and relief
+  ---
+  duration_ms: 252.861374
+  type: 'test'
+  ...
+# Subtest: Local desert: deterministic, 20 km, true mean and relief
+ok 143 - Local desert: deterministic, 20 km, true mean and relief
+  ---
+  duration_ms: 184.699968
+  type: 'test'
+  ...
+# Subtest: Local badlands: deterministic, 20 km, true mean and relief
+ok 144 - Local badlands: deterministic, 20 km, true mean and relief
+  ---
+  duration_ms: 180.247173
+  type: 'test'
+  ...
+# Subtest: Local wetland: deterministic, 20 km, true mean and relief
+ok 145 - Local wetland: deterministic, 20 km, true mean and relief
+  ---
+  duration_ms: 188.647661
+  type: 'test'
+  ...
+# Subtest: Local coast: deterministic, 20 km, true mean and relief
+ok 146 - Local coast: deterministic, 20 km, true mean and relief
+  ---
+  duration_ms: 177.492469
+  type: 'test'
+  ...
+# Subtest: Local alpine: deterministic, 20 km, true mean and relief
+ok 147 - Local alpine: deterministic, 20 km, true mean and relief
+  ---
+  duration_ms: 182.206178
+  type: 'test'
+  ...
+# Subtest: Local volcanic: deterministic, 20 km, true mean and relief
+ok 148 - Local volcanic: deterministic, 20 km, true mean and relief
+  ---
+  duration_ms: 137.819249
+  type: 'test'
+  ...
+# Subtest: Local tundra: deterministic, 20 km, true mean and relief
+ok 149 - Local tundra: deterministic, 20 km, true mean and relief
+  ---
+  duration_ms: 172.811249
+  type: 'test'
+  ...
+# Subtest: Local survey can be completely flat with no caves, roads, farms or water
+ok 150 - Local survey can be completely flat with no caves, roads, farms or water
+  ---
+  duration_ms: 62.23906
+  type: 'test'
+  ...
+# Subtest: Local roads are opt-in and obey the requested road style
+ok 151 - Local roads are opt-in and obey the requested road style
+  ---
+  duration_ms: 116.79553
+  type: 'test'
+  ...
+# Subtest: Cave counts are configurable and elevation is attached to each entrance
+ok 152 - Cave counts are configurable and elevation is attached to each entrance
+  ---
+  duration_ms: 122.29624
+  type: 'test'
+  ...
+# Subtest: Local isolated farms respect physical minimum spacing
+ok 153 - Local isolated farms respect physical minimum spacing
+  ---
+  duration_ms: 19.857897
+  type: 'test'
+  ...
+# Subtest: Elevation readout interpolates sample centers exactly
+ok 154 - Elevation readout interpolates sample centers exactly
+  ---
+  duration_ms: 40.846449
+  type: 'test'
+  ...
+# Subtest: Height CSV has all samples and uses correct metre-based coordinates
+ok 155 - Height CSV has all samples and uses correct metre-based coordinates
+  ---
+  duration_ms: 135.2433
+  type: 'test'
+  ...
+# Subtest: Height export rejects maps without surveyed elevations
+ok 156 - Height export rejects maps without surveyed elevations
+  ---
+  duration_ms: 71.13847
+  type: 'test'
+  ...
+# Subtest: All local water settings remain valid
+ok 157 - All local water settings remain valid
+  ---
+  duration_ms: 194.886711
+  type: 'test'
+  ...
+# Subtest: Invalid elevation length, non-finite data and wrong spacing are rejected
+ok 158 - Invalid elevation length, non-finite data and wrong spacing are rejected
+  ---
+  duration_ms: 119.782328
+  type: 'test'
+  ...
+# Subtest: Local settings survive JSON atlas roundtrip
+ok 159 - Local settings survive JSON atlas roundtrip
+  ---
+  duration_ms: 116.637206
+  type: 'test'
+  ...
+# Subtest: square: grid shape persists and renders a matching overlay
+ok 160 - square: grid shape persists and renders a matching overlay
+  ---
+  duration_ms: 5.687387
+  type: 'test'
+  ...
+# Subtest: hex-pointy: grid shape persists and renders a matching overlay
+ok 161 - hex-pointy: grid shape persists and renders a matching overlay
+  ---
+  duration_ms: 8.506559
+  type: 'test'
+  ...
+# Subtest: hex-flat: grid shape persists and renders a matching overlay
+ok 162 - hex-flat: grid shape persists and renders a matching overlay
+  ---
+  duration_ms: 8.03647
+  type: 'test'
+  ...
+# Subtest: hex-pointy: six nearest neighbors have exact 5 ft center spacing
+ok 163 - hex-pointy: six nearest neighbors have exact 5 ft center spacing
+  ---
+  duration_ms: 0.775901
+  type: 'test'
+  ...
+# Subtest: hex-pointy: snapping returns actual grid centers
+ok 164 - hex-pointy: snapping returns actual grid centers
+  ---
+  duration_ms: 2.388792
+  type: 'test'
+  ...
+# Subtest: hex-pointy: correct orientation and across-flat dimensions
+ok 165 - hex-pointy: correct orientation and across-flat dimensions
+  ---
+  duration_ms: 0.307273
+  type: 'test'
+  ...
+# Subtest: hex-pointy: play boundary trims maps and VTT walls consistently
+ok 166 - hex-pointy: play boundary trims maps and VTT walls consistently
+  ---
+  duration_ms: 2.662055
+  type: 'test'
+  ...
+# Subtest: hex-flat: six nearest neighbors have exact 5 ft center spacing
+ok 167 - hex-flat: six nearest neighbors have exact 5 ft center spacing
+  ---
+  duration_ms: 0.433704
+  type: 'test'
+  ...
+# Subtest: hex-flat: snapping returns actual grid centers
+ok 168 - hex-flat: snapping returns actual grid centers
+  ---
+  duration_ms: 0.667617
+  type: 'test'
+  ...
+# Subtest: hex-flat: correct orientation and across-flat dimensions
+ok 169 - hex-flat: correct orientation and across-flat dimensions
+  ---
+  duration_ms: 0.147302
+  type: 'test'
+  ...
+# Subtest: hex-flat: play boundary trims maps and VTT walls consistently
+ok 170 - hex-flat: play boundary trims maps and VTT walls consistently
+  ---
+  duration_ms: 1.677209
+  type: 'test'
+  ...
+# Subtest: Hex-cropped enclosed encounters retain connected floor for multiple themes
+ok 171 - Hex-cropped enclosed encounters retain connected floor for multiple themes
+  ---
+  duration_ms: 41.506093
+  type: 'test'
+  ...
+# Subtest: Grid metadata distinguishes movement grid from rectangular scene extent
+ok 172 - Grid metadata distinguishes movement grid from rectangular scene extent
+  ---
+  duration_ms: 0.559213
+  type: 'test'
+  ...
+# Subtest: Dense survey grids are bounded to a practical display spacing
+ok 173 - Dense survey grids are bounded to a practical display spacing
+  ---
+  duration_ms: 144.927299
+  type: 'test'
+  ...
+# Subtest: Region and local remain different generation modes at the same 20 km scale
+ok 174 - Region and local remain different generation modes at the same 20 km scale
+  ---
+  duration_ms: 84.287741
+  type: 'test'
+  ...
+# Subtest: The new asset inventory has 103 additions, each with a unique original body
+ok 175 - The new asset inventory has 103 additions, each with a unique original body
+  ---
+  duration_ms: 0.788198
+  type: 'test'
+  ...
+# Subtest: Narrow hex cave cannot become an empty map after boundary trimming
+ok 176 - Narrow hex cave cannot become an empty map after boundary trimming
+  ---
+  duration_ms: 6.183265
+  type: 'test'
+  ...
+1..176
+# tests 176
+# suites 0
+# pass 176
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11557.775275

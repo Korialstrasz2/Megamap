@@ -1,0 +1,108 @@
+{
+  "version": "1.2.0",
+  "browser": "144.0.7559.96",
+  "harness": "inline-with-CSP-removed",
+  "passed": 23,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "Four separate creation modes and 246 bundled assets",
+      "passed": true
+    },
+    {
+      "name": "Twelve shape choices, live preview, guidance endpoints 1 and 100",
+      "passed": true
+    },
+    {
+      "name": "Quarter checklist excludes unchecked programs and includes every checked type",
+      "passed": true
+    },
+    {
+      "name": "Building whitelist is enforced inside the exact concave city envelope",
+      "passed": true
+    },
+    {
+      "name": "Distinct quarter rooftops render, and the new asset category is browsable",
+      "passed": true
+    },
+    {
+      "name": "Changing one quarter program and undo preserve exact previous geometry",
+      "passed": true
+    },
+    {
+      "name": "Local region is distinct from campaign mode, defaults to 20 km and no villages or roads",
+      "passed": true
+    },
+    {
+      "name": "Local controls drive physical extent, mean/relief in metres, optional roads and cave count",
+      "passed": true
+    },
+    {
+      "name": "Local elevation/land-cover, hillshade and kilometre hex-grid styles are independent",
+      "passed": true
+    },
+    {
+      "name": "Local ruler uses 1 km for a tenth of a 10 km survey; cursor shows metre elevations",
+      "passed": true
+    },
+    {
+      "name": "Elevation CSV downloads all 25,600 metre-based samples with the requested mean",
+      "passed": true
+    },
+    {
+      "name": "Grid metadata export states the local map physical extent",
+      "passed": true
+    },
+    {
+      "name": "Pointy-top movement grid works independently of a rectangular outer boundary",
+      "passed": true
+    },
+    {
+      "name": "Stamp snapping lands at the rendered pointy-hex center, not square vertices",
+      "passed": true
+    },
+    {
+      "name": "Flat-top play-area boundary clips the map and rejects stamps outside it",
+      "passed": true
+    },
+    {
+      "name": "Hex SVG, PNG and grid metadata exports preserve the selected orientation",
+      "passed": true
+    },
+    {
+      "name": "Universal VTT contains a real PNG and explicit Megamap hex-grid metadata",
+      "passed": true
+    },
+    {
+      "name": "Cold-theme palette preserves pointy-hex grid and a nonempty clipped cave",
+      "passed": true
+    },
+    {
+      "name": "All 15 quarter types remain present even when target blocks is set to 12",
+      "passed": true
+    },
+    {
+      "name": "No quarters produces editable blank plots rather than silently adding unwanted buildings",
+      "passed": true
+    },
+    {
+      "name": "Saved atlas round trip preserves new envelopes, programs, DEMs and hex settings exactly",
+      "passed": true
+    },
+    {
+      "name": "The shipped v1 starter atlas opens without regenerating its original geometry",
+      "passed": true
+    },
+    {
+      "name": "No unhandled JavaScript errors in all v1.2 browser workflows",
+      "passed": true
+    }
+  ],
+  "pageErrors": [],
+  "durationSeconds": 9.7,
+  "limitations": [
+    "Not a native Windows BAT execution test.",
+    "No external VTT import tested.",
+    "Inline harness does not test file navigation, CSP enforcement or persistent browser storage recovery after restart."
+  ]
+}

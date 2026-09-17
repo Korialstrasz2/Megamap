@@ -1,0 +1,9 @@
+{
+  "name": "Megamap",
+  "version": "1.2.0",
+  "releaseDate": "2026-09-15",
+  "runtime": "offline browser, Windows BAT convenience launcher",
+  "schemaVersion": 1,
+  "bundledAssets": 246,
+  "newAssetsSinceV1": 103
+}

@@ -1,0 +1,15 @@
+Megamap 1.2.0
+
+New Megamap code and original vector symbols: provided under GNU GPL v3 only.
+The recursive city parcel-subdivision function is adapted from
+TownGeneratorOS by Oleg Dolya (Watabou), under GNU GPL v3 only.
+
+Upstream repository: https://github.com/watabou/TownGeneratorOS
+Inspected revision: 7fbc87a9398cc508af24de93f79cf2ad027f352b
+File: Source/com/watabou/towngenerator/wards/Ward.hx
+
+See vendor/watabou for the specific original method and modification notes.
+No upstream illustrations, bitmap font, private builds or branding assets
+are distributed here. Megamap is not endorsed by Watabou.
+
+This software is provided without warranty. See LICENSE.

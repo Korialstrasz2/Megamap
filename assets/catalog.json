@@ -1,0 +1,1743 @@
+{
+  "version": "1.2.0",
+  "license": "GPL-3.0-only",
+  "count": 246,
+  "categories": [
+    "Nature",
+    "Buildings",
+    "Infrastructure",
+    "Camp & travel",
+    "Interiors",
+    "Dungeon",
+    "Maritime",
+    "Markers",
+    "Footprints",
+    "Quarter rooftops",
+    "Quarter details",
+    "Local landscape"
+  ],
+  "assets": [
+    {
+      "id": "tree",
+      "category": "Nature",
+      "name": "Tree",
+      "tags": "",
+      "file": "svg/tree.svg"
+    },
+    {
+      "id": "pine",
+      "category": "Nature",
+      "name": "Pine",
+      "tags": "",
+      "file": "svg/pine.svg"
+    },
+    {
+      "id": "oak",
+      "category": "Nature",
+      "name": "Oak",
+      "tags": "",
+      "file": "svg/oak.svg"
+    },
+    {
+      "id": "palm",
+      "category": "Nature",
+      "name": "Palm",
+      "tags": "",
+      "file": "svg/palm.svg"
+    },
+    {
+      "id": "dead-tree",
+      "category": "Nature",
+      "name": "Dead Tree",
+      "tags": "",
+      "file": "svg/dead-tree.svg"
+    },
+    {
+      "id": "bush",
+      "category": "Nature",
+      "name": "Bush",
+      "tags": "",
+      "file": "svg/bush.svg"
+    },
+    {
+      "id": "rock",
+      "category": "Nature",
+      "name": "Rock",
+      "tags": "",
+      "file": "svg/rock.svg"
+    },
+    {
+      "id": "mountain",
+      "category": "Nature",
+      "name": "Mountain",
+      "tags": "",
+      "file": "svg/mountain.svg"
+    },
+    {
+      "id": "hill",
+      "category": "Nature",
+      "name": "Hill",
+      "tags": "",
+      "file": "svg/hill.svg"
+    },
+    {
+      "id": "boulder",
+      "category": "Nature",
+      "name": "Boulder",
+      "tags": "",
+      "file": "svg/boulder.svg"
+    },
+    {
+      "id": "mushroom",
+      "category": "Nature",
+      "name": "Mushroom",
+      "tags": "",
+      "file": "svg/mushroom.svg"
+    },
+    {
+      "id": "reeds",
+      "category": "Nature",
+      "name": "Reeds",
+      "tags": "",
+      "file": "svg/reeds.svg"
+    },
+    {
+      "id": "house",
+      "category": "Buildings",
+      "name": "House",
+      "tags": "",
+      "file": "svg/house.svg"
+    },
+    {
+      "id": "cottage",
+      "category": "Buildings",
+      "name": "Cottage",
+      "tags": "",
+      "file": "svg/cottage.svg"
+    },
+    {
+      "id": "tower",
+      "category": "Buildings",
+      "name": "Tower",
+      "tags": "",
+      "file": "svg/tower.svg"
+    },
+    {
+      "id": "castle",
+      "category": "Buildings",
+      "name": "Castle",
+      "tags": "",
+      "file": "svg/castle.svg"
+    },
+    {
+      "id": "ruin",
+      "category": "Buildings",
+      "name": "Ruin",
+      "tags": "",
+      "file": "svg/ruin.svg"
+    },
+    {
+      "id": "temple",
+      "category": "Buildings",
+      "name": "Temple",
+      "tags": "",
+      "file": "svg/temple.svg"
+    },
+    {
+      "id": "inn",
+      "category": "Buildings",
+      "name": "Inn",
+      "tags": "",
+      "file": "svg/inn.svg"
+    },
+    {
+      "id": "mill",
+      "category": "Buildings",
+      "name": "Mill",
+      "tags": "",
+      "file": "svg/mill.svg"
+    },
+    {
+      "id": "bridge",
+      "category": "Infrastructure",
+      "name": "Bridge",
+      "tags": "",
+      "file": "svg/bridge.svg"
+    },
+    {
+      "id": "cave",
+      "category": "Infrastructure",
+      "name": "Cave",
+      "tags": "",
+      "file": "svg/cave.svg"
+    },
+    {
+      "id": "mine",
+      "category": "Infrastructure",
+      "name": "Mine",
+      "tags": "",
+      "file": "svg/mine.svg"
+    },
+    {
+      "id": "well",
+      "category": "Infrastructure",
+      "name": "Well",
+      "tags": "",
+      "file": "svg/well.svg"
+    },
+    {
+      "id": "fountain",
+      "category": "Infrastructure",
+      "name": "Fountain",
+      "tags": "",
+      "file": "svg/fountain.svg"
+    },
+    {
+      "id": "statue",
+      "category": "Infrastructure",
+      "name": "Statue",
+      "tags": "",
+      "file": "svg/statue.svg"
+    },
+    {
+      "id": "stairs",
+      "category": "Infrastructure",
+      "name": "Stairs",
+      "tags": "",
+      "file": "svg/stairs.svg"
+    },
+    {
+      "id": "door",
+      "category": "Infrastructure",
+      "name": "Door",
+      "tags": "",
+      "file": "svg/door.svg"
+    },
+    {
+      "id": "gravestone",
+      "category": "Infrastructure",
+      "name": "Gravestone",
+      "tags": "",
+      "file": "svg/gravestone.svg"
+    },
+    {
+      "id": "camp",
+      "category": "Camp & travel",
+      "name": "Camp",
+      "tags": "",
+      "file": "svg/camp.svg"
+    },
+    {
+      "id": "tent",
+      "category": "Camp & travel",
+      "name": "Tent",
+      "tags": "",
+      "file": "svg/tent.svg"
+    },
+    {
+      "id": "boat",
+      "category": "Camp & travel",
+      "name": "Boat",
+      "tags": "",
+      "file": "svg/boat.svg"
+    },
+    {
+      "id": "crate",
+      "category": "Camp & travel",
+      "name": "Crate",
+      "tags": "",
+      "file": "svg/crate.svg"
+    },
+    {
+      "id": "barrel",
+      "category": "Camp & travel",
+      "name": "Barrel",
+      "tags": "",
+      "file": "svg/barrel.svg"
+    },
+    {
+      "id": "fire",
+      "category": "Camp & travel",
+      "name": "Fire",
+      "tags": "",
+      "file": "svg/fire.svg"
+    },
+    {
+      "id": "table",
+      "category": "Interiors",
+      "name": "Table",
+      "tags": "",
+      "file": "svg/table.svg"
+    },
+    {
+      "id": "bed",
+      "category": "Interiors",
+      "name": "Bed",
+      "tags": "",
+      "file": "svg/bed.svg"
+    },
+    {
+      "id": "chest",
+      "category": "Interiors",
+      "name": "Chest",
+      "tags": "",
+      "file": "svg/chest.svg"
+    },
+    {
+      "id": "bones",
+      "category": "Dungeon",
+      "name": "Bones",
+      "tags": "",
+      "file": "svg/bones.svg"
+    },
+    {
+      "id": "crystal",
+      "category": "Dungeon",
+      "name": "Crystal",
+      "tags": "",
+      "file": "svg/crystal.svg"
+    },
+    {
+      "id": "willow",
+      "category": "Nature",
+      "name": "Willow",
+      "tags": "tree riverside",
+      "file": "svg/willow.svg"
+    },
+    {
+      "id": "birch",
+      "category": "Nature",
+      "name": "Birch",
+      "tags": "tree",
+      "file": "svg/birch.svg"
+    },
+    {
+      "id": "cypress",
+      "category": "Nature",
+      "name": "Cypress",
+      "tags": "tree graveyard",
+      "file": "svg/cypress.svg"
+    },
+    {
+      "id": "cedar",
+      "category": "Nature",
+      "name": "Cedar",
+      "tags": "tree",
+      "file": "svg/cedar.svg"
+    },
+    {
+      "id": "jungle-tree",
+      "category": "Nature",
+      "name": "Jungle tree",
+      "tags": "",
+      "file": "svg/jungle-tree.svg"
+    },
+    {
+      "id": "fern",
+      "category": "Nature",
+      "name": "Fern",
+      "tags": "undergrowth",
+      "file": "svg/fern.svg"
+    },
+    {
+      "id": "cactus",
+      "category": "Nature",
+      "name": "Saguaro cactus",
+      "tags": "desert",
+      "file": "svg/cactus.svg"
+    },
+    {
+      "id": "flowers",
+      "category": "Nature",
+      "name": "Wildflowers",
+      "tags": "",
+      "file": "svg/flowers.svg"
+    },
+    {
+      "id": "lily-pads",
+      "category": "Nature",
+      "name": "Lily pads",
+      "tags": "pond water",
+      "file": "svg/lily-pads.svg"
+    },
+    {
+      "id": "fallen-log",
+      "category": "Nature",
+      "name": "Fallen log",
+      "tags": "forest",
+      "file": "svg/fallen-log.svg"
+    },
+    {
+      "id": "stump",
+      "category": "Nature",
+      "name": "Tree stump",
+      "tags": "",
+      "file": "svg/stump.svg"
+    },
+    {
+      "id": "rock-cluster",
+      "category": "Nature",
+      "name": "Rock cluster",
+      "tags": "",
+      "file": "svg/rock-cluster.svg"
+    },
+    {
+      "id": "cliff",
+      "category": "Nature",
+      "name": "Cliff face",
+      "tags": "",
+      "file": "svg/cliff.svg"
+    },
+    {
+      "id": "volcano",
+      "category": "Nature",
+      "name": "Volcano",
+      "tags": "",
+      "file": "svg/volcano.svg"
+    },
+    {
+      "id": "dunes",
+      "category": "Nature",
+      "name": "Sand dunes",
+      "tags": "desert",
+      "file": "svg/dunes.svg"
+    },
+    {
+      "id": "ice-shards",
+      "category": "Nature",
+      "name": "Ice shards",
+      "tags": "",
+      "file": "svg/ice-shards.svg"
+    },
+    {
+      "id": "waterfall",
+      "category": "Nature",
+      "name": "Waterfall",
+      "tags": "",
+      "file": "svg/waterfall.svg"
+    },
+    {
+      "id": "bakery",
+      "category": "Buildings",
+      "name": "Bakery",
+      "tags": "shop food",
+      "file": "svg/bakery.svg"
+    },
+    {
+      "id": "blacksmith",
+      "category": "Buildings",
+      "name": "Blacksmith",
+      "tags": "forge workshop",
+      "file": "svg/blacksmith.svg"
+    },
+    {
+      "id": "stable",
+      "category": "Buildings",
+      "name": "Stable",
+      "tags": "horse barn",
+      "file": "svg/stable.svg"
+    },
+    {
+      "id": "warehouse",
+      "category": "Buildings",
+      "name": "Warehouse",
+      "tags": "storage docks",
+      "file": "svg/warehouse.svg"
+    },
+    {
+      "id": "manor",
+      "category": "Buildings",
+      "name": "Manor house",
+      "tags": "noble villa",
+      "file": "svg/manor.svg"
+    },
+    {
+      "id": "observatory",
+      "category": "Buildings",
+      "name": "Observatory",
+      "tags": "wizard astronomy",
+      "file": "svg/observatory.svg"
+    },
+    {
+      "id": "lighthouse",
+      "category": "Buildings",
+      "name": "Lighthouse",
+      "tags": "",
+      "file": "svg/lighthouse.svg"
+    },
+    {
+      "id": "watermill",
+      "category": "Buildings",
+      "name": "Watermill",
+      "tags": "",
+      "file": "svg/watermill.svg"
+    },
+    {
+      "id": "watch-post",
+      "category": "Buildings",
+      "name": "Watch post",
+      "tags": "",
+      "file": "svg/watch-post.svg"
+    },
+    {
+      "id": "market-stall",
+      "category": "Buildings",
+      "name": "Market stall",
+      "tags": "shop bazaar",
+      "file": "svg/market-stall.svg"
+    },
+    {
+      "id": "gatehouse",
+      "category": "Infrastructure",
+      "name": "Gatehouse",
+      "tags": "",
+      "file": "svg/gatehouse.svg"
+    },
+    {
+      "id": "palisade",
+      "category": "Infrastructure",
+      "name": "Palisade",
+      "tags": "",
+      "file": "svg/palisade.svg"
+    },
+    {
+      "id": "signpost",
+      "category": "Infrastructure",
+      "name": "Signpost",
+      "tags": "",
+      "file": "svg/signpost.svg"
+    },
+    {
+      "id": "obelisk",
+      "category": "Infrastructure",
+      "name": "Obelisk",
+      "tags": "",
+      "file": "svg/obelisk.svg"
+    },
+    {
+      "id": "stone-circle",
+      "category": "Infrastructure",
+      "name": "Stone circle",
+      "tags": "ritual",
+      "file": "svg/stone-circle.svg"
+    },
+    {
+      "id": "farm-field",
+      "category": "Infrastructure",
+      "name": "Crop field",
+      "tags": "agriculture",
+      "file": "svg/farm-field.svg"
+    },
+    {
+      "id": "orchard",
+      "category": "Infrastructure",
+      "name": "Orchard",
+      "tags": "",
+      "file": "svg/orchard.svg"
+    },
+    {
+      "id": "cemetery",
+      "category": "Infrastructure",
+      "name": "Cemetery",
+      "tags": "",
+      "file": "svg/cemetery.svg"
+    },
+    {
+      "id": "round-table",
+      "category": "Interiors",
+      "name": "Round table",
+      "tags": "tavern",
+      "file": "svg/round-table.svg"
+    },
+    {
+      "id": "long-table",
+      "category": "Interiors",
+      "name": "Banquet table",
+      "tags": "",
+      "file": "svg/long-table.svg"
+    },
+    {
+      "id": "chair",
+      "category": "Interiors",
+      "name": "Chair",
+      "tags": "",
+      "file": "svg/chair.svg"
+    },
+    {
+      "id": "bench",
+      "category": "Interiors",
+      "name": "Bench",
+      "tags": "",
+      "file": "svg/bench.svg"
+    },
+    {
+      "id": "throne",
+      "category": "Interiors",
+      "name": "Throne",
+      "tags": "",
+      "file": "svg/throne.svg"
+    },
+    {
+      "id": "bookshelf",
+      "category": "Interiors",
+      "name": "Bookshelf",
+      "tags": "library archive",
+      "file": "svg/bookshelf.svg"
+    },
+    {
+      "id": "desk",
+      "category": "Interiors",
+      "name": "Writing desk",
+      "tags": "",
+      "file": "svg/desk.svg"
+    },
+    {
+      "id": "bunk-bed",
+      "category": "Interiors",
+      "name": "Bunk bed",
+      "tags": "barracks bedroom",
+      "file": "svg/bunk-bed.svg"
+    },
+    {
+      "id": "rug",
+      "category": "Interiors",
+      "name": "Woven rug",
+      "tags": "",
+      "file": "svg/rug.svg"
+    },
+    {
+      "id": "fireplace",
+      "category": "Interiors",
+      "name": "Fireplace",
+      "tags": "",
+      "file": "svg/fireplace.svg"
+    },
+    {
+      "id": "stove",
+      "category": "Interiors",
+      "name": "Iron stove",
+      "tags": "",
+      "file": "svg/stove.svg"
+    },
+    {
+      "id": "cauldron",
+      "category": "Interiors",
+      "name": "Cauldron",
+      "tags": "witch kitchen",
+      "file": "svg/cauldron.svg"
+    },
+    {
+      "id": "counter",
+      "category": "Interiors",
+      "name": "Bar counter",
+      "tags": "tavern shop",
+      "file": "svg/counter.svg"
+    },
+    {
+      "id": "cabinet",
+      "category": "Interiors",
+      "name": "Cabinet",
+      "tags": "",
+      "file": "svg/cabinet.svg"
+    },
+    {
+      "id": "sacks",
+      "category": "Interiors",
+      "name": "Grain sacks",
+      "tags": "storage",
+      "file": "svg/sacks.svg"
+    },
+    {
+      "id": "weapon-rack",
+      "category": "Interiors",
+      "name": "Weapon rack",
+      "tags": "armory",
+      "file": "svg/weapon-rack.svg"
+    },
+    {
+      "id": "anvil",
+      "category": "Interiors",
+      "name": "Anvil",
+      "tags": "forge",
+      "file": "svg/anvil.svg"
+    },
+    {
+      "id": "loom",
+      "category": "Interiors",
+      "name": "Loom",
+      "tags": "workshop",
+      "file": "svg/loom.svg"
+    },
+    {
+      "id": "alchemy",
+      "category": "Interiors",
+      "name": "Alchemy table",
+      "tags": "",
+      "file": "svg/alchemy.svg"
+    },
+    {
+      "id": "torture-rack",
+      "category": "Dungeon",
+      "name": "Rack",
+      "tags": "",
+      "file": "svg/torture-rack.svg"
+    },
+    {
+      "id": "sarcophagus",
+      "category": "Dungeon",
+      "name": "Sarcophagus",
+      "tags": "crypt tomb",
+      "file": "svg/sarcophagus.svg"
+    },
+    {
+      "id": "altar",
+      "category": "Dungeon",
+      "name": "Ritual altar",
+      "tags": "",
+      "file": "svg/altar.svg"
+    },
+    {
+      "id": "pentagram",
+      "category": "Dungeon",
+      "name": "Ritual circle",
+      "tags": "",
+      "file": "svg/pentagram.svg"
+    },
+    {
+      "id": "summoning-portal",
+      "category": "Dungeon",
+      "name": "Arcane portal",
+      "tags": "",
+      "file": "svg/summoning-portal.svg"
+    },
+    {
+      "id": "cage",
+      "category": "Dungeon",
+      "name": "Iron cage",
+      "tags": "",
+      "file": "svg/cage.svg"
+    },
+    {
+      "id": "pit",
+      "category": "Dungeon",
+      "name": "Open pit",
+      "tags": "",
+      "file": "svg/pit.svg"
+    },
+    {
+      "id": "spike-trap",
+      "category": "Dungeon",
+      "name": "Spike trap",
+      "tags": "",
+      "file": "svg/spike-trap.svg"
+    },
+    {
+      "id": "portcullis",
+      "category": "Dungeon",
+      "name": "Portcullis",
+      "tags": "",
+      "file": "svg/portcullis.svg"
+    },
+    {
+      "id": "column",
+      "category": "Dungeon",
+      "name": "Round column",
+      "tags": "",
+      "file": "svg/column.svg"
+    },
+    {
+      "id": "broken-column",
+      "category": "Dungeon",
+      "name": "Broken column",
+      "tags": "",
+      "file": "svg/broken-column.svg"
+    },
+    {
+      "id": "brazier",
+      "category": "Dungeon",
+      "name": "Brazier",
+      "tags": "",
+      "file": "svg/brazier.svg"
+    },
+    {
+      "id": "torch",
+      "category": "Dungeon",
+      "name": "Wall torch",
+      "tags": "",
+      "file": "svg/torch.svg"
+    },
+    {
+      "id": "chain",
+      "category": "Dungeon",
+      "name": "Hanging chain",
+      "tags": "",
+      "file": "svg/chain.svg"
+    },
+    {
+      "id": "web",
+      "category": "Dungeon",
+      "name": "Spider web",
+      "tags": "",
+      "file": "svg/web.svg"
+    },
+    {
+      "id": "treasure-pile",
+      "category": "Dungeon",
+      "name": "Treasure pile",
+      "tags": "",
+      "file": "svg/treasure-pile.svg"
+    },
+    {
+      "id": "rune-stone",
+      "category": "Dungeon",
+      "name": "Rune stone",
+      "tags": "",
+      "file": "svg/rune-stone.svg"
+    },
+    {
+      "id": "wagon",
+      "category": "Camp & travel",
+      "name": "Covered wagon",
+      "tags": "",
+      "file": "svg/wagon.svg"
+    },
+    {
+      "id": "handcart",
+      "category": "Camp & travel",
+      "name": "Handcart",
+      "tags": "",
+      "file": "svg/handcart.svg"
+    },
+    {
+      "id": "pavilion",
+      "category": "Camp & travel",
+      "name": "Pavilion tent",
+      "tags": "",
+      "file": "svg/pavilion.svg"
+    },
+    {
+      "id": "bedroll",
+      "category": "Camp & travel",
+      "name": "Bedroll",
+      "tags": "",
+      "file": "svg/bedroll.svg"
+    },
+    {
+      "id": "lantern",
+      "category": "Camp & travel",
+      "name": "Lantern",
+      "tags": "",
+      "file": "svg/lantern.svg"
+    },
+    {
+      "id": "campfire-ring",
+      "category": "Camp & travel",
+      "name": "Stone fire ring",
+      "tags": "",
+      "file": "svg/campfire-ring.svg"
+    },
+    {
+      "id": "rope-coil",
+      "category": "Camp & travel",
+      "name": "Coiled rope",
+      "tags": "",
+      "file": "svg/rope-coil.svg"
+    },
+    {
+      "id": "sailboat",
+      "category": "Maritime",
+      "name": "Sailboat",
+      "tags": "",
+      "file": "svg/sailboat.svg"
+    },
+    {
+      "id": "longship",
+      "category": "Maritime",
+      "name": "Longship",
+      "tags": "",
+      "file": "svg/longship.svg"
+    },
+    {
+      "id": "raft",
+      "category": "Maritime",
+      "name": "Raft",
+      "tags": "",
+      "file": "svg/raft.svg"
+    },
+    {
+      "id": "jetty",
+      "category": "Maritime",
+      "name": "Wooden jetty",
+      "tags": "",
+      "file": "svg/jetty.svg"
+    },
+    {
+      "id": "anchor",
+      "category": "Maritime",
+      "name": "Anchor",
+      "tags": "",
+      "file": "svg/anchor.svg"
+    },
+    {
+      "id": "fishing-net",
+      "category": "Maritime",
+      "name": "Fishing net",
+      "tags": "",
+      "file": "svg/fishing-net.svg"
+    },
+    {
+      "id": "shipwreck",
+      "category": "Maritime",
+      "name": "Shipwreck",
+      "tags": "",
+      "file": "svg/shipwreck.svg"
+    },
+    {
+      "id": "flag",
+      "category": "Markers",
+      "name": "Flag",
+      "tags": "objective banner",
+      "file": "svg/flag.svg"
+    },
+    {
+      "id": "quest",
+      "category": "Markers",
+      "name": "Quest marker",
+      "tags": "point interest",
+      "file": "svg/quest.svg"
+    },
+    {
+      "id": "danger",
+      "category": "Markers",
+      "name": "Danger marker",
+      "tags": "",
+      "file": "svg/danger.svg"
+    },
+    {
+      "id": "skull",
+      "category": "Markers",
+      "name": "Skull",
+      "tags": "",
+      "file": "svg/skull.svg"
+    },
+    {
+      "id": "compass-rose",
+      "category": "Markers",
+      "name": "Compass rose",
+      "tags": "",
+      "file": "svg/compass-rose.svg"
+    },
+    {
+      "id": "waypoint",
+      "category": "Markers",
+      "name": "Waypoint",
+      "tags": "",
+      "file": "svg/waypoint.svg"
+    },
+    {
+      "id": "crossed-swords",
+      "category": "Markers",
+      "name": "Battle site",
+      "tags": "",
+      "file": "svg/crossed-swords.svg"
+    },
+    {
+      "id": "bridge-marker",
+      "category": "Markers",
+      "name": "Crossing marker",
+      "tags": "",
+      "file": "svg/bridge-marker.svg"
+    },
+    {
+      "id": "secret",
+      "category": "Markers",
+      "name": "Secret marker",
+      "tags": "",
+      "file": "svg/secret.svg"
+    },
+    {
+      "id": "portal-marker",
+      "category": "Markers",
+      "name": "Dungeon entrance",
+      "tags": "",
+      "file": "svg/portal-marker.svg"
+    },
+    {
+      "id": "roof-cottage",
+      "category": "Footprints",
+      "name": "Cottage roof",
+      "tags": "",
+      "file": "svg/roof-cottage.svg"
+    },
+    {
+      "id": "roof-lhouse",
+      "category": "Footprints",
+      "name": "L-shaped roof",
+      "tags": "",
+      "file": "svg/roof-lhouse.svg"
+    },
+    {
+      "id": "roof-longhouse",
+      "category": "Footprints",
+      "name": "Longhouse roof",
+      "tags": "",
+      "file": "svg/roof-longhouse.svg"
+    },
+    {
+      "id": "roof-courtyard",
+      "category": "Footprints",
+      "name": "Courtyard house",
+      "tags": "",
+      "file": "svg/roof-courtyard.svg"
+    },
+    {
+      "id": "roof-tower",
+      "category": "Footprints",
+      "name": "Round tower roof",
+      "tags": "",
+      "file": "svg/roof-tower.svg"
+    },
+    {
+      "id": "roof-temple",
+      "category": "Footprints",
+      "name": "Temple roof",
+      "tags": "",
+      "file": "svg/roof-temple.svg"
+    },
+    {
+      "id": "roof-barn",
+      "category": "Footprints",
+      "name": "Barn roof",
+      "tags": "",
+      "file": "svg/roof-barn.svg"
+    },
+    {
+      "id": "roof-hut",
+      "category": "Footprints",
+      "name": "Thatched hut",
+      "tags": "",
+      "file": "svg/roof-hut.svg"
+    },
+    {
+      "id": "roof-townhouse",
+      "name": "Townhouse · narrow gable",
+      "category": "Quarter rooftops",
+      "tags": "merchants noble residential",
+      "file": "svg/roof-townhouse.svg"
+    },
+    {
+      "id": "roof-townhouse-gabled",
+      "name": "Townhouse · twin gables",
+      "category": "Quarter rooftops",
+      "tags": "merchants oldtown residential",
+      "file": "svg/roof-townhouse-gabled.svg"
+    },
+    {
+      "id": "roof-tenement",
+      "name": "Tenement · rear court",
+      "category": "Quarter rooftops",
+      "tags": "commons slums housing",
+      "file": "svg/roof-tenement.svg"
+    },
+    {
+      "id": "roof-rowhouse",
+      "name": "Rowhouses · four terraces",
+      "category": "Quarter rooftops",
+      "tags": "commons slums housing",
+      "file": "svg/roof-rowhouse.svg"
+    },
+    {
+      "id": "roof-shack",
+      "name": "Shanty · patched roof",
+      "category": "Quarter rooftops",
+      "tags": "slums housing",
+      "file": "svg/roof-shack.svg"
+    },
+    {
+      "id": "roof-villa",
+      "name": "Villa · walled courtyard",
+      "category": "Quarter rooftops",
+      "tags": "noble residence garden",
+      "file": "svg/roof-villa.svg"
+    },
+    {
+      "id": "roof-villa-pool",
+      "name": "Villa · pool court",
+      "category": "Quarter rooftops",
+      "tags": "noble residence pool",
+      "file": "svg/roof-villa-pool.svg"
+    },
+    {
+      "id": "roof-palace",
+      "name": "Palace · four corner towers",
+      "category": "Quarter rooftops",
+      "tags": "noble royal palace",
+      "file": "svg/roof-palace.svg"
+    },
+    {
+      "id": "roof-workshop",
+      "name": "Workshop · sawtooth shed",
+      "category": "Quarter rooftops",
+      "tags": "artisans industrial",
+      "file": "svg/roof-workshop.svg"
+    },
+    {
+      "id": "roof-pottery",
+      "name": "Pottery · kiln annex",
+      "category": "Quarter rooftops",
+      "tags": "artisans industrial pottery",
+      "file": "svg/roof-pottery.svg"
+    },
+    {
+      "id": "roof-smithy",
+      "name": "Smithy · forge chimney",
+      "category": "Quarter rooftops",
+      "tags": "artisans industrial military",
+      "file": "svg/roof-smithy.svg"
+    },
+    {
+      "id": "roof-shop",
+      "name": "Shop · street awning",
+      "category": "Quarter rooftops",
+      "tags": "market merchants shop",
+      "file": "svg/roof-shop.svg"
+    },
+    {
+      "id": "roof-shop-arcade",
+      "name": "Shops · covered arcade",
+      "category": "Quarter rooftops",
+      "tags": "market merchants arcade",
+      "file": "svg/roof-shop-arcade.svg"
+    },
+    {
+      "id": "roof-warehouse",
+      "name": "Warehouse · loading apron",
+      "category": "Quarter rooftops",
+      "tags": "docks industrial storage",
+      "file": "svg/roof-warehouse.svg"
+    },
+    {
+      "id": "roof-warehouse-paired",
+      "name": "Warehouse · twin sheds",
+      "category": "Quarter rooftops",
+      "tags": "docks merchants storage",
+      "file": "svg/roof-warehouse-paired.svg"
+    },
+    {
+      "id": "roof-inn",
+      "name": "Inn · long hall",
+      "category": "Quarter rooftops",
+      "tags": "market commons merchants inn",
+      "file": "svg/roof-inn.svg"
+    },
+    {
+      "id": "roof-inn-court",
+      "name": "Inn · coaching courtyard",
+      "category": "Quarter rooftops",
+      "tags": "market merchants travel",
+      "file": "svg/roof-inn-court.svg"
+    },
+    {
+      "id": "roof-tavern",
+      "name": "Tavern · L-shaped hall",
+      "category": "Quarter rooftops",
+      "tags": "slums commons docks tavern",
+      "file": "svg/roof-tavern.svg"
+    },
+    {
+      "id": "roof-domed-temple",
+      "name": "Temple · central dome",
+      "category": "Quarter rooftops",
+      "tags": "temple religious",
+      "file": "svg/roof-domed-temple.svg"
+    },
+    {
+      "id": "roof-shrine",
+      "name": "Shrine · small sanctuary",
+      "category": "Quarter rooftops",
+      "tags": "temple oldtown cemetery",
+      "file": "svg/roof-shrine.svg"
+    },
+    {
+      "id": "roof-monastery",
+      "name": "Monastery · cloister",
+      "category": "Quarter rooftops",
+      "tags": "temple religious cloister",
+      "file": "svg/roof-monastery.svg"
+    },
+    {
+      "id": "roof-barracks",
+      "name": "Barracks · three halls",
+      "category": "Quarter rooftops",
+      "tags": "military barracks",
+      "file": "svg/roof-barracks.svg"
+    },
+    {
+      "id": "roof-barracks-court",
+      "name": "Barracks · drill quadrangle",
+      "category": "Quarter rooftops",
+      "tags": "military barracks",
+      "file": "svg/roof-barracks-court.svg"
+    },
+    {
+      "id": "roof-keep",
+      "name": "Keep · defensive towers",
+      "category": "Quarter rooftops",
+      "tags": "military castle",
+      "file": "svg/roof-keep.svg"
+    },
+    {
+      "id": "roof-stable",
+      "name": "Stable · stalls and paddock",
+      "category": "Quarter rooftops",
+      "tags": "farming military travel",
+      "file": "svg/roof-stable.svg"
+    },
+    {
+      "id": "roof-library",
+      "name": "Library · reading wings",
+      "category": "Quarter rooftops",
+      "tags": "university scholars books",
+      "file": "svg/roof-library.svg"
+    },
+    {
+      "id": "roof-college",
+      "name": "College · two courts",
+      "category": "Quarter rooftops",
+      "tags": "university scholars",
+      "file": "svg/roof-college.svg"
+    },
+    {
+      "id": "roof-observatory",
+      "name": "Observatory · dome and annex",
+      "category": "Quarter rooftops",
+      "tags": "university stars dome",
+      "file": "svg/roof-observatory.svg"
+    },
+    {
+      "id": "roof-hospital",
+      "name": "Hospital · ward wings",
+      "category": "Quarter rooftops",
+      "tags": "university temple medicine",
+      "file": "svg/roof-hospital.svg"
+    },
+    {
+      "id": "roof-bathhouse",
+      "name": "Bathhouse · pools",
+      "category": "Quarter rooftops",
+      "tags": "noble baths",
+      "file": "svg/roof-bathhouse.svg"
+    },
+    {
+      "id": "roof-mill",
+      "name": "Mill · wheel and loft",
+      "category": "Quarter rooftops",
+      "tags": "farming industrial mill",
+      "file": "svg/roof-mill.svg"
+    },
+    {
+      "id": "roof-granary",
+      "name": "Granary · silos",
+      "category": "Quarter rooftops",
+      "tags": "farming grain",
+      "file": "svg/roof-granary.svg"
+    },
+    {
+      "id": "roof-guildhall",
+      "name": "Guildhall · assembly hall",
+      "category": "Quarter rooftops",
+      "tags": "artisans merchants guild",
+      "file": "svg/roof-guildhall.svg"
+    },
+    {
+      "id": "roof-fishmarket",
+      "name": "Fish market · waterside sheds",
+      "category": "Quarter rooftops",
+      "tags": "docks market fishing",
+      "file": "svg/roof-fishmarket.svg"
+    },
+    {
+      "id": "roof-shipyard",
+      "name": "Shipyard · boat shed",
+      "category": "Quarter rooftops",
+      "tags": "docks shipyard boats",
+      "file": "svg/roof-shipyard.svg"
+    },
+    {
+      "id": "roof-greenhouse",
+      "name": "Greenhouse · glazed roof",
+      "category": "Quarter rooftops",
+      "tags": "gardens glass plants",
+      "file": "svg/roof-greenhouse.svg"
+    },
+    {
+      "id": "roof-mausoleum",
+      "name": "Mausoleum · vaulted tomb",
+      "category": "Quarter rooftops",
+      "tags": "cemetery crypt",
+      "file": "svg/roof-mausoleum.svg"
+    },
+    {
+      "id": "canopy-stall",
+      "name": "Striped market canopy",
+      "category": "Quarter details",
+      "tags": "canopy stall quarter",
+      "file": "svg/canopy-stall.svg"
+    },
+    {
+      "id": "produce-stall",
+      "name": "Produce stall",
+      "category": "Quarter details",
+      "tags": "produce stall quarter",
+      "file": "svg/produce-stall.svg"
+    },
+    {
+      "id": "cloth-stall",
+      "name": "Cloth merchant",
+      "category": "Quarter details",
+      "tags": "cloth stall quarter",
+      "file": "svg/cloth-stall.svg"
+    },
+    {
+      "id": "market-scale",
+      "name": "Merchant balance",
+      "category": "Quarter details",
+      "tags": "market scale quarter",
+      "file": "svg/market-scale.svg"
+    },
+    {
+      "id": "laundry-line",
+      "name": "Courtyard washing line",
+      "category": "Quarter details",
+      "tags": "laundry line quarter",
+      "file": "svg/laundry-line.svg"
+    },
+    {
+      "id": "communal-oven",
+      "name": "Communal bread oven",
+      "category": "Quarter details",
+      "tags": "communal oven quarter",
+      "file": "svg/communal-oven.svg"
+    },
+    {
+      "id": "street-well",
+      "name": "Street well · top down",
+      "category": "Quarter details",
+      "tags": "street well quarter",
+      "file": "svg/street-well.svg"
+    },
+    {
+      "id": "small-square",
+      "name": "Paved neighborhood square",
+      "category": "Quarter details",
+      "tags": "small square quarter",
+      "file": "svg/small-square.svg"
+    },
+    {
+      "id": "street-lamp",
+      "name": "Street lantern",
+      "category": "Quarter details",
+      "tags": "street lamp quarter",
+      "file": "svg/street-lamp.svg"
+    },
+    {
+      "id": "timber-rack",
+      "name": "Timber storage rack",
+      "category": "Quarter details",
+      "tags": "timber rack quarter",
+      "file": "svg/timber-rack.svg"
+    },
+    {
+      "id": "kiln-yard",
+      "name": "Kiln yard",
+      "category": "Quarter details",
+      "tags": "kiln yard quarter",
+      "file": "svg/kiln-yard.svg"
+    },
+    {
+      "id": "dye-vats",
+      "name": "Dye vats",
+      "category": "Quarter details",
+      "tags": "dye vats quarter",
+      "file": "svg/dye-vats.svg"
+    },
+    {
+      "id": "artisan-yard",
+      "name": "Artisan work yard",
+      "category": "Quarter details",
+      "tags": "artisan yard quarter",
+      "file": "svg/artisan-yard.svg"
+    },
+    {
+      "id": "cloister-garden",
+      "name": "Cloister garden",
+      "category": "Quarter details",
+      "tags": "cloister garden quarter",
+      "file": "svg/cloister-garden.svg"
+    },
+    {
+      "id": "processional-square",
+      "name": "Processional court",
+      "category": "Quarter details",
+      "tags": "processional square quarter",
+      "file": "svg/processional-square.svg"
+    },
+    {
+      "id": "formal-garden",
+      "name": "Formal parterre",
+      "category": "Quarter details",
+      "tags": "formal garden quarter",
+      "file": "svg/formal-garden.svg"
+    },
+    {
+      "id": "hedge-maze",
+      "name": "Hedge maze",
+      "category": "Quarter details",
+      "tags": "hedge maze quarter",
+      "file": "svg/hedge-maze.svg"
+    },
+    {
+      "id": "reflecting-pool",
+      "name": "Reflecting pool",
+      "category": "Quarter details",
+      "tags": "reflecting pool quarter",
+      "file": "svg/reflecting-pool.svg"
+    },
+    {
+      "id": "gazebo",
+      "name": "Garden gazebo",
+      "category": "Quarter details",
+      "tags": "gazebo quarter",
+      "file": "svg/gazebo.svg"
+    },
+    {
+      "id": "orchard-block",
+      "name": "Orchard block",
+      "category": "Quarter details",
+      "tags": "orchard block quarter",
+      "file": "svg/orchard-block.svg"
+    },
+    {
+      "id": "pond-garden",
+      "name": "Pond garden",
+      "category": "Quarter details",
+      "tags": "pond garden quarter",
+      "file": "svg/pond-garden.svg"
+    },
+    {
+      "id": "dock-crane",
+      "name": "Harbor crane",
+      "category": "Quarter details",
+      "tags": "dock crane quarter",
+      "file": "svg/dock-crane.svg"
+    },
+    {
+      "id": "dry-dock",
+      "name": "Dry dock",
+      "category": "Quarter details",
+      "tags": "dry dock quarter",
+      "file": "svg/dry-dock.svg"
+    },
+    {
+      "id": "cargo-yard",
+      "name": "Cargo stacks",
+      "category": "Quarter details",
+      "tags": "cargo yard quarter",
+      "file": "svg/cargo-yard.svg"
+    },
+    {
+      "id": "fishing-racks",
+      "name": "Fish drying racks",
+      "category": "Quarter details",
+      "tags": "fishing racks quarter",
+      "file": "svg/fishing-racks.svg"
+    },
+    {
+      "id": "drill-yard",
+      "name": "Drill yard",
+      "category": "Quarter details",
+      "tags": "drill yard quarter",
+      "file": "svg/drill-yard.svg"
+    },
+    {
+      "id": "archery-yard",
+      "name": "Archery range",
+      "category": "Quarter details",
+      "tags": "archery yard quarter",
+      "file": "svg/archery-yard.svg"
+    },
+    {
+      "id": "training-ring",
+      "name": "Training ring",
+      "category": "Quarter details",
+      "tags": "training ring quarter",
+      "file": "svg/training-ring.svg"
+    },
+    {
+      "id": "supply-yard",
+      "name": "Military supply yard",
+      "category": "Quarter details",
+      "tags": "supply yard quarter",
+      "file": "svg/supply-yard.svg"
+    },
+    {
+      "id": "covered-market",
+      "name": "Covered market halls",
+      "category": "Quarter details",
+      "tags": "covered market quarter",
+      "file": "svg/covered-market.svg"
+    },
+    {
+      "id": "trade-court",
+      "name": "Merchant trade court",
+      "category": "Quarter details",
+      "tags": "trade court quarter",
+      "file": "svg/trade-court.svg"
+    },
+    {
+      "id": "astronomical-court",
+      "name": "Astronomical court",
+      "category": "Quarter details",
+      "tags": "astronomical court quarter",
+      "file": "svg/astronomical-court.svg"
+    },
+    {
+      "id": "botanical-garden",
+      "name": "Botanical collection",
+      "category": "Quarter details",
+      "tags": "botanical garden quarter",
+      "file": "svg/botanical-garden.svg"
+    },
+    {
+      "id": "charcoal-yard",
+      "name": "Charcoal clamps",
+      "category": "Quarter details",
+      "tags": "charcoal yard quarter",
+      "file": "svg/charcoal-yard.svg"
+    },
+    {
+      "id": "scrap-yard",
+      "name": "Scrap and salvage",
+      "category": "Quarter details",
+      "tags": "scrap yard quarter",
+      "file": "svg/scrap-yard.svg"
+    },
+    {
+      "id": "grave-row",
+      "name": "Grave rows",
+      "category": "Quarter details",
+      "tags": "grave row quarter",
+      "file": "svg/grave-row.svg"
+    },
+    {
+      "id": "memorial-circle",
+      "name": "Memorial circle",
+      "category": "Quarter details",
+      "tags": "memorial circle quarter",
+      "file": "svg/memorial-circle.svg"
+    },
+    {
+      "id": "crypt-entrance",
+      "name": "Sunken crypt entrance",
+      "category": "Quarter details",
+      "tags": "crypt entrance quarter",
+      "file": "svg/crypt-entrance.svg"
+    },
+    {
+      "id": "vegetable-plots",
+      "name": "Vegetable beds",
+      "category": "Quarter details",
+      "tags": "vegetable plots quarter",
+      "file": "svg/vegetable-plots.svg"
+    },
+    {
+      "id": "hay-yard",
+      "name": "Hay ricks",
+      "category": "Quarter details",
+      "tags": "hay yard quarter",
+      "file": "svg/hay-yard.svg"
+    },
+    {
+      "id": "animal-pen",
+      "name": "Livestock paddocks",
+      "category": "Quarter details",
+      "tags": "animal pen quarter",
+      "file": "svg/animal-pen.svg"
+    },
+    {
+      "id": "canopy-grove",
+      "name": "Broadleaf woodland stand",
+      "category": "Local landscape",
+      "tags": "canopy grove landscape survey",
+      "file": "svg/canopy-grove.svg"
+    },
+    {
+      "id": "canopy-conifers",
+      "name": "Conifer woodland stand",
+      "category": "Local landscape",
+      "tags": "canopy conifers landscape survey",
+      "file": "svg/canopy-conifers.svg"
+    },
+    {
+      "id": "meadow-patch",
+      "name": "Meadow patch",
+      "category": "Local landscape",
+      "tags": "meadow patch landscape survey",
+      "file": "svg/meadow-patch.svg"
+    },
+    {
+      "id": "hedgerow",
+      "name": "Hedgerow",
+      "category": "Local landscape",
+      "tags": "hedgerow landscape survey",
+      "file": "svg/hedgerow.svg"
+    },
+    {
+      "id": "rock-outcrop",
+      "name": "Rock outcrop",
+      "category": "Local landscape",
+      "tags": "rock outcrop landscape survey",
+      "file": "svg/rock-outcrop.svg"
+    },
+    {
+      "id": "ridge-spur",
+      "name": "Rocky ridge spur",
+      "category": "Local landscape",
+      "tags": "ridge spur landscape survey",
+      "file": "svg/ridge-spur.svg"
+    },
+    {
+      "id": "scree-slope",
+      "name": "Scree slope",
+      "category": "Local landscape",
+      "tags": "scree slope landscape survey",
+      "file": "svg/scree-slope.svg"
+    },
+    {
+      "id": "dune-ridge",
+      "name": "Dune ridge",
+      "category": "Local landscape",
+      "tags": "dune ridge landscape survey",
+      "file": "svg/dune-ridge.svg"
+    },
+    {
+      "id": "salt-pan",
+      "name": "Salt pan",
+      "category": "Local landscape",
+      "tags": "salt pan landscape survey",
+      "file": "svg/salt-pan.svg"
+    },
+    {
+      "id": "desert-wadi",
+      "name": "Desert wadi",
+      "category": "Local landscape",
+      "tags": "desert wadi landscape survey",
+      "file": "svg/desert-wadi.svg"
+    },
+    {
+      "id": "mesa",
+      "name": "Mesa",
+      "category": "Local landscape",
+      "tags": "mesa landscape survey",
+      "file": "svg/mesa.svg"
+    },
+    {
+      "id": "rock-arch",
+      "name": "Natural arch",
+      "category": "Local landscape",
+      "tags": "rock arch landscape survey",
+      "file": "svg/rock-arch.svg"
+    },
+    {
+      "id": "dry-gully",
+      "name": "Eroded gully",
+      "category": "Local landscape",
+      "tags": "dry gully landscape survey",
+      "file": "svg/dry-gully.svg"
+    },
+    {
+      "id": "marsh-pool",
+      "name": "Marsh pool",
+      "category": "Local landscape",
+      "tags": "marsh pool landscape survey",
+      "file": "svg/marsh-pool.svg"
+    },
+    {
+      "id": "reed-bed",
+      "name": "Reed bed",
+      "category": "Local landscape",
+      "tags": "reed bed landscape survey",
+      "file": "svg/reed-bed.svg"
+    },
+    {
+      "id": "sea-stack",
+      "name": "Sea stack",
+      "category": "Local landscape",
+      "tags": "sea stack landscape survey",
+      "file": "svg/sea-stack.svg"
+    },
+    {
+      "id": "snowfield",
+      "name": "Snowfield",
+      "category": "Local landscape",
+      "tags": "snowfield landscape survey",
+      "file": "svg/snowfield.svg"
+    },
+    {
+      "id": "lava-bed",
+      "name": "Lava field",
+      "category": "Local landscape",
+      "tags": "lava bed landscape survey",
+      "file": "svg/lava-bed.svg"
+    },
+    {
+      "id": "fumarole",
+      "name": "Fumarole",
+      "category": "Local landscape",
+      "tags": "fumarole landscape survey",
+      "file": "svg/fumarole.svg"
+    },
+    {
+      "id": "basalt-columns",
+      "name": "Basalt columns",
+      "category": "Local landscape",
+      "tags": "basalt columns landscape survey",
+      "file": "svg/basalt-columns.svg"
+    },
+    {
+      "id": "moss-patch",
+      "name": "Moss and lichen",
+      "category": "Local landscape",
+      "tags": "moss patch landscape survey",
+      "file": "svg/moss-patch.svg"
+    },
+    {
+      "id": "cave-mouth",
+      "name": "Cave entrance marker",
+      "category": "Local landscape",
+      "tags": "cave mouth landscape survey",
+      "file": "svg/cave-mouth.svg"
+    },
+    {
+      "id": "local-farmstead",
+      "name": "Isolated farmstead marker",
+      "category": "Local landscape",
+      "tags": "local farmstead landscape survey",
+      "file": "svg/local-farmstead.svg"
+    },
+    {
+      "id": "spring-source",
+      "name": "Spring source",
+      "category": "Local landscape",
+      "tags": "spring source landscape survey",
+      "file": "svg/spring-source.svg"
+    },
+    {
+      "id": "sinkhole",
+      "name": "Karst sinkhole",
+      "category": "Local landscape",
+      "tags": "sinkhole landscape survey",
+      "file": "svg/sinkhole.svg"
+    }
+  ]
+}

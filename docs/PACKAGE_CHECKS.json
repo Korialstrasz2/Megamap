@@ -1,0 +1,17 @@
+{
+  "wellFormedSVGFiles": 254,
+  "standaloneAssets": 246,
+  "resolvedLocalHTMLReferences": 527,
+  "javascriptSyntaxChecks": 9,
+  "validatedExampleData": {
+    "atlases": 3,
+    "maps": 22,
+    "features": 10423
+  },
+  "v1ExampleAtlasesPreservedByteForByte": 2,
+  "launcherReferencesPresent": true,
+  "version": "1.2.0",
+  "failures": [],
+  "passed": true,
+  "limitations": "Structural checks only: not real file navigation, native Windows execution, security certification or VTT importer compatibility."
+}

@@ -1,0 +1,624 @@
+{
+  "newAssets": 103,
+  "totalAssets": 246,
+  "assets": [
+    {
+      "id": "roof-townhouse",
+      "name": "Townhouse \u00b7 narrow gable",
+      "category": "Quarter rooftops",
+      "tags": "merchants noble residential"
+    },
+    {
+      "id": "roof-townhouse-gabled",
+      "name": "Townhouse \u00b7 twin gables",
+      "category": "Quarter rooftops",
+      "tags": "merchants oldtown residential"
+    },
+    {
+      "id": "roof-tenement",
+      "name": "Tenement \u00b7 rear court",
+      "category": "Quarter rooftops",
+      "tags": "commons slums housing"
+    },
+    {
+      "id": "roof-rowhouse",
+      "name": "Rowhouses \u00b7 four terraces",
+      "category": "Quarter rooftops",
+      "tags": "commons slums housing"
+    },
+    {
+      "id": "roof-shack",
+      "name": "Shanty \u00b7 patched roof",
+      "category": "Quarter rooftops",
+      "tags": "slums housing"
+    },
+    {
+      "id": "roof-villa",
+      "name": "Villa \u00b7 walled courtyard",
+      "category": "Quarter rooftops",
+      "tags": "noble residence garden"
+    },
+    {
+      "id": "roof-villa-pool",
+      "name": "Villa \u00b7 pool court",
+      "category": "Quarter rooftops",
+      "tags": "noble residence pool"
+    },
+    {
+      "id": "roof-palace",
+      "name": "Palace \u00b7 four corner towers",
+      "category": "Quarter rooftops",
+      "tags": "noble royal palace"
+    },
+    {
+      "id": "roof-workshop",
+      "name": "Workshop \u00b7 sawtooth shed",
+      "category": "Quarter rooftops",
+      "tags": "artisans industrial"
+    },
+    {
+      "id": "roof-pottery",
+      "name": "Pottery \u00b7 kiln annex",
+      "category": "Quarter rooftops",
+      "tags": "artisans industrial pottery"
+    },
+    {
+      "id": "roof-smithy",
+      "name": "Smithy \u00b7 forge chimney",
+      "category": "Quarter rooftops",
+      "tags": "artisans industrial military"
+    },
+    {
+      "id": "roof-shop",
+      "name": "Shop \u00b7 street awning",
+      "category": "Quarter rooftops",
+      "tags": "market merchants shop"
+    },
+    {
+      "id": "roof-shop-arcade",
+      "name": "Shops \u00b7 covered arcade",
+      "category": "Quarter rooftops",
+      "tags": "market merchants arcade"
+    },
+    {
+      "id": "roof-warehouse",
+      "name": "Warehouse \u00b7 loading apron",
+      "category": "Quarter rooftops",
+      "tags": "docks industrial storage"
+    },
+    {
+      "id": "roof-warehouse-paired",
+      "name": "Warehouse \u00b7 twin sheds",
+      "category": "Quarter rooftops",
+      "tags": "docks merchants storage"
+    },
+    {
+      "id": "roof-inn",
+      "name": "Inn \u00b7 long hall",
+      "category": "Quarter rooftops",
+      "tags": "market commons merchants inn"
+    },
+    {
+      "id": "roof-inn-court",
+      "name": "Inn \u00b7 coaching courtyard",
+      "category": "Quarter rooftops",
+      "tags": "market merchants travel"
+    },
+    {
+      "id": "roof-tavern",
+      "name": "Tavern \u00b7 L-shaped hall",
+      "category": "Quarter rooftops",
+      "tags": "slums commons docks tavern"
+    },
+    {
+      "id": "roof-domed-temple",
+      "name": "Temple \u00b7 central dome",
+      "category": "Quarter rooftops",
+      "tags": "temple religious"
+    },
+    {
+      "id": "roof-shrine",
+      "name": "Shrine \u00b7 small sanctuary",
+      "category": "Quarter rooftops",
+      "tags": "temple oldtown cemetery"
+    },
+    {
+      "id": "roof-monastery",
+      "name": "Monastery \u00b7 cloister",
+      "category": "Quarter rooftops",
+      "tags": "temple religious cloister"
+    },
+    {
+      "id": "roof-barracks",
+      "name": "Barracks \u00b7 three halls",
+      "category": "Quarter rooftops",
+      "tags": "military barracks"
+    },
+    {
+      "id": "roof-barracks-court",
+      "name": "Barracks \u00b7 drill quadrangle",
+      "category": "Quarter rooftops",
+      "tags": "military barracks"
+    },
+    {
+      "id": "roof-keep",
+      "name": "Keep \u00b7 defensive towers",
+      "category": "Quarter rooftops",
+      "tags": "military castle"
+    },
+    {
+      "id": "roof-stable",
+      "name": "Stable \u00b7 stalls and paddock",
+      "category": "Quarter rooftops",
+      "tags": "farming military travel"
+    },
+    {
+      "id": "roof-library",
+      "name": "Library \u00b7 reading wings",
+      "category": "Quarter rooftops",
+      "tags": "university scholars books"
+    },
+    {
+      "id": "roof-college",
+      "name": "College \u00b7 two courts",
+      "category": "Quarter rooftops",
+      "tags": "university scholars"
+    },
+    {
+      "id": "roof-observatory",
+      "name": "Observatory \u00b7 dome and annex",
+      "category": "Quarter rooftops",
+      "tags": "university stars dome"
+    },
+    {
+      "id": "roof-hospital",
+      "name": "Hospital \u00b7 ward wings",
+      "category": "Quarter rooftops",
+      "tags": "university temple medicine"
+    },
+    {
+      "id": "roof-bathhouse",
+      "name": "Bathhouse \u00b7 pools",
+      "category": "Quarter rooftops",
+      "tags": "noble baths"
+    },
+    {
+      "id": "roof-mill",
+      "name": "Mill \u00b7 wheel and loft",
+      "category": "Quarter rooftops",
+      "tags": "farming industrial mill"
+    },
+    {
+      "id": "roof-granary",
+      "name": "Granary \u00b7 silos",
+      "category": "Quarter rooftops",
+      "tags": "farming grain"
+    },
+    {
+      "id": "roof-guildhall",
+      "name": "Guildhall \u00b7 assembly hall",
+      "category": "Quarter rooftops",
+      "tags": "artisans merchants guild"
+    },
+    {
+      "id": "roof-fishmarket",
+      "name": "Fish market \u00b7 waterside sheds",
+      "category": "Quarter rooftops",
+      "tags": "docks market fishing"
+    },
+    {
+      "id": "roof-shipyard",
+      "name": "Shipyard \u00b7 boat shed",
+      "category": "Quarter rooftops",
+      "tags": "docks shipyard boats"
+    },
+    {
+      "id": "roof-greenhouse",
+      "name": "Greenhouse \u00b7 glazed roof",
+      "category": "Quarter rooftops",
+      "tags": "gardens glass plants"
+    },
+    {
+      "id": "roof-mausoleum",
+      "name": "Mausoleum \u00b7 vaulted tomb",
+      "category": "Quarter rooftops",
+      "tags": "cemetery crypt"
+    },
+    {
+      "id": "canopy-stall",
+      "name": "Striped market canopy",
+      "category": "Quarter details",
+      "tags": "canopy stall quarter"
+    },
+    {
+      "id": "produce-stall",
+      "name": "Produce stall",
+      "category": "Quarter details",
+      "tags": "produce stall quarter"
+    },
+    {
+      "id": "cloth-stall",
+      "name": "Cloth merchant",
+      "category": "Quarter details",
+      "tags": "cloth stall quarter"
+    },
+    {
+      "id": "market-scale",
+      "name": "Merchant balance",
+      "category": "Quarter details",
+      "tags": "market scale quarter"
+    },
+    {
+      "id": "laundry-line",
+      "name": "Courtyard washing line",
+      "category": "Quarter details",
+      "tags": "laundry line quarter"
+    },
+    {
+      "id": "communal-oven",
+      "name": "Communal bread oven",
+      "category": "Quarter details",
+      "tags": "communal oven quarter"
+    },
+    {
+      "id": "street-well",
+      "name": "Street well \u00b7 top down",
+      "category": "Quarter details",
+      "tags": "street well quarter"
+    },
+    {
+      "id": "small-square",
+      "name": "Paved neighborhood square",
+      "category": "Quarter details",
+      "tags": "small square quarter"
+    },
+    {
+      "id": "street-lamp",
+      "name": "Street lantern",
+      "category": "Quarter details",
+      "tags": "street lamp quarter"
+    },
+    {
+      "id": "timber-rack",
+      "name": "Timber storage rack",
+      "category": "Quarter details",
+      "tags": "timber rack quarter"
+    },
+    {
+      "id": "kiln-yard",
+      "name": "Kiln yard",
+      "category": "Quarter details",
+      "tags": "kiln yard quarter"
+    },
+    {
+      "id": "dye-vats",
+      "name": "Dye vats",
+      "category": "Quarter details",
+      "tags": "dye vats quarter"
+    },
+    {
+      "id": "artisan-yard",
+      "name": "Artisan work yard",
+      "category": "Quarter details",
+      "tags": "artisan yard quarter"
+    },
+    {
+      "id": "cloister-garden",
+      "name": "Cloister garden",
+      "category": "Quarter details",
+      "tags": "cloister garden quarter"
+    },
+    {
+      "id": "processional-square",
+      "name": "Processional court",
+      "category": "Quarter details",
+      "tags": "processional square quarter"
+    },
+    {
+      "id": "formal-garden",
+      "name": "Formal parterre",
+      "category": "Quarter details",
+      "tags": "formal garden quarter"
+    },
+    {
+      "id": "hedge-maze",
+      "name": "Hedge maze",
+      "category": "Quarter details",
+      "tags": "hedge maze quarter"
+    },
+    {
+      "id": "reflecting-pool",
+      "name": "Reflecting pool",
+      "category": "Quarter details",
+      "tags": "reflecting pool quarter"
+    },
+    {
+      "id": "gazebo",
+      "name": "Garden gazebo",
+      "category": "Quarter details",
+      "tags": "gazebo quarter"
+    },
+    {
+      "id": "orchard-block",
+      "name": "Orchard block",
+      "category": "Quarter details",
+      "tags": "orchard block quarter"
+    },
+    {
+      "id": "pond-garden",
+      "name": "Pond garden",
+      "category": "Quarter details",
+      "tags": "pond garden quarter"
+    },
+    {
+      "id": "dock-crane",
+      "name": "Harbor crane",
+      "category": "Quarter details",
+      "tags": "dock crane quarter"
+    },
+    {
+      "id": "dry-dock",
+      "name": "Dry dock",
+      "category": "Quarter details",
+      "tags": "dry dock quarter"
+    },
+    {
+      "id": "cargo-yard",
+      "name": "Cargo stacks",
+      "category": "Quarter details",
+      "tags": "cargo yard quarter"
+    },
+    {
+      "id": "fishing-racks",
+      "name": "Fish drying racks",
+      "category": "Quarter details",
+      "tags": "fishing racks quarter"
+    },
+    {
+      "id": "drill-yard",
+      "name": "Drill yard",
+      "category": "Quarter details",
+      "tags": "drill yard quarter"
+    },
+    {
+      "id": "archery-yard",
+      "name": "Archery range",
+      "category": "Quarter details",
+      "tags": "archery yard quarter"
+    },
+    {
+      "id": "training-ring",
+      "name": "Training ring",
+      "category": "Quarter details",
+      "tags": "training ring quarter"
+    },
+    {
+      "id": "supply-yard",
+      "name": "Military supply yard",
+      "category": "Quarter details",
+      "tags": "supply yard quarter"
+    },
+    {
+      "id": "covered-market",
+      "name": "Covered market halls",
+      "category": "Quarter details",
+      "tags": "covered market quarter"
+    },
+    {
+      "id": "trade-court",
+      "name": "Merchant trade court",
+      "category": "Quarter details",
+      "tags": "trade court quarter"
+    },
+    {
+      "id": "astronomical-court",
+      "name": "Astronomical court",
+      "category": "Quarter details",
+      "tags": "astronomical court quarter"
+    },
+    {
+      "id": "botanical-garden",
+      "name": "Botanical collection",
+      "category": "Quarter details",
+      "tags": "botanical garden quarter"
+    },
+    {
+      "id": "charcoal-yard",
+      "name": "Charcoal clamps",
+      "category": "Quarter details",
+      "tags": "charcoal yard quarter"
+    },
+    {
+      "id": "scrap-yard",
+      "name": "Scrap and salvage",
+      "category": "Quarter details",
+      "tags": "scrap yard quarter"
+    },
+    {
+      "id": "grave-row",
+      "name": "Grave rows",
+      "category": "Quarter details",
+      "tags": "grave row quarter"
+    },
+    {
+      "id": "memorial-circle",
+      "name": "Memorial circle",
+      "category": "Quarter details",
+      "tags": "memorial circle quarter"
+    },
+    {
+      "id": "crypt-entrance",
+      "name": "Sunken crypt entrance",
+      "category": "Quarter details",
+      "tags": "crypt entrance quarter"
+    },
+    {
+      "id": "vegetable-plots",
+      "name": "Vegetable beds",
+      "category": "Quarter details",
+      "tags": "vegetable plots quarter"
+    },
+    {
+      "id": "hay-yard",
+      "name": "Hay ricks",
+      "category": "Quarter details",
+      "tags": "hay yard quarter"
+    },
+    {
+      "id": "animal-pen",
+      "name": "Livestock paddocks",
+      "category": "Quarter details",
+      "tags": "animal pen quarter"
+    },
+    {
+      "id": "canopy-grove",
+      "name": "Broadleaf woodland stand",
+      "category": "Local landscape",
+      "tags": "canopy grove landscape survey"
+    },
+    {
+      "id": "canopy-conifers",
+      "name": "Conifer woodland stand",
+      "category": "Local landscape",
+      "tags": "canopy conifers landscape survey"
+    },
+    {
+      "id": "meadow-patch",
+      "name": "Meadow patch",
+      "category": "Local landscape",
+      "tags": "meadow patch landscape survey"
+    },
+    {
+      "id": "hedgerow",
+      "name": "Hedgerow",
+      "category": "Local landscape",
+      "tags": "hedgerow landscape survey"
+    },
+    {
+      "id": "rock-outcrop",
+      "name": "Rock outcrop",
+      "category": "Local landscape",
+      "tags": "rock outcrop landscape survey"
+    },
+    {
+      "id": "ridge-spur",
+      "name": "Rocky ridge spur",
+      "category": "Local landscape",
+      "tags": "ridge spur landscape survey"
+    },
+    {
+      "id": "scree-slope",
+      "name": "Scree slope",
+      "category": "Local landscape",
+      "tags": "scree slope landscape survey"
+    },
+    {
+      "id": "dune-ridge",
+      "name": "Dune ridge",
+      "category": "Local landscape",
+      "tags": "dune ridge landscape survey"
+    },
+    {
+      "id": "salt-pan",
+      "name": "Salt pan",
+      "category": "Local landscape",
+      "tags": "salt pan landscape survey"
+    },
+    {
+      "id": "desert-wadi",
+      "name": "Desert wadi",
+      "category": "Local landscape",
+      "tags": "desert wadi landscape survey"
+    },
+    {
+      "id": "mesa",
+      "name": "Mesa",
+      "category": "Local landscape",
+      "tags": "mesa landscape survey"
+    },
+    {
+      "id": "rock-arch",
+      "name": "Natural arch",
+      "category": "Local landscape",
+      "tags": "rock arch landscape survey"
+    },
+    {
+      "id": "dry-gully",
+      "name": "Eroded gully",
+      "category": "Local landscape",
+      "tags": "dry gully landscape survey"
+    },
+    {
+      "id": "marsh-pool",
+      "name": "Marsh pool",
+      "category": "Local landscape",
+      "tags": "marsh pool landscape survey"
+    },
+    {
+      "id": "reed-bed",
+      "name": "Reed bed",
+      "category": "Local landscape",
+      "tags": "reed bed landscape survey"
+    },
+    {
+      "id": "sea-stack",
+      "name": "Sea stack",
+      "category": "Local landscape",
+      "tags": "sea stack landscape survey"
+    },
+    {
+      "id": "snowfield",
+      "name": "Snowfield",
+      "category": "Local landscape",
+      "tags": "snowfield landscape survey"
+    },
+    {
+      "id": "lava-bed",
+      "name": "Lava field",
+      "category": "Local landscape",
+      "tags": "lava bed landscape survey"
+    },
+    {
+      "id": "fumarole",
+      "name": "Fumarole",
+      "category": "Local landscape",
+      "tags": "fumarole landscape survey"
+    },
+    {
+      "id": "basalt-columns",
+      "name": "Basalt columns",
+      "category": "Local landscape",
+      "tags": "basalt columns landscape survey"
+    },
+    {
+      "id": "moss-patch",
+      "name": "Moss and lichen",
+      "category": "Local landscape",
+      "tags": "moss patch landscape survey"
+    },
+    {
+      "id": "cave-mouth",
+      "name": "Cave entrance marker",
+      "category": "Local landscape",
+      "tags": "cave mouth landscape survey"
+    },
+    {
+      "id": "local-farmstead",
+      "name": "Isolated farmstead marker",
+      "category": "Local landscape",
+      "tags": "local farmstead landscape survey"
+    },
+    {
+      "id": "spring-source",
+      "name": "Spring source",
+      "category": "Local landscape",
+      "tags": "spring source landscape survey"
+    },
+    {
+      "id": "sinkhole",
+      "name": "Karst sinkhole",
+      "category": "Local landscape",
+      "tags": "sinkhole landscape survey"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+# Normalize line endings in the repository, keep platform-appropriate ones on checkout.
+* text=auto
+
+# Windows scripts need CRLF for reliable cmd.exe parsing.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Shell / JS / JSON / docs stay LF.
+*.sh text eol=lf
+*.cjs text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+
+# Binary assets — never touch.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.svg text

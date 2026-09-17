@@ -1,0 +1,12 @@
+{
+  "name": "megamap",
+  "version": "1.2.0",
+  "private": true,
+  "description": "Offline campaign, local survey, guided city and square/hex encounter mapmaker",
+  "license": "GPL-3.0-only",
+  "scripts": {
+    "test": "node --test tests/engine.test.cjs tests/v1.test.cjs tests/v12.test.cjs tests/city-generation.test.cjs tests/battle-zones.test.cjs",
+    "assets": "node scripts/build-assets.cjs",
+    "examples": "node scripts/build-v12-examples.cjs"
+  }
+}

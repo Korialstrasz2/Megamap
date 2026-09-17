@@ -1,0 +1,23 @@
+{
+  "format": "megamap-grid",
+  "version": 1,
+  "mapTitle": "Woodland encounter · pointy-top hex",
+  "mapSizeUnits": {
+    "width": 200,
+    "height": 180,
+    "units": "ft"
+  },
+  "grid": {
+    "type": "hex-pointy",
+    "units": "ft",
+    "distance": 5,
+    "spacingMapUnits": 25,
+    "radiusMapUnits": 14.433756729740645,
+    "originMapUnits": {
+      "x": 12.5,
+      "y": 14.433756729740645
+    }
+  },
+  "mapShape": "hex-pointy",
+  "note": "SVG/PNG use this grid. Universal VTT importers may require manual grid-type and offset setup."
+}

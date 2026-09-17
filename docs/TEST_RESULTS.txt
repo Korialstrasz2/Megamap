@@ -1,0 +1,49 @@
+Megamap 1.2.0 — release verification
+
+ENGINE / PURE LOGIC
+176 Node tests passed; 0 failed, skipped or cancelled.
+Commands: npm test
+  node --test tests/engine.test.cjs tests/v1.test.cjs tests/v12.test.cjs
+Full TAP output: NODE_TEST_LOG.txt.
+36 base tests + 64 v1 regression tests + 76 v1.2 tests.
+
+V1.2 test scope includes 12 city shapes, guidance endpoints, concave rotations,
+area conservation and building containment, selectable quarter and building
+programs, locked-child preservation, stable IDs, roof transforms, all local
+biomes, exact sample mean/range, physical scale, farm separation, cave markers,
+elevation interpolation and CSV, all movement grids, hex-neighbor geometry,
+snapping, boundary clipping, connected floors and an empty-cave fallback.
+
+BROWSER
+53 Chromium workflow checks passed; 0 failed; no unhandled page errors.
+30 existing regression checks in tests/browser_smoke.py.
+23 v1.2 workflow checks in tests/browser_v12.py.
+Chromium version: 144.0.7559.96
+Measured suite durations: 21.0 s and 9.7 s.
+
+Commands (developer-only tools, not runtime dependencies):
+  python tests/browser_smoke.py --inline --chromium /usr/bin/chromium --output /tmp/megamap-qa
+  python tests/browser_v12.py --inline --chromium /usr/bin/chromium --output /tmp/megamap-qa-v12
+
+The browser checks use the actual source and exercise input controls, shape
+previews, selection programs, local parameters, rendered roof/grid geometry,
+object tools, exact saved-geometry round trips, import validation, legacy v1
+opening, real PNG/WebP/SVG downloads, CSV, grid JSON and UVTT file payloads.
+The test report describes individual checks. A valid UVTT payload is NOT a
+claim that a specific third-party importer accepted or displayed it correctly.
+
+HARNESS LIMITS
+This environment blocks file:// and localhost navigation. Browser workflows
+therefore use an in-memory HTML page with local CSS/JS inlined and the CSP meta
+tag removed. This verifies UI/logic, not actual navigation or CSP enforcement.
+Native Windows BAT execution, the real local-file startup path, persistent
+IndexedDB/localStorage recovery across restart, external VTT import, and
+cross-browser compatibility were not tested. No soak-test or certified-native-
+application claim is made. A navigation block is not silently counted as a
+successful startup test.
+
+PACKAGE CHECKS
+See PACKAGE_CHECKS.json for structured data, SVG and reference checks.
+The release manifest hashes every distributable file except itself.
+Optional verification: node scripts/verify-package.cjs
+The integrity check confirms file contents, not software correctness or safety.
