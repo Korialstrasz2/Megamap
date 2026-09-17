@@ -35,17 +35,17 @@ jobs:
               target.write_bytes(data)
               subprocess.run(['git','apply','--check',*flags,str(target)],check=True)
               subprocess.run(['git','apply',*flags,str(target)],check=True)
-          p=Path('.github/workflows/encounter-expansion.yml')
-          p.write_text(p.read_text().replace("data['pageErrors']", "data['errors']"))
           PY
           node scripts/build-assets.cjs
           node scripts/build-encounter-examples.cjs
           node --test tests/*.test.cjs
-      - name: Remove temporary transport and publish only completed implementation
+      - name: Remove temporary transport and publish completed source
         shell: bash
         run: |
-          git rm .github/encounter-patch-1.b64 .github/encounter-patch-2.b64 .github/encounter-patch-3.b64 .github/encounter-recovery.b64 .github/workflows/assemble-encounters.yml
-          git add src/ tests/ assets/ docs/ scripts/ examples/ index.html package.json README.md README.html README.txt CHANGELOG.md .github/workflows/encounter-expansion.yml
+          # Workflow updates are applied separately through the authorized connector.
+          git restore --source=HEAD -- .github/workflows/encounter-expansion.yml
+          git rm .github/encounter-patch-1.b64 .github/encounter-patch-2.b64 .github/encounter-patch-3.b64 .github/encounter-recovery.b64
+          git add src/ tests/ assets/ docs/ scripts/ examples/ index.html package.json README.md README.html README.txt CHANGELOG.md
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'Add six battle encounters, 32 vector props, Italian UI and regression coverage [assembled]'
