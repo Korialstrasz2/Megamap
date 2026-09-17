@@ -9,28 +9,60 @@ permissions:
 jobs:
   regression:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Existing regression tests
-        run: node --test tests/*.test.cjs
-      - name: Source snapshot for offline verification
+      - name: Engine, editor, compatibility and architecture regressions
+        shell: bash
+        run: |
+          set -o pipefail
+          node --test tests/*.test.cjs | tee "$RUNNER_TEMP/node-tests.tap"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser test dependencies
+        run: |
+          python -m pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Existing editor workflows with local-file CSP intact
+        run: python tests/browser_smoke.py --output "$RUNNER_TEMP/qa-smoke"
+      - name: Campaign, local, city and grid browser regressions
+        run: python tests/browser_v12.py --output "$RUNNER_TEMP/qa-v12"
+      - name: Battle planner, architecture and export browser regressions
+        run: python tests/browser_battle.py --output "$RUNNER_TEMP/qa-battle"
+      - name: Publish verification summary
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP'])
+          lines = ['## Battle map verification', '', 'Browser suites open the actual local index.html with CSP intact.', '']
+          tap = root / 'node-tests.tap'
+          if tap.exists():
+              lines += [line for line in tap.read_text().splitlines() if line.startswith(('# tests ', '# pass ', '# fail '))]
+              lines.append('')
+          for name in ['qa-smoke', 'qa-v12', 'qa-battle']:
+              path = root / name / 'report.json'
+              if path.exists():
+                  report = json.loads(path.read_text())
+                  lines.append(f"- {name}: {report.get('passed', '?')} checks passed; browser {report.get('browser', '?')}.")
+              else:
+                  lines.append(f'- {name}: no success report; inspect job logs and failure artifacts.')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
+              output.write('\n'.join(lines) + '\n')
+          PY
+      - name: Retain screenshots, exports and test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: verification-source
+          name: battle-map-qa-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            src/
-            assets/
-            tests/
-            tools/
-            vendor/
-            examples/
-            docs/
-            index.html
-            README.md
-            VERSION.json
-          retention-days: 1
+            ${{ runner.temp }}/node-tests.tap
+            ${{ runner.temp }}/qa-smoke/
+            ${{ runner.temp }}/qa-v12/
+            ${{ runner.temp }}/qa-battle/
+          retention-days: 7
