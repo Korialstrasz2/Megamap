@@ -21,6 +21,7 @@ function geometryCheck(s){
   assert(C.dryLine(g,a.points,0),'Access stays dry');
   for(let i=1;i<a.points.length;i++){
    const poly=C.corridor(a.points[i-1],a.points[i],a.width*.8);
+   for(const t of [.05,.15,.25,.4,.5,.6,.75,.85,.95,.99]){const p=[a.points[i-1][0]+(a.points[i][0]-a.points[i-1][0])*t,a.points[i-1][1]+(a.points[i][1]-a.points[i-1][1])*t];assert(!E.inside(p,b.polygon)||E.nearPolyline(p,[...b.polygon,b.polygon[0]])<.001,'Access crosses its own building before reaching the door: '+b.id);}
    for(const hit of ix.query(poly))if(hit.value.id!==b.id)assert(!E.polygonsIntersect(poly,hit.poly),'Access blocked by '+hit.value.id);
   }
  }
@@ -45,11 +46,17 @@ test('Legacy city output remains byte-identical to the pre-Studio engine',()=>{
  const s=E.generate('city','legacy-city-studio-check',{districts:18,buildings:['house','warehouse','temple']});
  assert.equal(crypto.createHash('sha256').update(JSON.stringify(s)).digest('hex'),'7be740e4f2c0144a1ef54ae3f741c1fe11cde59538c2f9e2b35033f404a7e97e');assert(!s.cityStudio);
 });
+test('Legacy appearance and shipped battle atlases do not acquire City Studio metadata',()=>{
+ for(const mode of ['region','city','battle']){const s=E.generate(mode,'appearance-legacy',{districts:12});assert(!('cityLevel' in Core.appearance(s)));}
+ const {execFileSync}=require('node:child_process'),path=require('node:path');
+ for(const script of ['build-arena-example.cjs','build-encounter-examples.cjs'])execFileSync(process.execPath,[path.resolve(__dirname,'../scripts',script),'--check'],{stdio:'pipe'});
+ const s=make('fishing');assert.equal(Core.appearance(s).cityLevel,'surface');
+});
 for(const p of C.PRESETS)test(p.id+': repeated-seed geometry, road access, placement and ships',()=>{
  for(const seed of ['qa-0','qa-1']){const s=make(p.id,{},seed);geometryCheck(s);shipsCheck(s);assert(buildings(s).length>=s.cityStudio.resolved.count*.5,p.id+' usable yield');assert.equal(s.cityStudio.statistics.boats,p.boats);}
 });
 test('Four huts and three skiffs are exact across thirty distinct seeds',()=>{
- for(let i=0;i<30;i++){const s=make('fishing',{},'landing-'+i);assert.equal(buildings(s).length,4);assert(buildings(s).every(b=>b.buildingKind==='shack'));assert.equal(s.features.filter(f=>f.cityShip==='skiff').length,3);assert.equal(C.buildGraph(s).components.length,1);assert(!s.cityStudio.warnings.length);}
+ for(let i=0;i<30;i++){const s=make('fishing',{},'landing-'+i);assert.equal(buildings(s).length,4);assert(buildings(s).every(b=>b.buildingKind==='shack'));assert.equal(s.features.filter(f=>f.cityShip==='skiff').length,3);assert.equal(C.buildGraph(s).components.length,1);assert(!s.cityStudio.warnings.length);geometryCheck(s);}
 });
 test('Fresh generation is deterministic; seeds genuinely change terrain, roads and plots',()=>{
  for(const p of ['council','fishing','market']){assert.deepEqual(make(p),make(p));assert.notDeepEqual(make(p,{},'different').features,make(p).features);}

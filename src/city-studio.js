@@ -228,9 +228,11 @@ function buildFrontages(s,only=null,requested=null){const st=s.cityStudio,v=st.r
 }
 function tinySettlement(s){const st=s.cityStudio,v=st.resolved,g=st.ground,r=rng(s.seed+'-huts'),ward=st.neighborhoods[0];let route=s.features.find(f=>f.type==='road'&&f.cityRole==='lane'),n=0,ix=networkIndex(s),occupied=builtIndex(s);
  // Deliberately finite four-hut plan at physical scale, with verified access.
- for(const [x,y]of [[355,420],[405,625],[535,390],[555,555],[290,545],[365,710]]){if(n>=v.count)break;const near=nearestRoad(s,[x,y]),angle=near?Math.atan2(near.point[1]-y,near.point[0]-x)+Math.PI/2:0,poly=rect([x,y],(6+r()*1.5)/v.metersPerUnit,(8+r()*2)/v.metersPerUnit,angle);if(!footprintGood(s,poly,ix,occupied))continue;
- const f=emit(s,'building',{polygon:poly,x,y,ward:ward.feature,quarter:'commons',buildingKind:'shack',cityRole:'building',cityCulture:v.culture,cityRoof:'gable',cityFloors:1,cityFront:2,roof:n%3,elevationM:heightAt(g,[x,y]),label:'',notes:''});occupied.add(poly,{feature:f});
- if(near){const front=f.cityFront;const end=point(poly[front],poly[(front+1)%poly.length],.5);street(s,[near.point,end],'access',7,{cityBuilding:f.id,cityStreet:near.road.id,ward:ward.feature});}n++;
+ for(const [x,y]of [[355,420],[405,625],[535,390],[555,555],[290,545],[365,710]]){if(n>=v.count)break;const near=nearestRoad(s,[x,y]),angle=near?Math.atan2(near.point[1]-y,near.point[0]-x)+Math.PI/2:0,poly=rect([x,y],(6+r()*1.5)/v.metersPerUnit,(8+r()*2)/v.metersPerUnit,angle);if(!footprintGood(s,poly,ix,occupied)||!near)continue;
+ // The near face is edge zero: the local negative-y normal points toward the road.
+ const end=point(poly[0],poly[1],.5),access=[near.point,end],accessPoly=corridor(...access,7);if(occupied.hits(accessPoly,.1)||!dryLine(g,access,1)||!currentWaterClear(s,accessPoly,0))continue;
+ const f=emit(s,'building',{polygon:poly,x,y,ward:ward.feature,quarter:'commons',buildingKind:'shack',cityRole:'building',cityCulture:v.culture,cityRoof:'gable',cityFloors:1,cityFront:0,roof:n%3,elevationM:heightAt(g,[x,y]),label:'',notes:''});occupied.add(poly,{feature:f});
+ street(s,access,'access',7,{cityBuilding:f.id,cityStreet:near.road.id,ward:ward.feature});occupied.add(accessPoly,{access:f.id});n++;
  }
  if(n<v.count)buildFrontages(s,null,v.count-n);
 }

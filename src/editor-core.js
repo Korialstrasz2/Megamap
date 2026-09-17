@@ -10,7 +10,7 @@ function appearance(s){const a=s.appearance||{};return {
  gridSpacingKm:Number.isFinite(a.gridSpacingKm)?E.clamp(a.gridSpacingKm,Math.max(.05,s.scale/150),10):1,
  terrainDisplay:['landcover','elevation'].includes(a.terrainDisplay)?a.terrainDisplay:'landcover',hillshade:a.hillshade!==false,
  hq:(s.mode==='battle'||!!s.cityStudio)&&(typeof a.hq==='boolean'?a.hq:s.options?.hq===true),
- cityLevel:s.cityStudio&&(a.cityLevel==='rooftops'&&s.options.rooftops||a.cityLevel==='underground'&&s.options.underground)?a.cityLevel:'surface',
+ ...(s.cityStudio?{cityLevel:(a.cityLevel==='rooftops'&&s.options.rooftops||a.cityLevel==='underground'&&s.options.underground)?a.cityLevel:'surface'}:{}),
  contours:a.contours===true,textures:a.textures!==false,labels:a.labels!==false,
  layers:Object.fromEntries(Object.entries(DEFAULT_LAYERS).map(([k,v])=>[k,typeof a.layers?.[k]==='boolean'?a.layers[k]:v]))
 };}
