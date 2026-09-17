@@ -1,0 +1,29 @@
+# Arena and HQ battle-map appearance / Arena e qualità HQ
+
+## English
+
+**Build → Battle → Preset → Arena**, or **New wizard → Battle → Arena**, creates an open arena: an elliptical fighting floor, individually editable spectator sectors, opposing entrance aisles, real barrier walls and optional cover. There are now **19 battle themes**; the previous eighteen remain available.
+
+Arena defaults: 52 × 44 five-foot units (260 × 220 ft), a sand fighting floor at 65% of the bowl radii, four spectator tiers and six obstacles. **Arena layout** offers sand/grass, floor size 45–75%, two to five tiers, zero to twelve obstacles and entrance direction. Normal map dimensions and square/pointy-hex/flat-hex grids and outer boundaries still apply. The entire bowl is fitted to the outer map shape before construction. Narrow maps may place fewer obstacles and report that explicitly. It is not an interior room program: the floor has no invented dungeon rooms. Tier heights and climbing rules are descriptive, not simulated.
+
+**HQ · detailed materials and lighting** is on by default for newly generated battle maps, including all previous themes. It appears in the Encounter step of both the wizard and the sidebar. **Style → HQ** changes the active map immediately, with undo/redo and without regenerating or changing geometry. The chosen setting is saved per map and restored in the sidebar; it is not a global preference.
+
+HQ adds seven procedurally drawn material tiles (grass with individual blades, soil, sand, stone, wood grain, water ripples and snow), larger ground variations, paving/plank seams, shaded top-down tree/pine/palm/shrub/rock variants, layered wall/contact shadows, road-edge wear and wheel tracks, boardwalk plank detail, furnishing shading and warm light accents. The default atlas palette uses more natural greens and earth colors; the other five palettes retain their selected color treatment. HQ off returns to the original lightweight vector renderer. The movement grid can be hidden independently under Style to see the artwork without an overlay.
+
+HQ is a **2D rendering enhancement**, not AI imagery, photogrammetry, an elevation model or a change to cover/LOS rules. Terrain features and furnishings retain their existing geometry and editor tools. Light accents are visual; existing VTT light metadata is unchanged. Arena barriers are normal wall features, so they export as vision-blocking lines with open entrance gaps. Seating art does not add hidden walls. Older saved maps without an HQ flag keep their previous appearance until HQ is explicitly enabled.
+
+Everything remains offline. The renderer creates deterministic indexed PNG tiles locally from original procedural code and embeds them in SVG; PNG, WebP and VTT raster exports carry the same appearance. No image service, external art, network request, runtime package or build step is required. An HQ SVG is self-contained but is **mixed vector/raster**, not a purely vector image. Material textures are finite-resolution tiles; very large exports cannot invent photographic detail. No full-map SVG blur/turbulence filters are used; texture and symbol caches are bounded. HQ adds rendering work and larger exports relative to standard mode.
+
+Open `examples/Arena-HQ.megamap.json` for an editable example. `scripts/build-arena-example.cjs --check` verifies the example against the generator. `tests/battle-arena-hq.test.cjs` covers geometry, open entrances, texture encoding, settings, legacy handling and all nineteen themes. `tests/browser_arena_hq.py` exercises the wizard, sidebar, HQ toggle, undo/redo, save/load, Italian and actual image/VTT exports. By default browser tests open the shipped local HTML with CSP intact; `--inline` is a separately identified developer fallback. Native Windows launcher execution and external VTT importers are not tested by these suites.
+
+## Italiano
+
+Apri **Crea → Battaglia → Preimpostazione → Arena**, oppure **Nuova procedura guidata → Battaglia → Arena**. La mappa contiene uno spazio ellittico di combattimento, tribune a settori, due ingressi aperti, barriere e coperture modificabili. I diciotto scenari precedenti restano disponibili: ora sono **19**.
+
+In **Struttura dell’arena** scegli sabbia o erba, dimensione del terreno (45–75%), due–cinque gradoni, zero–dodici ostacoli e direzione di ingresso. L’arena si adatta al contorno rettangolare o esagonale. I due ingressi e il passaggio centrale restano liberi; se lo spazio non basta, le coperture mancanti sono segnalate. Non vengono create stanze. Le quote delle tribune e le regole di arrampicata non sono simulate.
+
+**HQ · materiali dettagliati e illuminazione** è attivo per impostazione predefinita nelle nuove mappe di battaglia, anche negli scenari già esistenti. È disponibile nel wizard e nella barra laterale. Dopo la generazione, **Stile → HQ** cambia subito l’aspetto della mappa, senza rigenerarla, ed è annullabile con Annulla/Ripeti. L’impostazione viene salvata nell’atlante per ogni mappa. Le vecchie mappe senza il flag conservano il loro aspetto precedente finché non attivi HQ.
+
+HQ aggiunge erba dettagliata, variazioni di terreno, sabbia, pietra, venature del legno, acqua, neve, vegetazione vista dall’alto, ombre, usura dei percorsi e sfumature sugli arredi. Non cambia geometria, ostacoli o metadati VTT. Le barriere dell’arena vengono esportate come muri con ingressi aperti. Puoi disattivare la griglia in Stile per vedere la grafica senza sovrapposizioni.
+
+Tutto funziona offline: le texture vengono calcolate localmente e incorporate nelle esportazioni. Nessun servizio di immagini, dipendenza aggiuntiva o connessione di rete. L’SVG HQ è autonomo ma contiene sia elementi vettoriali sia piccole texture raster; non è un’immagine fotografica o interamente vettoriale. Disattiva HQ per ripristinare la visualizzazione leggera precedente. L’esempio modificabile è `examples/Arena-HQ.megamap.json`.

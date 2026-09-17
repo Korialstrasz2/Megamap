@@ -2,7 +2,7 @@
  * Rooms are allocated before doors; doors reserve circulation before furnishing.
  * All geometry is expressed in 5 ft construction cells until final projection.
  */
-(function(root,factory){const content=typeof module==='object'&&module.exports?require('./encounter-content.js'):root.MegamapEncounterContent,landscapes=typeof module==='object'&&module.exports?require('./battle-landscapes.js'):root.MegamapBattleLandscapes;const api=factory(content,landscapes);if(typeof module==='object'&&module.exports)module.exports=api;else root.MegamapBattle=api;})(typeof globalThis!=='undefined'?globalThis:this,function(Content,Landscapes){
+(function(root,factory){const content=typeof module==='object'&&module.exports?require('./encounter-content.js'):root.MegamapEncounterContent,landscapes=typeof module==='object'&&module.exports?require('./battle-landscapes.js'):root.MegamapBattleLandscapes;const arena=typeof module==='object'&&module.exports?require('./battle-arena.js'):root.MegamapBattleArena;const api=factory(content,landscapes,arena);if(typeof module==='object'&&module.exports)module.exports=api;else root.MegamapBattle=api;})(typeof globalThis!=='undefined'?globalThis:this,function(Content,Landscapes,Arena){
 'use strict';
 const MAX_ZONES=24;
 const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -92,9 +92,11 @@ for(const [id,z] of Object.entries(ZONE_ROLES)){
 Object.assign(ZONE_ROLES,Content.roles);
 for(const [id,z] of Object.entries(Content.roles)){if(z.access==='service')SERVICE.add(id);if(z.access==='private')PRIVATE.add(id);if(z.access==='secure')SECURE.add(id);}
 for(const p of Content.presets)THEME_ZONES[p.id]=p.zones.slice();
-const isRoomless=Content.isRoomless;
+THEME_ZONES.arena=[];
+const EXTRA_PRESETS=[...Content.presets,Arena.PRESET];
+const isRoomless=theme=>theme==='arena'||Content.isRoomless(theme);
 const isOutdoor=theme=>['forest','desert','bridge'].includes(theme)||isRoomless(theme);
-const DEFAULTS={cols:40,rows:30,roomCount:12,theme:'dungeon',gridType:'hex-flat',mapShape:'rectangle',layout:'auto',entrySide:'auto',corridorWidth:1,furnishing:.7,condition:'inhabited',serviceExit:true,routeWidth:2,clearingSize:5,roughness:.5};
+const DEFAULTS={cols:40,rows:30,roomCount:12,theme:'dungeon',gridType:'hex-flat',mapShape:'rectangle',layout:'auto',entrySide:'auto',corridorWidth:1,furnishing:.7,condition:'inhabited',serviceExit:true,routeWidth:2,clearingSize:5,roughness:.5,hq:true,arenaSurface:'sand',arenaFloor:65,arenaTiers:4,arenaCover:6};
 const LAYOUTS={dungeon:'branching',tavern:'compact',dwelling:'compact',stronghold:'courtyard',temple:'axial',ruins:'courtyard',sewer:'branching',mansion:'courtyard',castle:'courtyard'};
 const TEMPLATES=[
  {id:'garrison',name:'Dungeon garrison',theme:'dungeon',zones:THEME_ZONES.dungeon,layout:'branching'},
@@ -114,13 +116,16 @@ function detail(value={},index=0,length=0){
 }
 function normalize(input={}){
  if(!input||typeof input!=='object'||Array.isArray(input))input={};
- const preset=Content.presets.find(p=>p.id===input.theme),base=preset?Object.fromEntries(['cols','rows','layout','corridorWidth','routeWidth','clearingSize','roughness'].filter(k=>preset[k]!=null).map(k=>[k,preset[k]])):{};
+ const preset=EXTRA_PRESETS.find(p=>p.id===input.theme),base=preset?Object.fromEntries(['cols','rows','layout','corridorWidth','routeWidth','clearingSize','roughness'].filter(k=>preset[k]!=null).map(k=>[k,preset[k]])):{};
  const o={...DEFAULTS,...base,...input};
  for(const [k,lo,hi] of [['cols',16,80],['rows',16,80],['roomCount',3,25],['corridorWidth',1,2]])o[k]=Number.isFinite(Number(o[k]))?clamp(Math.round(Number(o[k])),lo,hi):DEFAULTS[k];
  for(const [k,lo,hi] of [['routeWidth',1,4],['clearingSize',2,8],['roughness',0,1]])o[k]=Number.isFinite(Number(o[k]))?clamp(Number(o[k]),lo,hi):DEFAULTS[k];
  o.furnishing=Number.isFinite(Number(o.furnishing))?clamp(Number(o.furnishing),0,1):DEFAULTS.furnishing;
  for(const [key,values] of Object.entries({theme:Object.keys(THEME_ZONES),gridType:['square','hex-pointy','hex-flat'],mapShape:['rectangle','hex-pointy','hex-flat'],layout:['auto','compact','branching','courtyard','axial'],entrySide:['auto','north','east','south','west'],condition:['inhabited','abandoned','ruined']}))if(!values.includes(o[key]))o[key]=DEFAULTS[key];
  o.serviceExit=typeof o.serviceExit==='boolean'?o.serviceExit:DEFAULTS.serviceExit;
+ o.hq=typeof o.hq==='boolean'?o.hq:true;
+ o.arenaSurface=['sand','grass'].includes(o.arenaSurface)?o.arenaSurface:'sand';
+ for(const [k,lo,hi]of [['arenaFloor',45,75],['arenaTiers',2,5],['arenaCover',0,12]])o[k]=Number.isFinite(Number(o[k]))?clamp(Math.round(Number(o[k])),lo,hi):DEFAULTS[k];
  const raw=isRoomless(o.theme)?[]:Array.isArray(input.zones)?input.zones:THEME_ZONES[o.theme],valid=raw.map((role,i)=>({role,i})).filter(z=>typeof z.role==='string'&&Object.hasOwn(ZONE_ROLES,z.role)).slice(0,MAX_ZONES);
  const remap=new Map(valid.map((z,i)=>[z.i,i]));
  o.zones=valid.map(z=>z.role);
@@ -398,7 +403,7 @@ function finish(F){
  s.metadata.program=b.rooms.map(q=>ZONE_ROLES[q.role].name).join(' → ');
  s.metadata.architecture='Rooms, shared walls and circulation are planned before doors and furnishings. Construction cells are 5 ft; the movement grid is independent.';
  s.metadata.mapBoundary='Construction is fitted inside the play boundary before allocation; rooms are not cropped after generation.';
- s.appearance={grid:F.o.gridType};
+ s.appearance={grid:F.o.gridType,hq:F.o.hq};
  return s;
 }
 function material(q,F){if(['courtyard','cloister'].includes(q.role))return 'grass';if(['kitchen','pantry','privy','workshop','stable','bathroom'].includes(q.role))return 'flagstone';if(['nave','altar','shrine','reliquary','chapel','foyer'].includes(q.role))return 'tile';if(['crypt','prison','treasury','cellar'].includes(q.role))return 'slate';return F.o.theme==='castle'&&!['royal-chamber','war-room'].includes(q.role)?'stone':F.residential?'wood':'stone';}
@@ -507,11 +512,12 @@ function outdoors(F){
  F.s.battle.entrance={room:F.rooms[0].key,side:['north','east','south','west'][F.turn],point:F.P(...route[0])};
  return finish(F);
 }
-function generate(scene,helpers){const F=frame(scene,helpers);return isRoomless(F.o.theme)?Landscapes.generate(F,{finish,prop,footprint,pointOnRoute,lineDistance,choose,clamp}):isOutdoor(F.o.theme)?outdoors(F):['cave','ice-cave'].includes(F.o.theme)?caves(F):interiors(F);}
+function generate(scene,helpers){const F=frame(scene,helpers);return F.o.theme==='arena'?Arena.generate(F,{finish,prop,footprint}):isRoomless(F.o.theme)?Landscapes.generate(F,{finish,prop,footprint,pointOnRoute,lineDistance,choose,clamp}):isOutdoor(F.o.theme)?outdoors(F):['cave','ice-cave'].includes(F.o.theme)?caves(F):interiors(F);}
 /** Bound optional architectural metadata before rendering; legacy atlases remain valid. */
 function validateMetadata(s){
  const fail=what=>{throw Error('Invalid battle '+what+'.');},point=p=>Array.isArray(p)&&p.length===2&&p.every(v=>Number.isFinite(v)&&Math.abs(v)<=20000),poly=(p,min,max)=>Array.isArray(p)&&p.length>=min&&p.length<=max&&p.every(point),text=v=>typeof v==='string'&&v.length<=200;
  for(const f of s.features){
+  if(f.arenaTier!=null&&(!Number.isInteger(f.arenaTier)||f.arenaTier<1||f.arenaTier>5))fail('arena tier');
   if(f.battleProp!=null&&typeof f.battleProp!=='boolean')fail('prop flag');
   if(f.battleProp){if(f.type!=='asset'||![f.propWidth,f.propHeight,f.size].every(v=>Number.isFinite(v)&&v>0&&v<=20000))fail('prop dimensions');}
   if(f.battleFootprint!=null&&!poly(f.battleFootprint,4,4))fail('prop footprint');
@@ -533,7 +539,8 @@ function validateMetadata(s){
  if(b.courtyard!=null&&!poly(b.courtyard,3,100))fail('courtyard');
  if(b.windows!=null&&(!Array.isArray(b.windows)||b.windows.length>100||b.windows.some(p=>!poly(p,2,2))))fail('windows');
  if(b.landscape!=null){const l=b.landscape;if(!l||!isRoomless(l.kind)||!['grass','hill','sand'].includes(l.ground)||!poly(l.route,2,32)||!poly(l.clearing,3,40)||!Number.isFinite(l.routeWidthFt)||l.routeWidthFt<5||l.routeWidthFt>20)fail('landscape');}
+ if(b.arena!=null){const a=b.arena;if(s.options.theme!=='arena'||!a||!poly(a.floor,3,100)||!poly(a.bowl,3,100)||!poly(a.entrances,2,2)||!Number.isInteger(a.tiers)||a.tiers<2||a.tiers>5||!Number.isInteger(a.coverPlaced)||a.coverPlaced<0||a.coverPlaced>12)fail('arena');}
  const d=b.diagnostics;if(!d||!Number.isInteger(d.requested)||d.requested<(isRoomless(s.options.theme)?0:1)||d.requested>MAX_ZONES||d.placed!==b.rooms.length||!Array.isArray(d.warnings)||d.warnings.length>100||d.warnings.some(w=>typeof w!=='string'||w.length>10000)||!Array.isArray(d.unplaced)||d.unplaced.length>MAX_ZONES)fail('diagnostics');
 }
-return {isRoomless,isOutdoor,EXTRA_PRESETS:Content.presets,MAX_ZONES,ZONES:ZONE_ROLES,PLANS:THEME_ZONES,GROUPS:GROUP_NAMES,TEMPLATES,DEFAULTS,normalize,estimate,program,generate,validateMetadata};
+return {isRoomless,isOutdoor,EXTRA_PRESETS,MAX_ZONES,ZONES:ZONE_ROLES,PLANS:THEME_ZONES,GROUPS:GROUP_NAMES,TEMPLATES,DEFAULTS,normalize,estimate,program,generate,validateMetadata};
 });

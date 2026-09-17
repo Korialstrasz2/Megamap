@@ -928,7 +928,7 @@ function mapBoundary(s){if(s.mode!=='battle'||!['hex-pointy','hex-flat'].include
  return Array.from({length:6},(_,i)=>[s.width/2+r*Math.cos(angle+i*Math.PI/3),s.height/2+r*Math.sin(angle+i*Math.PI/3)]);
 }
 function finalizeBattle(s){
- s.appearance={grid:s.options.gridType};s.battle.boundary=mapBoundary(s);
+ s.appearance={grid:s.options.gridType,hq:s.options.hq};s.battle.boundary=mapBoundary(s);
  if(s.battle.generatorVersion===2)return s;
  if(s.options.mapShape==='rectangle')return s;
  const poly=s.battle.boundary,g=s.gridSize,{cols,rows,cells}=s.battle,outdoor=Battle.isOutdoor(s.options.theme);
@@ -994,6 +994,8 @@ function validateScene(s){
  if(s.notes!=null&&(typeof s.notes!=='string'||s.notes.length>200000))throw Error('Invalid map notes.');
  s.seed=String(s.seed??'imported').slice(0,120);s.notes=s.notes||'';s.units=s.mode==='battle'?'ft':'km';
  s.metadata=s.metadata&&typeof s.metadata==='object'&&!Array.isArray(s.metadata)?s.metadata:{};
+ // Pre-HQ saved maps keep their original look. New generation supplies hq:true.
+ if(s.mode==='battle'&&s.options?.hq==null&&s.appearance?.hq==null){s.appearance={...s.appearance,hq:false};}
  s.options=options(s.mode,s.options&&typeof s.options==='object'?s.options:{});
  const types=new Set(['river','water','settlement','road','poi','decoration','district','plaza','asset','building','wall','room','label','paint','image','area','portal','light']);
  const paths=new Set(['river','road','wall','paint','portal']),polygons=new Set(['water','district','plaza','building','area']);

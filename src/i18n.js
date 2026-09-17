@@ -1305,6 +1305,23 @@ Object.assign(IT,{
  "Marble bathtub": "Vasca in marmo"
 });
 Object.assign(IT,{"Hollow bog stump": "Ceppo cavo nella palude", "Tidal boulder cluster": "Gruppo di scogli", "Driftwood tangle": "Intreccio di legname alla deriva", "Wrecked fishing skiff": "Barca da pesca naufragata", "Fishing baskets and net": "Ceste e rete da pesca", "Upholstered chaise longue": "Chaise-longue imbottita", "Set banquet table": "Tavolo da banchetto apparecchiato", "Glass display cabinet": "Vetrina in vetro"});
+Object.assign(IT,{
+ "Arena": "Arena",
+ "Arena layout": "Struttura dell’arena",
+ "Arena preview": "Anteprima arena",
+ "An open fighting floor, stepped spectator stands, opposing entrances and optional tactical cover.": "Uno spazio di combattimento aperto, tribune a gradoni, ingressi contrapposti e coperture tattiche opzionali.",
+ "Use Arena layout to choose the fighting floor, tiers and obstacles.": "Usa Struttura dell’arena per scegliere terreno, tribune e ostacoli.",
+ "Fighting floor": "Terreno di combattimento",
+ "Fighting floor size (%)": "Dimensione dello spazio di combattimento (%)",
+ "Spectator tiers": "Gradoni delle tribune",
+ "Arena obstacles": "Ostacoli nell’arena",
+ "Two open entrances and central crossing stay clear. Barriers export as VTT walls; seating heights are descriptive.": "I due ingressi aperti e il passaggio centrale restano liberi. Le barriere vengono esportate come muri VTT; le altezze delle tribune sono descrittive.",
+ "HQ · detailed materials and lighting": "HQ · materiali dettagliati e illuminazione",
+ "HQ adds textured ground, natural foliage and depth. Switch it in Style after generation without rebuilding.": "HQ aggiunge terreno texturizzato, vegetazione naturale e profondità. Puoi attivarlo o disattivarlo in Stile dopo la generazione, senza ricostruire la mappa.",
+ "Arena entrance": "Ingresso dell’arena",
+ "Opposing entrance": "Ingresso opposto",
+ "The arena is too tight for all requested cover. Enlarge the floor or reduce cover.": "L’arena è troppo stretta per tutte le coperture richieste. Amplia il terreno o riduci le coperture."
+});
 const SKIP='#mapHost,#atlasCards,#featureResults,#mapNotes';
 const ATTRS=['title','aria-label','placeholder','label'];
 const entries=[];
