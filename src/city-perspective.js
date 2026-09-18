@@ -4,9 +4,9 @@
  * Painter ordering is schematic, not a general-purpose 3D visibility solver.
  */
 (function(root,factory){const node=typeof module==='object'&&module.exports;
- const api=factory(node?require('./city-studio.js'):root.MegamapCityStudio,node?require('./city-render.js'):root.MegamapCityRender,node?require('./assets.js'):root.MegamapAssets,node?require('./editor-core.js'):root.MegamapCore,node?require('./render.js'):root.MegamapRender);
+ const api=factory(node?require('./city-studio.js'):root.MegamapCityStudio,node?require('./city-render.js'):root.MegamapCityRender,node?require('./assets.js'):root.MegamapAssets,node?require('./editor-core.js'):root.MegamapCore,node?require('./render.js'):root.MegamapRender,node?require('./engine.js'):root.MegamapEngine);
  if(node)module.exports=api;else root.MegamapCityPerspective=api;
-})(typeof globalThis!=='undefined'?globalThis:this,function(C,CR,A,Core,R){
+})(typeof globalThis!=='undefined'?globalThis:this,function(C,CR,A,Core,R,E){
 'use strict';
 const n=CR.num,pts=CR.pts,esc=R.esc,clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const lerp=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
@@ -20,31 +20,56 @@ function layer(f){return ['road','wall','portal'].includes(f.type)?'roads':['are
 function elevation(s,p){return C.heightAt(s.cityStudio.ground,p)/s.scale;}
 function buildingHeight(f,s){return clamp(Number(f.cityFloors)||1,1,12)*3.1/s.scale;}
 function clipMap(poly){let out=poly;for(const [axis,bound,direction]of [[0,0,1],[0,1000,-1],[1,0,1],[1,1000,-1]]){const next=[];for(let i=0;i<out.length;i++){const a=out[i],b=out[(i+1)%out.length],da=(a[axis]-bound)*direction,db=(b[axis]-bound)*direction;if(da>=0)next.push(a);if((da>=0)!==(db>=0))next.push(lerp(a,b,da/(da-db)));}out=next;}return out;}
+// One camera-independent triangulated heightfield is used by terrain,
+// draped roads/areas and object foundations in every rotation and HQ setting.
+// A four-corner polygon is NOT a terrain surface when its interior crosses a
+// hill. Clip each surface to the same mesh rather than spanning the hollow.
+function terrainMesh(s){const count=64,step=1000/count,nodes=[];
+ for(let y=0;y<=count;y++)for(let x=0;x<=count;x++)nodes.push([x*step,y*step,C.heightAt(s.cityStudio.ground,[x*step,y*step])/s.scale]);
+ const at=(x,y)=>nodes[y*(count+1)+x],triangles=(x,y)=>[[at(x,y),at(x+1,y),at(x+1,y+1)],[at(x,y),at(x+1,y+1),at(x,y+1)]];
+ const height=p=>{const x=clamp(p[0]/step,0,count-1e-8),y=clamp(p[1]/step,0,count-1e-8),ix=Math.floor(x),iy=Math.floor(y),u=x-ix,v=y-iy,a=at(ix,iy)[2],b=at(ix+1,iy)[2],c=at(ix+1,iy+1)[2],d=at(ix,iy+1)[2];return u>=v?a*(1-u)+b*(u-v)+c*v:a*(1-v)+c*u+d*(v-u);};
+ return{count,step,nodes,triangles,height};
+}
+function clipTriangle(subject,triangle){let out=subject.map(p=>p.slice(0,2));
+ for(let k=0;k<3&&out.length;k++){const a=triangle[k],b=triangle[(k+1)%3],side=p=>(b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]),next=[];
+  for(let j=0;j<out.length;j++){const u=out[j],v=out[(j+1)%out.length],du=side(u),dv=side(v);if(du>=-1e-8)next.push(u);if((du>=0)!==(dv>=0))next.push(lerp(u,v,du/(du-dv)));}out=next;
+ }return out;
+}
+function surfacePieces(ps,mesh){ps=clipMap(ps);if(ps.length<3||C.area(ps)<1e-7)return[];
+ const convex=ps.every((p,i)=>{const a=ps[(i+1)%ps.length],b=ps[(i+2)%ps.length];return(a[0]-p[0])*(b[1]-a[1])-(a[1]-p[1])*(b[0]-a[0])>=-1e-7;});
+ // Ear clipping preserves concave courts and arbitrary user-edited polygons.
+ const parts=convex?[ps]:E.triangulate(ps),pieces=[];
+ for(const part of parts){const b=C.bounds(part),x0=clamp(Math.floor(b.x0/mesh.step),0,mesh.count-1),x1=clamp(Math.floor(b.x1/mesh.step),0,mesh.count-1),y0=clamp(Math.floor(b.y0/mesh.step),0,mesh.count-1),y1=clamp(Math.floor(b.y1/mesh.step),0,mesh.count-1);
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)for(const tri of mesh.triangles(x,y)){const poly=clipTriangle(part,tri);if(poly.length>=3&&C.area(poly)>1e-7)pieces.push({poly,tile:C.center(tri.map(p=>p.slice(0,2)))});}
+ }return pieces;
+}
+function wallPanels(s,f,height,mesh=terrainMesh(s)){const ps=C.pathSamples(f.points,mesh.step/2),panels=[];
+ for(let i=1;i<ps.length;i++){if(C.distance(ps[i-1],ps[i])<.001)continue;const footprint=C.corridor(ps[i-1],ps[i],f.width),bottom=footprint.map(p=>mesh.height(p));panels.push({footprint,bottom,top:bottom.map(z=>z+height)});}return panels;
+}
 function render(s,view={},bearing=0){const lang=R.labels.language(view);
  if(!s?.cityStudio)throw Error('2.5D preview requires a City Studio map.');
  const v={...Core.appearance(s),...view},p=R.palettes[v.palette]||R.palettes.atlas,cam=camera(bearing),g=s.cityStudio.ground,hq=v.hq===true,layers={...Core.DEFAULT_LAYERS,...v.layers};
  const visible=f=>!f.hidden&&!(v.player&&f.gmOnly)&&layers[layer(f)]!==false&&!CR.hidden(f,s,v);
+ const mesh=terrainMesh(s),elevation=(_,p)=>mesh.height(p);
  const fs=s.features.filter(visible),extent={x0:Infinity,y0:Infinity,x1:-Infinity,y1:-Infinity},ground=[],surface=[],objects=[],labels=[];
  const include=q=>{extent.x0=Math.min(extent.x0,q[0]);extent.x1=Math.max(extent.x1,q[0]);extent.y0=Math.min(extent.y0,q[1]);extent.y1=Math.max(extent.y1,q[1]);return q;};
  const project=(p,z=0)=>include(cam.project(p,z));
  const poly=(ps,fill,attrs='',stroke=p.ink,sw=.45)=>`<polygon points="${pts(ps)}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" ${attrs}/>`;
  const line=(ps,color,width=1,attrs='')=>`<polyline points="${pts(ps)}" fill="none" stroke="${color}" stroke-width="${n(width)}" stroke-linecap="round" stroke-linejoin="round" ${attrs}/>`;
- const surfacePoly=(ps,fill,attrs='',z=null)=>poly(ps.map(q=>project(q,z===null?elevation(s,q):z)),fill,attrs,fill,.28);
+ let surfaceId='',surfaceOrder=0;
+ const surfacePoly=(ps,fill,attrs='',z=null)=>{for(const piece of surfacePieces(ps,mesh)){const points=piece.poly.map(q=>project(q,z===null?elevation(s,q):z));surface.push({d:cam.depth(piece.tile),order:surfaceOrder,art:`<g data-id="${esc(surfaceId)}">${poly(points,fill,attrs,fill,.18)}</g>`});}return '';};
  const matrixArt=(art,z,anchor,size=0)=>{project(anchor,z);if(size)for(const q of C.rect(anchor,size*2,size*2))project(q,z);return `<g transform="matrix(${cam.matrix(z)})">${art}</g>`;};
  const signOf=ps=>Math.sign(ps.reduce((sum,a,i)=>{const b=ps[(i+1)%ps.length];return sum+a[0]*b[1]-b[0]*a[1];},0))||1;
- // Terrain is deliberately bounded to a 40 x 40 display mesh. The authoritative
- // 64 x 64 field and editable plan are untouched. No unseen districts are drawn.
- if(layers.terrain!==false){const count=hq?40:28,step=1000/count;
-  for(let y=0;y<count;y++)for(let x=0;x<count;x++){
-   const corners=[[x*step,y*step],[(x+1)*step,y*step],[(x+1)*step,(y+1)*step],[x*step,(y+1)*step]],mid=[(x+.5)*step,(y+.5)*step],z=C.heightAt(g,mid),t=g.relief?z/g.relief:0;
-   const slope=C.heightAt(g,[mid[0]+8,mid[1]])-C.heightAt(g,[mid[0],mid[1]+8]);let fill=CR.color(p.land,p.hill,t*.32);
+ // Triangles cannot twist or change their apparent slope when the camera
+ // turns. Surface layers use these exact vertices and interpolation rules.
+ if(layers.terrain!==false){for(let y=0;y<mesh.count;y++)for(let x=0;x<mesh.count;x++)for(const tri of mesh.triangles(x,y)){
+   const mid=C.center(tri.map(q=>q.slice(0,2))),z=mesh.height(mid)*s.scale,t=g.relief?z/g.relief:0,slope=C.heightAt(g,[mid[0]+8,mid[1]])-C.heightAt(g,[mid[0],mid[1]+8]);let fill=CR.color(p.land,p.hill,t*.32);
    if(hq)fill=CR.color(fill,slope>0?p.paper:p.ink,Math.min(.1,Math.abs(slope)*.012));
-   ground.push({d:cam.depth(mid),art:poly(corners.map(q=>project(q,elevation(s,q))),fill,'data-terrain-face="true"',fill,1.1)});
-  }
- }else for(const q of [[0,0],[1000,0],[1000,1000],[0,1000]])project(q,0);
+   ground.push({d:cam.depth(mid),art:poly(tri.map(q=>project(q,q[2])),fill,'data-terrain-face="true"',fill,.4)});
+ }}else for(const q of [[0,0],[1000,0],[1000,1000],[0,1000]])project(q,0);
  // Water and paths are surface geometry, not flattened screen-space strokes.
- for(const f of fs){let art='';
-  if(f.type==='water'&&f.polygon)art=surfacePoly(clipMap(f.polygon),f.cityWaterKind==='sea'?CR.color(p.water,p.deep,.75):p.water,'data-surface-water="true"',0);
+ for(const f of fs){let art='';surfaceId=f.id;surfaceOrder++;
+  if(f.type==='water'&&f.polygon)art=surfacePoly(clipMap(f.polygon),f.cityWaterKind==='sea'?CR.color(p.water,p.deep,.75):p.water,'data-surface-water="true"',f.cityPaintBand&&f.cityWaterKind==='river'?null:0);
   else if(f.type==='river'&&f.points){for(let i=1;i<f.points.length;i++)art+=surfacePoly(clipMap(C.corridor(f.points[i-1],f.points[i],f.width)),p.water,'',0);}
   else if(f.type==='road'){
    const layerRoute=['roof-route','tunnel'].includes(f.cityRole);
@@ -59,13 +84,13 @@ function render(s,view={},bearing=0){const lang=R.labels.language(view);
    const fill=f.cityRole==='crater'?p.mountain:f.cityRole==='ruin'?p.hill:f.cityRole==='yard'||f.citySurface==='garden'?p.grass:f.type==='plaza'||f.cityRole==='court'?p.sand:f.type==='district'?p.district:(p[f.material]||p.grass);
    art=surfacePoly(f.polygon,fill,f.type==='district'?'opacity=".25"':'');
   }
-  if(art)surface.push(`<g data-id="${esc(f.id)}">${art}</g>`);
+  if(art)surface.push({d:cam.depth(Core.center(f)),order:surfaceOrder,art:`<g data-id="${esc(f.id)}">${art}</g>`});
  }
  function wallFaces(f,footprint,base,top,windows=false){const sign=signOf(footprint);let out='';
   for(let i=0;i<footprint.length;i++){
    const a=footprint[i],b=footprint[(i+1)%footprint.length];if(!cam.facing(a,b,sign))continue;
    const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy),shade=clamp(.12+((dx-dy)/(len||1))*.10,.03,.3),fill=CR.color(f.cityWealth==='modest'?(f.cityClimate==='hot-dry'?p.sand:p.roof[0]):f.cityWealth==='affluent'?p.paper:f.cityCulture==='nordic'||f.cityCulture==='woodland'?p.roof[0]:p.paper,p.ink,shade);
-   out+=poly([project(a,elevation(s,a)),project(b,elevation(s,b)),project(b,top),project(a,top)],fill,'data-wall-face="true"',p.ink,hq?.42:.6);
+   out+=poly([project(a,elevation(s,a)),project(b,elevation(s,b)),project(b,Array.isArray(top)?top[(i+1)%footprint.length]:top),project(a,Array.isArray(top)?top[i]:top)],fill,'data-wall-face="true"',p.ink,hq?.42:.6);
    if(hq&&windows&&len*s.scale>4){
     const floors=clamp(Math.round(f.cityFloors||1),1,7),cols=clamp(Math.floor(len*s.scale/(f.cityWealth==='modest'?7:5)),1,6);
     for(let k=0;k<floors;k++)for(let j=0;j<cols;j++){
@@ -102,7 +127,7 @@ function render(s,view={},bearing=0){const lang=R.labels.language(view);
   art+=wallFaces(f,footprint,base,top,true)+roof(f,footprint,top);
   return{art,d:Math.max(...footprint.map(cam.depth)),z:top,center:C.center(footprint)};
  }
- function vessel(f){const a=(f.rotation||0)*Math.PI/180,cs=Math.cos(a),sn=Math.sin(a),l=f.size*2,w=l*(f.cityBeam||.25),map=(x,y)=>[f.x+x*cs-y*sn,f.y+x*sn+y*cs],polyWorld=[map(-l/2,0),map(-l*.3,-w*.45),map(l*.35,-w*.45),map(l/2,0),map(l*.35,w*.45),map(-l*.3,w*.45)],top=1/s.scale;
+ function vessel(f){const a=(f.rotation||0)*Math.PI/180,cs=Math.cos(a),sn=Math.sin(a),l=f.size*2,w=l*(f.cityBeam||.25),map=(x,y)=>[f.x+x*cs-y*sn,f.y+x*sn+y*cs],polyWorld=[map(-l/2,0),map(-l*.3,-w*.45),map(l*.35,-w*.45),map(l/2,0),map(l*.35,w*.45),map(-l*.3,w*.45)],top=(g.paintWater&&g.paintWater.cells[C.PLAN.cell([f.x,f.y])]===1?elevation(s,[f.x,f.y]):0)+1/s.scale;
   let art=poly(polyWorld.map(q=>project(q,top)),p.roof[1],'data-vessel="true"',p.ink,.5);art+=line([project(map(-l*.32,0),top),project(map(l*.35,0),top)],p.sand,Math.max(1,w*.32));
   if(f.cityShip!=='skiff'){const height=(f.cityShip==='warship'?18:11)/s.scale;
    for(const x of(f.cityShip==='warship'?[-l*.18,l*.22]:[0])){const b=map(x,0),tip=project(b,top+height);art+=line([project(b,top),tip],p.ink,.8);
@@ -113,9 +138,12 @@ function render(s,view={},bearing=0){const lang=R.labels.language(view);
  for(const f of fs){let item=null;const at=Core.center(f),z=elevation(s,at);
   if(f.type==='building'&&f.polygon)item=raisedObject(f);
   else if(f.cityRole==='vessel')item={art:vessel(f),d:cam.depth(at),center:at,z:15/s.scale};
-  else if(f.type==='wall'&&f.points){let art='';const height=(f.cityRole==='retaining'?1.5:f.cityRole==='old-wall'?2.2:6)/s.scale;
-   for(let i=1;i<f.points.length;i++){const ps=C.corridor(f.points[i-1],f.points[i],f.width),base=Math.max(...ps.map(q=>elevation(s,q))),top=base+height;art+=wallFaces(f,ps,base,top)+poly(ps.map(q=>project(q,top)),p.hill,'data-wall-top="true"',p.ink,.35);}
-   item={art,d:Math.max(...f.points.map(cam.depth)),center:at,z:z+height};
+  else if(f.type==='wall'&&f.points){const height=(f.cityRole==='retaining'?1.5:f.cityRole==='old-wall'?2.2:6)/s.scale;
+   // Sort short panels independently. A single maximum height/depth for an
+   // entire long wall turned low sections into towers and drew it over hills.
+   for(const panel of wallPanels(s,f,height,mesh)){const {footprint,bottom,top}=panel,art=wallFaces(f,footprint,Math.min(...bottom),top)+poly(footprint.map((q,i)=>project(q,top[i])),p.hill,'data-wall-top="true"',p.ink,.35);
+    objects.push({art,id:f.id,d:Math.max(...footprint.map(cam.depth)),z:Math.max(...top),center:C.center(footprint)});
+   }
   }
   else if(['asset','poi','decoration','image'].includes(f.type)){
    let art='';const tree=['tree','pine','palm','great-tree'].includes(f.citySymbol)||['tree','oak','pine','palm'].includes(f.asset),hint=A.byId[f.asset]?.heightM;
@@ -148,10 +176,13 @@ function render(s,view={},bearing=0){const lang=R.labels.language(view);
   if(f.cityRole==='complex-ground'&&(f.cityComplexKind!=='temple'||f.labelCustom)&&f.label&&layers.labels!==false&&v.labels!==false){const gate=lerp(f.polygon[0],f.polygon[1],.5),q=project(gate,elevation(s,gate)+4/s.scale);labels.push(`<text data-city-complex-label="true" x="${n(q[0])}" y="${n(q[1])}" text-anchor="middle" font-size="10" font-family="Georgia,serif" fill="${p.ink}" stroke="${p.paper}" stroke-width="2" paint-order="stroke">${esc(R.labels.feature(f,lang))}</text>`);}
   if(f.type==='label'&&f.label&&layers.labels!==false&&v.labels!==false){const q=project(at,z+1);labels.push(`<text x="${n(q[0])}" y="${n(q[1])}" fill="${p.ink}" font-family="Georgia,serif" font-size="11">${esc(R.labels.feature(f,lang))}</text>`);}
  }
- ground.sort((a,b)=>a.d-b.d);objects.sort((a,b)=>a.d-b.d||a.id.localeCompare(b.id));
+ const scene=[...ground.map(x=>({...x,rank:0,kind:'terrain'})),...surface.map(x=>({...x,rank:1,kind:'surface'})),...objects.map(x=>({...x,rank:2,kind:'objects'}))];
+ // Foreground terrain must be able to hide objects and roads behind it. The
+ // old terrain / all surfaces / all objects buckets drew through hills.
+ scene.sort((a,b)=>a.d-b.d||a.rank-b.rank||(a.order||0)-(b.order||0)||(a.id||'').localeCompare(b.id||''));
  const minX=extent.x0-35,maxX=extent.x1+35,minY=extent.y0-45,maxY=extent.y1+35,w=maxX-minX,h=maxY-minY;
  const definitions=CR.defs(s,p,v)+R.symbols(p,new Set(fs.filter(f=>f.asset).map(f=>f.asset)));
- return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="${Math.round(1600*h/w)}" viewBox="${n(minX)} ${n(minY)} ${n(w)} ${n(h)}" role="img" aria-label="${esc(R.labels.title(s,lang))} · 2.5D" data-city-perspective="true" data-bearing="${n(cam.bearing)}"><title>${esc(R.labels.title(s,lang))} — 2.5D</title><desc>${esc(R.labels.text('Read-only axonometric city view. Building heights and terrain are schematic; edit the authoritative top-down map.',lang))}</desc><defs>${definitions}</defs><rect x="${n(minX)}" y="${n(minY)}" width="${n(w)}" height="${n(h)}" fill="${p.paper}"/><g data-perspective-terrain="true">${ground.map(x=>x.art).join('')}</g><g data-perspective-surface="true">${surface.join('')}</g><g data-perspective-objects="true">${objects.map(x=>`<g data-id="${esc(x.id)}">${x.art}</g>`).join('')}</g><g pointer-events="none">${labels.join('')}</g></svg>`;
+ return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="${Math.round(1600*h/w)}" viewBox="${n(minX)} ${n(minY)} ${n(w)} ${n(h)}" role="img" aria-label="${esc(R.labels.title(s,lang))} · 2.5D" data-city-perspective="true" data-bearing="${n(cam.bearing)}" data-terrain-mesh="64"><title>${esc(R.labels.title(s,lang))} — 2.5D</title><desc>${esc(R.labels.text('Read-only axonometric city view. Building heights and terrain are schematic; edit the authoritative top-down map.',lang))}</desc><defs>${definitions}</defs><rect x="${n(minX)}" y="${n(minY)}" width="${n(w)}" height="${n(h)}" fill="${p.paper}"/><g data-perspective-scene="true">${scene.map(x=>`<g data-perspective-${x.kind}="true"${x.id?` data-id="${esc(x.id)}"`:''}>${x.art}</g>`).join('')}</g><g pointer-events="none">${labels.join('')}</g></svg>`;
 }
-return{render,camera,elevation,buildingHeight,clipMap};
+return{render,camera,elevation,buildingHeight,clipMap,terrainMesh,surfacePieces,wallPanels};
 });

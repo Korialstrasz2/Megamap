@@ -46,6 +46,8 @@ jobs:
         run: python tests/browser_city_part1.py --output "$RUNNER_TEMP/city-part1-qa"
       - name: Smart brush, compounds, Italian and exports with shipped CSP
         run: python tests/browser_city_part2.py --output "$RUNNER_TEMP/city-part2-qa"
+      - name: Painted terrain capacity and rotation-stable 2.5D with shipped CSP
+        run: python tests/browser_city_terrain_fixes.py --output "$RUNNER_TEMP/city-terrain-fixes-qa"
       - name: Verify package hashes
         run: node scripts/verify-package.cjs
       - name: Package matching source for reproduction
@@ -62,7 +64,7 @@ jobs:
           tap = root / 'city-studio-tests.tap'
           if tap.exists():
               lines += [line for line in tap.read_text().splitlines() if line.startswith(('# tests ', '# pass ', '# fail '))]
-          for suite in ['city-studio-qa', 'city-refinement-qa', 'city-paint-qa', 'city-part1-qa', 'city-part2-qa']:
+          for suite in ['city-studio-qa', 'city-refinement-qa', 'city-paint-qa', 'city-part1-qa', 'city-part2-qa', 'city-terrain-fixes-qa']:
               report = root / suite / 'report.json'
               if report.exists():
                   data = json.loads(report.read_text())
@@ -83,5 +85,6 @@ jobs:
             ${{ runner.temp }}/city-paint-qa/
             ${{ runner.temp }}/city-part1-qa/
             ${{ runner.temp }}/city-part2-qa/
+            ${{ runner.temp }}/city-terrain-fixes-qa/
             ${{ runner.temp }}/city-studio-source.tar.gz
           retention-days: 7

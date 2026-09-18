@@ -80,9 +80,13 @@ function outline(cells){const set=new Set(cells),edges=[];for(const i of cells){
  p=p.filter((b,i)=>{const a=p[(i+p.length-1)%p.length],c=p[(i+1)%p.length];return(a[0]-b[0])*(c[1]-b[1])!==(a[1]-b[1])*(c[0]-b[0]);});return p.map(p=>p.map(x=>x*STEP));
 }
 function prepare(s,C){const st=s.cityStudio,plan=compile(s.options.cityPlan),g=st.ground;st.paintPlan={version:1,n:N,zones:plan.zones,cellWard:Array(N*N).fill(-1)};g.paintWater={n:N,cells:plan.terrain};g.landscape='plain';g.canals=[];st.bridges=[];st.neighborhoods=[];
- // Water lowers its own terrain and adjacent banks, without inventing another
- // preset river, sea, palace or central landmark over the user's sketch.
- g.heights=g.heights.map((z,i)=>z*clamp(bankDistance(g,[(i%64+.5)*1000/64,(Math.floor(i/64)+.5)*1000/64])/40,0,1));
+ // A river is not a sea-level trench. Keep the selected relief, carve a
+ // shallow channel, and shape only actual sea/lake banks toward sea level.
+ // makeGround has deliberately skipped the *preset* coastline for this plan.
+ const sea=plan.terrain.some(x=>x===2)?{paintWater:{n:N,cells:plan.terrain.map(x=>x===2?2:0)}}:null;
+ g.heights=g.heights.map((z,i)=>{const p=[(i%64+.5)*1000/64,(Math.floor(i/64)+.5)*1000/64],bank=bankDistance(g,p),coast=sea?clamp(bankDistance(sea,p)/120,0,1):1;
+  return Math.max(0,z*coast-(g.relief?Math.max(0,1-bank/24)*Math.min(3,g.relief*.02)/g.relief:0));});
+ g.paintWater.surfaceVersion=1;
  for(const band of rectangles(plan.terrain))C.emit(s,'water',{polygon:band.polygon,cityRole:'water',cityPaintBand:true,cityWaterKind:band.code===2?'sea':'river'});
  const visited=new Uint8Array(N*N);let components=[];
  for(let i=0;i<visited.length;i++){if(visited[i]||!plan.zones[i]||plan.terrain[i])continue;const cells=[i],code=plan.zones[i];visited[i]=1;for(let j=0;j<cells.length;j++){const u=cells[j],x=u%N,y=Math.floor(u/N);for(const k of [x?u-1:-1,x<N-1?u+1:-1,y?u-N:-1,y<N-1?u+N:-1])if(k>=0&&!visited[k]&&plan.zones[k]===code&&!plan.terrain[k]){visited[k]=1;cells.push(k);}}if(cells.length>=3)components.push({code,cells});}
@@ -91,8 +95,15 @@ function prepare(s,C){const st=s.cityStudio,plan=compile(s.options.cityPlan),g=s
  if(!components.some(c=>!OPEN.has(c.code)))throw Error('Paint at least one buildable district before generating.');
  for(const component of components){const index=st.neighborhoods.length,cells=component.cells,mean=cells.reduce((p,i)=>[p[0]+(i%N+.5)*STEP/cells.length,p[1]+(Math.floor(i/N)+.5)*STEP/cells.length],[0,0]),cellCenter=i=>[(i%N+.5)*STEP,(Math.floor(i/N)+.5)*STEP],best=cells.reduce((a,b)=>C.distance(cellCenter(a),mean)<C.distance(cellCenter(b),mean)?a:b),center=component.anchor||cellCenter(best),brush=DISTRICTS[component.code-1],quarter=brush.id==='square'?'gardens':brush.id;
   const ward={id:'paint'+index,center,quarter,seed:C.hash(s.seed+'paint'+index),revision:0,target:0,planAngle:0,paintIndex:index,paintRole:brush.id,citySmart:component.smart===true};ward.profile=C.Refine.profile(s,quarter);if(!component.smart)ward.profile.name=brush.name;
-  const f=C.emit(s,'district',{polygon:outline(cells),x:center[0],y:center[1],ward:ward.profile.name,quarter,label:ward.profile.name,cityWard:ward.id,cityPaintRole:brush.id});ward.feature=f.id;st.neighborhoods.push(ward);cells.forEach(i=>st.paintPlan.cellWard[i]=index);
+  const f=C.emit(s,'district',{polygon:outline(cells),x:center[0],y:center[1],ward:ward.profile.name,quarter,label:ward.profile.name,cityWard:ward.id,cityPaintRole:brush.id});ward.feature=f.id;st.neighborhoods.push(ward);if(component.site){ward.smartSite=component.site;st.reservations.push({polygon:component.site.polygon,blockRoad:true,smartSite:ward.id});}cells.forEach(i=>st.paintPlan.cellWard[i]=index);
  }
+ // Reserve and grade only the chosen civic pads, with a short blended apron.
+ // A maximum 10 m cut/fill keeps a hill city terraced, rather than rejecting
+ // every institution for having sloping ground. Never grade painted water.
+ const pads=st.neighborhoods.filter(w=>w.smartSite).map(w=>({bb:C.bounds(w.smartSite.polygon),level:w.smartSite.levelM/(g.relief||1)}));
+ if(g.relief&&pads.length)g.heights=g.heights.map((z,i)=>{const p=[(i%64+.5)*1000/64,(Math.floor(i/64)+.5)*1000/64];if(waterAt(g,p,STEP*2))return z;
+  let best=null,dist=Infinity;for(const pad of pads){const b=pad.bb,d=Math.hypot(Math.max(b.x0-p[0],0,p[0]-b.x1),Math.max(b.y0-p[1],0,p[1]-b.y1));if(d<dist){best=pad;dist=d;}}
+  const weight=clamp((32-dist)/16,0,1);return clamp(z+clamp(best.level-z,-10/g.relief,10/g.relief)*weight,0,1);});
  const first=st.neighborhoods.find(w=>!OPEN.has(CODES[w.paintRole]));st.origin=first.center.slice();st.networkRoot=first.center.slice();st.planAngle=0;st.refinementVersion=1;
  // Open ground is physically present, not a request for buildings painted green.
  const open=plan.zones.map((code,i)=>!plan.terrain[i]&&OPEN.has(code)?code:0);for(const b of rectangles(open)){const w=at(s,C.center(b.polygon));if(w)C.emit(s,'area',{polygon:b.polygon,ward:w.feature,cityRole:'paint-open',citySurface:b.code===CODES.gardens?'garden':'paving',material:b.code===CODES.gardens?'grass':'sand'});}
@@ -112,7 +123,9 @@ function paintWalls(s,plan,C){const st=s.cityStudio;for(const wall of plan.walls
   if(C.waterAt(st.ground,p,wall.width/2)||gate)flush();else run.push(p);
  }flush();}}
 function network(s,C){const st=s.cityStudio,g=st.ground;
- for(const ward of st.neighborhoods){if(OPEN.has(CODES[ward.paintRole]))continue;const p=ward.center,near=C.nearestRoad(s,p),width=Math.max(2,5/s.scale);
+ for(const ward of st.neighborhoods){if(OPEN.has(CODES[ward.paintRole]))continue;let p=ward.center;const width=Math.max(2,5/s.scale);
+  if(ward.smartSite){const site=ward.smartSite,ps=site.polygon,candidates=ps.map((a,i)=>{const b=ps[(i+1)%4],mid=[(a[0]+b[0])/2,(a[1]+b[1])/2],dx=mid[0]-p[0],dy=mid[1]-p[1],d=Math.hypot(dx,dy)||1;return[mid[0]+dx/d*(width+5),mid[1]+dy/d*(width+5)];});candidates.sort((a,b)=>(C.nearestRoad(s,a)?.distance||0)-(C.nearestRoad(s,b)?.distance||0));p=candidates.find(q=>!C.waterAt(g,q,width))||candidates[0];}
+  const near=C.nearestRoad(s,p);
   if(near&&near.distance<5)continue;
   const route=near&&C.route(s,near.point,p,width);if(route)C.street(s,route,'street',width);
   else{const ix=ward.paintIndex,candidates=[];for(let k=0;k<st.paintPlan.cellWard.length;k++)if(st.paintPlan.cellWard[k]===ix)candidates.push([(k%N+.5)*STEP,(Math.floor(k/N)+.5)*STEP]);let made=false;for(const q of candidates.sort((a,b)=>C.distance(b,p)-C.distance(a,p)).slice(0,12)){const line=C.route(s,p,q,width);if(line){C.street(s,line,'street',width);made=true;break;}}if(!made)st.warnings.push('A small painted district could not fit a usable street.');}
@@ -137,7 +150,7 @@ function finish(s,C){const st=s.cityStudio,graph=C.buildGraph(s);st.paintPlan.co
  Smart.finish(s);st.warnings=[...new Set(st.warnings)].slice(0,150);
 }
 function validate(s){Smart.validate(s);const st=s.cityStudio;if(!st.paintPlan&&!st.ground.paintWater)return;
- const plan=st.paintPlan,g=st.ground.paintWater;if(!plan||plan.version!==1||plan.n!==N||!g||g.n!==N)throw Error('Invalid painted city masks.');normalize(s.options.cityPlan);
+ const plan=st.paintPlan,g=st.ground.paintWater;if(!plan||plan.version!==1||plan.n!==N||!g||g.n!==N)throw Error('Invalid painted city masks.');normalize(s.options.cityPlan);if(g.surfaceVersion!=null&&g.surfaceVersion!==1)throw Error('Invalid painted water surface.');
  for(const [a,min,max]of [[g.cells,0,2],[plan.zones,0,DISTRICTS.length],[plan.cellWard,-1,st.neighborhoods.length-1]])if(!Array.isArray(a)||a.length!==N*N||a.some(x=>!Number.isInteger(x)||x<min||x>max))throw Error('Invalid painted city mask cells.');
  for(const [i,w]of st.neighborhoods.entries())if(w.paintIndex!==i||!CODES[w.paintRole])throw Error('Invalid painted district index.');
 }
