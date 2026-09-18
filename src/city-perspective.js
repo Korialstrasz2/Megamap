@@ -20,7 +20,7 @@ function layer(f){return ['road','wall','portal'].includes(f.type)?'roads':['are
 function elevation(s,p){return C.heightAt(s.cityStudio.ground,p)/s.scale;}
 function buildingHeight(f,s){return clamp(Number(f.cityFloors)||1,1,12)*3.1/s.scale;}
 function clipMap(poly){let out=poly;for(const [axis,bound,direction]of [[0,0,1],[0,1000,-1],[1,0,1],[1,1000,-1]]){const next=[];for(let i=0;i<out.length;i++){const a=out[i],b=out[(i+1)%out.length],da=(a[axis]-bound)*direction,db=(b[axis]-bound)*direction;if(da>=0)next.push(a);if((da>=0)!==(db>=0))next.push(lerp(a,b,da/(da-db)));}out=next;}return out;}
-function render(s,view={},bearing=0){
+function render(s,view={},bearing=0){const lang=R.labels.language(view);
  if(!s?.cityStudio)throw Error('2.5D preview requires a City Studio map.');
  const v={...Core.appearance(s),...view},p=R.palettes[v.palette]||R.palettes.atlas,cam=camera(bearing),g=s.cityStudio.ground,hq=v.hq===true,layers={...Core.DEFAULT_LAYERS,...v.layers};
  const visible=f=>!f.hidden&&!(v.player&&f.gmOnly)&&layers[layer(f)]!==false&&!CR.hidden(f,s,v);
@@ -143,14 +143,14 @@ function render(s,view={},bearing=0){
    item={art,d:cam.depth(at)+(f.size||0)*.4,center:at,z:z+height};
   }
   if(item?.art){objects.push({...item,id:f.id});
-   if(layers.labels!==false&&v.labels!==false&&f.label&&f.cityRole==='civic'){const q=project(item.center,item.z+12/s.scale);labels.push(`<text x="${n(q[0])}" y="${n(q[1])}" text-anchor="middle" font-size="10" font-family="Georgia,serif" fill="${p.ink}" stroke="${p.paper}" stroke-width="2" paint-order="stroke">${esc(f.label)}</text>`);}
+   if(layers.labels!==false&&v.labels!==false&&f.label&&f.cityRole==='civic'){const q=project(item.center,item.z+12/s.scale);labels.push(`<text x="${n(q[0])}" y="${n(q[1])}" text-anchor="middle" font-size="10" font-family="Georgia,serif" fill="${p.ink}" stroke="${p.paper}" stroke-width="2" paint-order="stroke">${esc(R.labels.feature(f,lang))}</text>`);}
   }
-  if(f.type==='label'&&f.label&&layers.labels!==false&&v.labels!==false){const q=project(at,z+1);labels.push(`<text x="${n(q[0])}" y="${n(q[1])}" fill="${p.ink}" font-family="Georgia,serif" font-size="11">${esc(f.label)}</text>`);}
+  if(f.type==='label'&&f.label&&layers.labels!==false&&v.labels!==false){const q=project(at,z+1);labels.push(`<text x="${n(q[0])}" y="${n(q[1])}" fill="${p.ink}" font-family="Georgia,serif" font-size="11">${esc(R.labels.feature(f,lang))}</text>`);}
  }
  ground.sort((a,b)=>a.d-b.d);objects.sort((a,b)=>a.d-b.d||a.id.localeCompare(b.id));
  const minX=extent.x0-35,maxX=extent.x1+35,minY=extent.y0-45,maxY=extent.y1+35,w=maxX-minX,h=maxY-minY;
  const definitions=CR.defs(s,p,v)+R.symbols(p,new Set(fs.filter(f=>f.asset).map(f=>f.asset)));
- return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="${Math.round(1600*h/w)}" viewBox="${n(minX)} ${n(minY)} ${n(w)} ${n(h)}" role="img" aria-label="${esc(s.title)} · 2.5D" data-city-perspective="true" data-bearing="${n(cam.bearing)}"><title>${esc(s.title)} — 2.5D</title><desc>Read-only axonometric city view. Building heights and terrain are schematic; edit the authoritative top-down map.</desc><defs>${definitions}</defs><rect x="${n(minX)}" y="${n(minY)}" width="${n(w)}" height="${n(h)}" fill="${p.paper}"/><g data-perspective-terrain="true">${ground.map(x=>x.art).join('')}</g><g data-perspective-surface="true">${surface.join('')}</g><g data-perspective-objects="true">${objects.map(x=>`<g data-id="${esc(x.id)}">${x.art}</g>`).join('')}</g><g pointer-events="none">${labels.join('')}</g></svg>`;
+ return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="${Math.round(1600*h/w)}" viewBox="${n(minX)} ${n(minY)} ${n(w)} ${n(h)}" role="img" aria-label="${esc(R.labels.title(s,lang))} · 2.5D" data-city-perspective="true" data-bearing="${n(cam.bearing)}"><title>${esc(R.labels.title(s,lang))} — 2.5D</title><desc>${esc(R.labels.text('Read-only axonometric city view. Building heights and terrain are schematic; edit the authoritative top-down map.',lang))}</desc><defs>${definitions}</defs><rect x="${n(minX)}" y="${n(minY)}" width="${n(w)}" height="${n(h)}" fill="${p.paper}"/><g data-perspective-terrain="true">${ground.map(x=>x.art).join('')}</g><g data-perspective-surface="true">${surface.join('')}</g><g data-perspective-objects="true">${objects.map(x=>`<g data-id="${esc(x.id)}">${x.art}</g>`).join('')}</g><g pointer-events="none">${labels.join('')}</g></svg>`;
 }
 return{render,camera,elevation,buildingHeight,clipMap};
 });

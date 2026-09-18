@@ -1,3 +1,9 @@
+## City upgrade · Part 1
+
+- Presentation-only EN/IT default labels across maps, inspectors, atlas/search and exports, with persisted custom-name protection and translated planning warnings.
+- Direct header 2.5D button, Shift+V, visible zoom controls, session camera bearing, focus return and a wizard preview entry point.
+- Smart buildings and landmark-complex generation are deliberately reserved for Part 2; existing generation and assets remain unchanged.
+
 ## Wizard-painted city planning and housing variety
 
 - Wizard-only labeled brushes for water, infrastructure and 16 district/open-space roles, with layer erasers, stroke undo/redo, preview, save/load and bounded deterministic fill.

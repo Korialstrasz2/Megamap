@@ -10,11 +10,11 @@ const IT={
  'Schematic terrain and building heights. No geometry is changed.':'Terreno e altezze degli edifici schematici. La geometria non cambia.',
  'Preparing image…':'Preparazione immagine…','Image exported.':'Immagine esportata.','The image could not be exported. Try SVG instead.':'Impossibile esportare l’immagine. Prova il formato SVG.'
 };
-let state=null,installed=false,drag=null;
+let state=null,installed=false,drag=null,lastBearing=0,returnFocus=null;
 const $=id=>root.document.getElementById(id),t=text=>root.MegamapI18n?.t(text)||text;
 function fit(){if(!state)return;state.box=state.full.slice();update();}
 function update(){const svg=$('city25Host').querySelector('svg');if(svg&&state)svg.setAttribute('viewBox',state.box.join(' '));}
-function draw(){if(!state)return;state.svg=root.MegamapCityPerspective.render(state.scene,state.view,state.bearing);$('city25Host').innerHTML=state.svg;const svg=$('city25Host').querySelector('svg');state.full=svg.getAttribute('viewBox').split(/\s+/).map(Number);fit();}
+function draw(){if(!state)return;$('city25MapName').textContent=root.MegamapMapLabels.title(state.scene);state.svg=root.MegamapCityPerspective.render(state.scene,state.view,state.bearing);$('city25Host').innerHTML=state.svg;const svg=$('city25Host').querySelector('svg');state.full=svg.getAttribute('viewBox').split(/\s+/).map(Number);fit();}
 function zoom(factor){if(!state)return;const b=state.box,scale=Math.max(.08,Math.min(4,b[2]*factor/state.full[2])),w=state.full[2]*scale,h=state.full[3]*scale;state.box=[b[0]+(b[2]-w)/2,b[1]+(b[3]-h)/2,w,h];update();}
 function save(blob,suffix,title=state?.scene.title){const url=URL.createObjectURL(blob),a=root.document.createElement('a');a.href=url;a.download=String(title||'city').replace(/[^a-z0-9_-]+/gi,'-').slice(0,80)+'-2.5D.'+suffix;root.document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
 async function png(){if(!state)return;const current=state,title=current.scene.title,button=$('city25Png'),message=$('city25Status');button.disabled=true;message.textContent=t('Preparing image…');let url;
@@ -28,15 +28,16 @@ async function png(){if(!state)return;const current=state,title=current.scene.ti
  finally{if(url)URL.revokeObjectURL(url);button.disabled=false;}
 }
 function install(){if(installed)return;installed=true;const host=$('city25Host'),dialog=$('city25Dialog');
- $('city25Left').onclick=()=>{state.bearing=(state.bearing+270)%360;draw();};$('city25Right').onclick=()=>{state.bearing=(state.bearing+90)%360;draw();};$('city25Fit').onclick=fit;
+ $('city25Left').onclick=()=>{state.bearing=(state.bearing+270)%360;draw();};$('city25Right').onclick=()=>{state.bearing=(state.bearing+90)%360;draw();};$('city25Fit').onclick=fit;$('city25ZoomIn').onclick=()=>zoom(1/1.15);$('city25ZoomOut').onclick=()=>zoom(1.15);
  $('city25Close').onclick=()=>dialog.close();$('city25Svg').onclick=()=>save(new Blob([state.svg],{type:'image/svg+xml'}),'svg');$('city25Png').onclick=png;
- dialog.addEventListener('close',()=>{drag=null;});
+ dialog.addEventListener('close',()=>{if(state)lastBearing=state.bearing;drag=null;state=null;if(returnFocus?.isConnected)returnFocus.focus();returnFocus=null;});
+ root.document.addEventListener('megamap:languagechange',()=>{if(state&&dialog.open){const box=state.box.slice();draw();state.box=box;update();$('city25Status').textContent=t('Schematic terrain and building heights. No geometry is changed.');}});
  host.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY>0?1.12:1/1.12);},{passive:false});
  host.addEventListener('pointerdown',e=>{if(e.button!==0||!state)return;host.focus();drag={x:e.clientX,y:e.clientY,box:state.box.slice()};host.setPointerCapture(e.pointerId);});
  host.addEventListener('pointermove',e=>{if(!drag||!state)return;const bounds=host.getBoundingClientRect(),scale=Math.min(bounds.width/drag.box[2],bounds.height/drag.box[3]);state.box=[drag.box[0]-(e.clientX-drag.x)/scale,drag.box[1]-(e.clientY-drag.y)/scale,...drag.box.slice(2)];update();});
  host.addEventListener('pointerup',()=>{drag=null;});host.addEventListener('pointercancel',()=>{drag=null;});
  host.addEventListener('keydown',e=>{if(!state)return;const b=state.box;if(e.key==='+'||e.key==='=')zoom(1/1.15);else if(e.key==='-')zoom(1.15);else if(e.key==='Home')fit();else if(e.key.startsWith('Arrow')){if(e.key==='ArrowLeft')b[0]-=b[2]*.06;if(e.key==='ArrowRight')b[0]+=b[2]*.06;if(e.key==='ArrowUp')b[1]-=b[3]*.06;if(e.key==='ArrowDown')b[1]+=b[3]*.06;update();}else return;e.preventDefault();});
 }
-function open(scene,view={}){if(!scene?.cityStudio)return;install();state={scene,view:{...view},bearing:0,svg:'',box:[],full:[]};$('city25Status').textContent=t('Schematic terrain and building heights. No geometry is changed.');draw();$('city25Dialog').showModal();$('city25Host').focus();}
+function open(scene,view={}){if(!scene?.cityStudio)return;install();returnFocus=root.document.activeElement;state={scene,view:{...view},bearing:lastBearing,svg:'',box:[],full:[]};$('city25Status').textContent=t('Schematic terrain and building heights. No geometry is changed.');draw();if(!$('city25Dialog').open)$('city25Dialog').showModal();$('city25Host').focus();}
 return{open,IT};
 });
