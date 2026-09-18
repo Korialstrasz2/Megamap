@@ -41,6 +41,10 @@ jobs:
         run: python tests/browser_city_refinement.py --output "$RUNNER_TEMP/city-refinement-qa"
       - name: Wizard-only painting, housing, masks, preview and saved plans with shipped CSP
         run: python tests/browser_city_paint.py --output "$RUNNER_TEMP/city-paint-qa"
+      - name: Localized maps and direct 2.5D entry points with shipped CSP
+        run: python tests/browser_city_part1.py --output "$RUNNER_TEMP/city-part1-qa"
+      - name: Verify package hashes
+        run: node scripts/verify-package.cjs
       - name: Package matching source for reproduction
         if: always()
         run: git archive --format=tar.gz -o "$RUNNER_TEMP/city-studio-source.tar.gz" HEAD
@@ -55,7 +59,7 @@ jobs:
           tap = root / 'city-studio-tests.tap'
           if tap.exists():
               lines += [line for line in tap.read_text().splitlines() if line.startswith(('# tests ', '# pass ', '# fail '))]
-          for suite in ['city-studio-qa', 'city-refinement-qa', 'city-paint-qa']:
+          for suite in ['city-studio-qa', 'city-refinement-qa', 'city-paint-qa', 'city-part1-qa']:
               report = root / suite / 'report.json'
               if report.exists():
                   data = json.loads(report.read_text())
@@ -74,5 +78,6 @@ jobs:
             ${{ runner.temp }}/city-studio-qa/
             ${{ runner.temp }}/city-refinement-qa/
             ${{ runner.temp }}/city-paint-qa/
+            ${{ runner.temp }}/city-part1-qa/
             ${{ runner.temp }}/city-studio-source.tar.gz
           retention-days: 7

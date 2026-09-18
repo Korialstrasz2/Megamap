@@ -1,8 +1,8 @@
 /* Megamap 1.2.0 — offline interface language layer (English source → Italian).
  * Default language: Italiano. Stored with the other UI preferences under the
  * localStorage key "megamap-ui-v1" (field: lang). No network access, no build step.
- * Static interface chrome and known status strings are translated; user content
- * (map titles, labels, notes, seeds) is never touched.
+ * Static chrome and known status strings are translated. Generated map labels
+ * use map-labels.js in renderers; custom names, notes and seeds stay verbatim.
  */
 (function(){
 'use strict';
@@ -1322,7 +1322,8 @@ Object.assign(IT,{
  "Opposing entrance": "Ingresso opposto",
  "The arena is too tight for all requested cover. Enlarge the floor or reduce cover.": "L’arena è troppo stretta per tutte le coperture richieste. Amplia il terreno o riduci le coperture."
 });
-const SKIP='#mapHost,#atlasCards,#featureResults,#mapNotes';
+for(const [key,value] of Object.entries(window.MegamapMapLabels?.IT||{}))if(!Object.hasOwn(IT,key))IT[key]=value;
+const SKIP='#mapHost,#city25Host,#atlasCards,#featureResults,#mapNotes,[data-user-content]';
 const ATTRS=['title','aria-label','placeholder','label'];
 const entries=[];
 function replacement(raw){
@@ -1337,7 +1338,8 @@ function replacement(raw){
 }
 function t(text){
  if(typeof text!=='string'||!text||lang==='en')return text;
- return replacement(text)||text;
+ const semantic=window.MegamapMapLabels?.text(text,lang);
+ return semantic!==text&&semantic!=null?semantic:replacement(text)||text;
 }
 function prune(){
  if(entries.length<4000)return;
@@ -1350,16 +1352,18 @@ function remember(entry){
 function translateText(node){
  const raw=node.nodeValue,next=replacement(raw);
  if(next==null||next===raw)return;
- if(node.__i18nEn==null)node.__i18nEn=raw;
- remember({node,en:node.__i18nEn,it:next});
+ let entry=node.__i18nRecord;
+ if(!entry){entry={node,en:raw,it:next};node.__i18nRecord=entry;remember(entry);}
+ else{entry.en=raw;entry.it=next;}
  node.nodeValue=next;
 }
 function translateAttr(el,attr){
  const raw=el.getAttribute(attr),next=raw&&replacement(raw);
  if(next==null||next===raw)return;
- if(el.__i18nEn==null)el.__i18nEn={};
- if(el.__i18nEn[attr]==null)el.__i18nEn[attr]=raw;
- remember({el,attr,en:el.__i18nEn[attr],it:next});
+ el.__i18nRecords=el.__i18nRecords||{};
+ let entry=el.__i18nRecords[attr];
+ if(!entry){entry={el,attr,en:raw,it:next};el.__i18nRecords[attr]=entry;remember(entry);}
+ else{entry.en=raw;entry.it=next;}
  el.setAttribute(attr,next);
 }
 function blocked(el){return !el||!!el.closest(SKIP);}
@@ -1367,7 +1371,7 @@ function scan(root){
  if(blocked(root))return;
  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode(node){
   const parent=node.parentElement;
-  if(!parent||['SCRIPT','STYLE','TEXTAREA'].includes(parent.tagName))return NodeFilter.FILTER_REJECT;
+  if(!parent||blocked(parent)||['SCRIPT','STYLE','TEXTAREA'].includes(parent.tagName))return NodeFilter.FILTER_REJECT;
   return node.nodeValue.trim()?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;
  }});
  let node;
@@ -1396,23 +1400,23 @@ function watch(){
 function capture(root){
  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode(node){
   const parent=node.parentElement;
-  if(!parent||['SCRIPT','STYLE','TEXTAREA'].includes(parent.tagName))return NodeFilter.FILTER_REJECT;
+  if(!parent||blocked(parent)||['SCRIPT','STYLE','TEXTAREA'].includes(parent.tagName))return NodeFilter.FILTER_REJECT;
   return node.nodeValue.trim()?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;
  }});
  let node;
  while((node=walker.nextNode())){
   const raw=node.nodeValue,core=raw.trim(),italian=IT[core];
   if(italian==null)continue;
-  entries.push({node,en:raw,it:raw.match(/^\s*/)[0]+italian+raw.match(/\s*$/)[0]});
+  const entry={node,en:raw,it:raw.match(/^\s*/)[0]+italian+raw.match(/\s*$/)[0]};node.__i18nRecord=entry;entries.push(entry);
  }
  for(const el of [root,...root.querySelectorAll('*')]){
-  if(!el.getAttribute)continue;
+  if(!el.getAttribute||blocked(el))continue;
   for(const attr of ['title','aria-label','placeholder']){
    const value=el.getAttribute(attr);
    if(!value)continue;
    const italian=IT[value.trim()];
    if(italian==null)continue;
-   entries.push({el,attr,en:value,it:value.replace(value.trim(),italian)});
+   const entry={el,attr,en:value,it:value.replace(value.trim(),italian)};el.__i18nRecords=el.__i18nRecords||{};el.__i18nRecords[attr]=entry;entries.push(entry);
   }
  }
 }
@@ -1426,6 +1430,7 @@ function setLang(next){
  }
  // Text rendered while English was active is already in the DOM: sweep it once.
  if(lang==='it'&&document.body)scan(document.body);
+ document.dispatchEvent(new CustomEvent('megamap:languagechange',{detail:{language:lang}}));
 }
 function apply(root){
  if(captured)return;

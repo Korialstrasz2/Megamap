@@ -1,3 +1,7 @@
+## City upgrade · Part 1: labels and direct 2.5D
+
+Generated map labels now follow English/Italian throughout the map, inspector, search and exports. Custom names remain verbatim. A direct **2.5D** map-header button, **Shift+V** shortcut, visible zoom controls and **2.5D preview** in the painted-plan wizard make perspective easier to open. No generation rules or assets change in this part. See [Part 1 guide and Part 2 scope](docs/city-part1.html).
+
 
 ## Wizard-painted cities and housing climates
 

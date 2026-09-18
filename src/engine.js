@@ -993,6 +993,7 @@ function validateScene(s){
  for(const k of ['width','height'])if(!Number.isFinite(s[k])||s[k]<=0||s[k]>10000)throw Error('Invalid map dimensions.');
  if(!Number.isFinite(s.scale)||s.scale<=0||s.scale>100000)throw Error('Invalid map scale.');
  if(!Array.isArray(s.features)||s.features.length>40000)throw Error('Invalid or oversized feature list (40,000 maximum).');
+ if(s.titleCustom!=null&&typeof s.titleCustom!=='boolean')throw Error('Invalid custom title flag.');
  if(typeof s.title!=='string'||s.title.length>1000)throw Error('Invalid map title.');
  if(s.notes!=null&&(typeof s.notes!=='string'||s.notes.length>200000))throw Error('Invalid map notes.');
  s.seed=String(s.seed??'imported').slice(0,120);s.notes=s.notes||'';s.units=s.mode==='battle'?'ft':'km';
@@ -1006,6 +1007,7 @@ function validateScene(s){
  const ids=new Set();
  for(const f of s.features){
   if(!f||typeof f!=='object'||!types.has(f.type)||typeof f.id!=='string'||f.id.length>150||ids.has(f.id))throw Error('Invalid or duplicated feature.');ids.add(f.id);
+  if(f.labelCustom!=null&&typeof f.labelCustom!=='boolean')throw Error('Invalid custom label flag.');
   for(const k of ['label','notes','ward','quarter','buildingKind','roofAsset'])if(f[k]!=null&&(typeof f[k]!=='string'||f[k].length>200000))throw Error('Invalid feature text.');
   for(const k of ['x','y','width','size','rotation','opacity','range','intensity','aspect','roof','z','roofAngle','roofWidth','roofHeight','roofCx','roofCy','widthMeters','elevationM'])if(f[k]!=null&&(!Number.isFinite(f[k])||Math.abs(f[k])>20000))throw Error('Invalid feature geometry.');
   for(const k of ['size','width','range','aspect'])if(f[k]!=null&&f[k]<=0)throw Error('Feature size must be positive.');
