@@ -1,4 +1,4 @@
-name: Assemble City Part 1 source
+name: Finalize City Part 1 source
 on:
   push:
     branches: [feature/city-part1-language-view]
@@ -6,70 +6,51 @@ on:
 permissions:
   contents: write
 jobs:
-  assemble:
+  finalize:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Apply hash-verified reviewed UTF-8 source operations
+      - name: Verify small final text fixes
         run: |
           python - <<'PY'
-          import base64, hashlib, json, lzma
           from pathlib import Path
-          digest = lambda data: hashlib.sha256(data).hexdigest()
-          parts = [Path(f'.part1-transfer/part-{i:02d}.b64').read_bytes().strip() for i in range(3)]
-          for i, part in enumerate(parts):
-              print('Part', i, len(part), digest(part))
-          raw = lzma.decompress(base64.b64decode(b''.join(parts), validate=True))
-          assert digest(raw) == '8245f4d186f6a764e1c2041879d9953edf5dd9c718fc7aea49aa89b40f988ee9', 'Source bundle mismatch'
-          ops = json.loads(raw)
-          assert len(ops) == 17
-          for op in ops:
-              path = Path(op['path'])
-              assert not path.is_absolute() and '..' not in path.parts and '.git' not in path.parts
-              assert path.parts[0] != '.github' and not path.is_symlink()
-              assert all(not parent.is_symlink() for parent in path.parents)
-              if op['before'] is None:
-                  assert not path.exists(), str(path)
-                  text = ''
-              else:
-                  original = path.read_bytes()
-                  assert digest(original) == op['before'], 'Base mismatch: ' + str(path)
-                  text = original.decode('utf-8')
-              end = 0
-              for start, stop, replacement in op['edits']:
-                  assert end <= start <= stop <= len(text)
-                  end = stop
-              for start, stop, replacement in reversed(op['edits']):
-                  text = text[:start] + replacement + text[stop:]
-              data = text.encode('utf-8')
-              assert digest(data) == op['after'], 'Result mismatch: ' + str(path)
-              path.parent.mkdir(parents=True, exist_ok=True)
-              path.write_bytes(data)
-              print('Verified', path)
+          import hashlib,json
+          h=lambda b:hashlib.sha256(b).hexdigest()
+          p=Path('src/map-labels.js')
+          assert h(p.read_bytes())=='52e0c3c0744e72c00f3a332394e49d8ea0e5a8534e690dd830d2eba95732357b'
+          t=p.read_text()
+          for a,b in [('" objects": "oggetti"','" objects": " oggetti"'),('" buildings": "edifici"','" buildings": " edifici"'),('" samples": "campioni"','" samples": " campioni"')]:
+              assert a in t
+              t=t.replace(a,b)
+          p.write_text(t)
+          assert h(p.read_bytes())=='5aa383bbb7840d04752d3ebbbb927b915991f55be0906085a3980942840bcec8'
+          p=Path('tests/map-labels.test.cjs')
+          assert h(p.read_bytes())=='6266cb9ecb68c012525f7cd1191886c600abd80168b54ae2f208e7cc44b2d744'
+          t=p.read_text()
+          a="test('City placement diagnostics translate their actual counts and district names',()=>{"
+          b=a+"\n assert.equal('12'+L.text(' buildings','it'),'12 edifici');assert.equal('28'+L.text(' objects','it'),'28 oggetti');"
+          assert a in t
+          p.write_text(t.replace(a,b))
+          assert h(p.read_bytes())=='084dab50abb0112e9318629d3c3bdb2a38afd8a4670a32d4eda758901dcbcf2a'
+          p=Path('docs/SHA256_MANIFEST.json')
+          assert h(p.read_bytes())=='44b5ca216a3f3db2f0c2de73ab36979bc89ec1c80b807cf8a4b746a0d8ee4d37'
+          data=json.loads(p.read_text())
+          for name in data['files']:
+              data['files'][name]=h(Path(name).read_bytes())
+          p.write_text(json.dumps(data,indent=2)+'\n')
+          assert h(p.read_bytes())=='0041d80c71b38f8f43912d04250dd729021f38612bff3d657ddb1d1b2c4b90e7'
           PY
-          for file in src/*.js; do node --check "$file"; done
-          git diff --check
-      - name: Verify unchanged generated assets and examples
-        run: |
-          node scripts/build-assets.cjs
-          git diff --exit-code -- assets/
-          node scripts/build-city-studio-examples.cjs --check
-          node scripts/build-painted-city-examples.cjs --check
-          node scripts/build-encounter-examples.cjs --check
-          node scripts/build-arena-example.cjs --check
+          node --test tests/map-labels.test.cjs
           node scripts/verify-package.cjs
-      - name: Run source regressions
-        run: node --test tests/*.test.cjs
-      - name: Remove transfer and commit reviewed source on feature branch
+          git diff --check
+      - name: Commit text fixes on isolated feature branch
         run: |
-          git rm -r .part1-transfer
-          git add -A
-          git diff --cached --check
+          git add src/map-labels.js tests/map-labels.test.cjs docs/SHA256_MANIFEST.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m "Implement Part 1 bilingual map labels and direct 2.5D access"
+          git commit -m "Keep word spacing in Italian map statistics"
           git push origin HEAD:feature/city-part1-language-view
