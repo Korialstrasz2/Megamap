@@ -2,6 +2,12 @@
 
 City Studio is the new, independent fantasy-settlement tool. **Build → City Studio** opens it. **Build → City · legacy** retains the previous guided city generator, its shape controls, building whitelist and district programs. Loading an existing atlas does not regenerate any map.
 
+## Refinement and 2.5D
+
+Preset-specific neighborhood profiles now place working waterfronts, elevated civic/villa quarters, dense frontages, service yards and quieter edges according to location. Selected neighborhoods reserve small signature courts before building infill. Sixteen new **City details** add net racks, assembly stones, boatbuilding cradles, bazaars, cisterns, pergolas and other physical infrastructure, without adding generator controls or narrative content.
+
+**Style → Open 2.5D view** opens a read-only axonometric view with terrain relief, building walls, pitched roofs, trees and vessels. Rotate in 90-degree steps, drag to pan, scroll or use +/− to zoom, and press Home to fit. SVG and PNG export the complete projection. Return to the top-down editor to move or reshape objects. Heights and terrain are schematic; this is not a 3D editor or an exact occlusion/line-of-sight system. Read [City refinement and 2.5D](city-refinement.html) for material, asset, export and compatibility details.
+
 ## Start with a place, not a wall of parameters
 
 Choose a **Preset**, leave **Settlement size** at **By preset**, and generate. This adds a map rather than replacing the active map. The same controls are available in **New wizard**. There are two sections: **Settlement** and **Customize**. Exact count overrides and optional route layers are folded away.
@@ -45,7 +51,7 @@ The **Exact overrides** section has a structure target (0 = automatic), boat cou
 
 **HQ** is on for newly generated Studio maps and is available both during creation and afterward in **Style**. It adds procedural roof materials, architectural depth, paving, water marks, foliage and ship detail while retaining the existing six cartographic palettes. Standard mode uses simpler vectors. Neither mode needs an account, a texture download, an API key or an online renderer.
 
-Switching HQ does not change a footprint, a street or a saved map's seed. The setting is stored per map, can be undone/redone and is used by SVG, PNG and WebP exports. **Roof & floor detail** remains an independent appearance control. City Studio adds procedural vector drawing code, not hundreds of near-duplicate library files; the existing 278-item asset library remains intact.
+Switching HQ does not change a footprint, a street or a saved map's seed. The setting is stored per map, can be undone/redone and is used by SVG, PNG and WebP exports. **Roof & floor detail** remains an independent appearance control. City Studio adds procedural vector drawing code, not hundreds of near-duplicate library files; the 278 existing symbols are retained, with 16 City details added for a total of 294 assets.
 
 ## Optional routes, not extra campaigns
 
@@ -73,6 +79,7 @@ Developer verification:
 node --test tests/*.test.cjs
 node scripts/build-city-studio-examples.cjs --check
 python tests/browser_city_studio.py
+python tests/browser_city_refinement.py
 ```
 
 The new source tests cover both engines, repeated presets, exact tiny settlements, independent polygon intersection checks, whole-hull water placement, connected street/access graphs, physical roof gaps, rendering, strict envelopes, option bounds, malformed imports and locked neighborhood regeneration. Browser tests cover sidebar, wizard, Italian controls, a narrow viewport, saved geometry, HQ, layers, undo/redo and image export. GitHub Actions opens the actual local entry point with the shipped CSP. The optional `--inline` test fallback removes CSP and must not be presented as a file/CSP verification.
@@ -94,3 +101,10 @@ I collegamenti fra tetti e i percorsi sotterranei sono tracciati facoltativi da 
 Per rigenerare un quartiere, abilita il livello Distretti, selezionalo e usa **Rigenera questo distretto** nel pannello Oggetto. Strade, altri quartieri, luoghi civici ed edifici bloccati vengono mantenuti; Annulla ripristina la situazione precedente. Le modifiche manuali non risolvono automaticamente accessi, corti o tracciati collegati: controllali dopo lo spostamento di un edificio.
 
 Apri **examples/City-Studio.megamap.json** per sei esempi modificabili. Salva l’atlante prima di aggiornare. Tutto il funzionamento, inclusi SVG, PNG e WebP, resta locale e offline. Il rilievo è sintetico e il risultato è una cartografia fantasy bidimensionale, non una simulazione storica o un rilievo topografico.
+
+
+### Raffinamenti e vista 2.5D
+
+I quartieri hanno profili più specifici per ogni modello: cantieri sull’acqua, corti alte, fronti commerciali fitti, margini misti e cortili di servizio. Sedici nuovi dettagli fisici portano la libreria a 294 simboli: reti da pesca, scali per barche, sedute dell’assemblea, cisterne, pergole, bazar e reperti. HQ distingue materiali e giardini senza aggiungere parametri.
+
+Apri **Stile → Apri vista 2.5D**. La prospettiva è di sola lettura: ruota di 90°, trascina per spostare, scorri o usa +/− per lo zoom, Home per adattare. SVG e PNG esportano l’intera proiezione, non il ritaglio temporaneo. Esc o **Torna alla mappa** riaprono la vista dall’alto. Terreno, altezze e visibilità sono schematici, non un modello 3D esatto; la telecamera non è salvata nell’atlante. Le mappe già salvate non vengono rigenerate.

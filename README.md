@@ -1,9 +1,21 @@
+
+## Wizard-painted cities and housing climates
+
+**New wizard → City Studio → Paint a city plan** adds labeled water, road, wall and district brushes. Sketch the layout, preview it, then generate editable streets and architecture. Painting is wizard-only; normal sidebar generation remains independent. Houses now vary by climate and means in footprint, spacing, roof form, materials and detail, including the retained 2.5D view. Open `examples/Painted-Cities.megamap.json` for two examples. See `docs/city-paint.html` for English/Italian instructions and planning limits.
 # Megamap 1.2
 ## An offline mapmaking workbench for campaign, landscape, city and encounter maps
 
 **Target:** tabletop game masters and campaign builders who need editable maps, predictable physical scales, configurable city layouts and a local asset library without an account, subscription, API key or online service.
 
 **Scope:** a portable **2D procedural generator and editor**, launched from a Windows `.bat` into a browser. This is the complete source-and-runtime package for the features below. It builds on the supplied Megamap v1; it is not a signed native executable, a GIS survey system, or a full fork of Watabou's current private engine.
+
+## City Studio refinement and 2.5D view
+
+City Studio now gives each preset more specific neighborhood placement, architectural proportions, activity at major street frontages, quieter district edges and reserved signature courts. Sixteen new editable **City details** bring the library to **294 assets in 15 categories**. HQ adds differentiated tile, slate, shingle, thatch, turf, plaster and weathered roofs, plus clipped courtyard paving and gardens. No additional generator parameters are required.
+
+Open a Studio map, choose **Style → Open 2.5D view**, then rotate, pan or zoom the read-only axonometric view. Terrain relief, walls, pitched roofs, trees, piers and vessels are projected from the map; export the full view as **SVG or PNG**. Return to the top-down editor to change geometry. The viewer is a schematic height projection, not a 3D editor, exact visibility solver or battle-map exporter. See [City refinement and 2.5D](docs/city-refinement.html).
+
+Saved geometry and the legacy city tool remain intact. Newly generated Studio maps use the refined rules; old maps are not silently rebuilt. Physical settlements only: no generated people or stories.
 
 ## New: City Studio — fantasy settlements, separately from legacy cities
 
@@ -19,7 +31,7 @@ The large **New wizard / Nuova procedura guidata** button beside the title offer
 
 **Build → Battle → Preset**, or the wizard, now includes **Forest road encounter, Mountain path, Marsh causeway, Coastal cove, Mansion interior and Castle interior**. The first four generate open terrain **without rooms**; the two interiors have different 13-room programs, furnished public, private and service spaces, and editable architecture. All 12 previous battle themes remain available: **18 total**.
 
-The library now contains **278 vector assets in 14 categories**, including **32 new landscape and mansion/castle props**. Open **examples/Six-new-encounters.megamap.json** for six ready-to-edit maps. English/Italian instructions, controls, asset IDs and export limitations are in **docs/encounter-expansion.md**; wizard instructions are in **docs/map-wizard.md**.
+The encounter expansion brought the library to **278 vector assets in 14 categories**, including **32 new landscape and mansion/castle props**. Open **examples/Six-new-encounters.megamap.json** for six ready-to-edit maps. English/Italian instructions, controls, asset IDs and export limitations are in **docs/encounter-expansion.md**; wizard instructions are in **docs/map-wizard.md**.
 
 Outdoor trees and rocks are visual cover, not automatic VTT line-of-sight walls. Add wall segments where required. Imported older atlases retain their stored geometry; they are not regenerated automatically. The sections below describe the original v1.2 release and its historical verification counts.
 

@@ -1,8 +1,8 @@
 # Megamap 1.2 vector library
 
-**278 distinct SVG symbols in 14 categories.** The encounter expansion adds **32 symbols** in **Battle landscapes** and **Manor & castle**. V1.2 adds **103 symbols** to the previous 143: **37 Quarter rooftops, 41 Quarter details and 25 Local landscape** assets. Counts refer to distinct symbol definitions, not recolored duplicates.
+**294 distinct SVG symbols in 15 categories.** The City Studio refinement adds **16 physical City details**, including net racks, boatbuilding cradles, assembly benches, pergolas, cisterns, bazaars and excavated relic gardens. The encounter expansion adds **32 symbols** in **Battle landscapes** and **Manor & castle**. V1.2 adds **103 symbols** to the previous 143: **37 Quarter rooftops, 41 Quarter details and 25 Local landscape** assets. Counts refer to distinct symbol definitions, not recolored duplicates.
 
-Open `catalog.html` for searchable previews; `catalog.json` contains metadata and stable IDs. `svg/` contains 278 standalone 256-pixel SVG wrappers with transparent backgrounds and vector geometry. The application uses the same source definitions embedded at rendering time, so it does not load hundreds of external SVG files during startup.
+Open `catalog.html` for searchable previews; `catalog.json` contains metadata and stable IDs. `svg/` contains 294 standalone 256-pixel SVG wrappers with transparent backgrounds and vector geometry. The application uses the same source definitions embedded at rendering time, so it does not load hundreds of external SVG files during startup.
 
 Quarter rooftops are top-down and used by city building programs: roofs are rotated, stretched to lot bounds and clipped to actual building polygons. Decorative roofs are not interiors. Quarter details distinguish trade, temple, military, noble, academic, industrial, garden, necropolis and other areas. The Local landscape symbols depict terrain and land-cover patches, not measured footprints at regional scale.
 
@@ -10,6 +10,8 @@ The retained categories are Nature, Buildings, Infrastructure, Camp & travel, In
 
 All symbols respond to the six map palettes. Standalone files use Field Atlas. No external art packs, photographs, bitmap fonts or Watabou illustrations are distributed. Imported user artwork retains its owner's terms.
 
-Source: `../src/assets.js`, `../src/encounter-content.js` and `../src/render.js`. Regenerate the catalog and standalone files with `node scripts/build-assets.cjs` from the project root. No rebuild is needed for normal use.
+Source: `../src/assets.js`, `../src/city-assets.js`, `../src/encounter-content.js` and `../src/render.js`. Regenerate the catalog and standalone files with `node scripts/build-assets.cjs` from the project root. No rebuild is needed for normal use.
 
 Code and bundled artwork: **GNU GPL version 3 only**; see `../LICENSE` and `../NOTICE`. The 32 encounter additions and their stable IDs are documented in `../docs/encounter-expansion.md`. The historical 103 v1.2 additions are listed in `../docs/NEW_ASSETS_V12.json`.
+
+The City details are palette-aware top-down stamps with physical size hints for generation and projection. They remain ordinary selectable/rotatable assets; they are not full 3D meshes. Their stable IDs and use are listed in `../docs/city-refinement.md`.

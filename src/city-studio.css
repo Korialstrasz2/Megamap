@@ -10,3 +10,14 @@
 .city-exact summary { cursor: pointer; font-size: .83rem; font-weight: 600; margin-bottom: .55rem; }
 #cityLevelControl .micro { display: block; font-weight: normal; margin-top: .35rem; }
 .new-map-wizard .city-summary { max-width: 100%; }
+/* The perspective is a separate read-only viewport, never an editing overlay. */
+.city-perspective-dialog{width:min(96vw,1500px);max-width:96vw;height:min(92vh,1100px);max-height:92vh;padding:18px;box-sizing:border-box;}
+.city-perspective-dialog[open]{display:flex;flex-direction:column;gap:10px;}
+.city-perspective-dialog h2{margin:0;}.city-perspective-dialog p{margin:0;}
+.city-perspective-actions{display:flex;flex-wrap:wrap;gap:7px;align-items:center;}
+.city-perspective-actions button{width:auto;flex:0 1 auto;}
+#city25Host{flex:1;min-height:150px;overflow:hidden;border:1px solid var(--line,#55645b);border-radius:8px;cursor:grab;touch-action:none;background:var(--paper,#eee8d7);}
+#city25Host:active{cursor:grabbing;}#city25Host:focus-visible{outline:2px solid var(--accent,#91af96);outline-offset:2px;}
+#city25Host>svg{width:100%;height:100%;display:block;pointer-events:none;user-select:none;}
+#city25Open{width:100%;margin:8px 0;}
+@media(max-width:650px){.city-perspective-dialog{padding:10px;gap:7px;}.city-perspective-actions button{font-size:11px;padding:7px 9px;}#city25Hints{font-size:10px;}}

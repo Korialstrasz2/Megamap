@@ -1,3 +1,11 @@
+## Painted plans and housing climates
+
+Extract the complete updated folder. The colored planning canvas is available only in the City Studio wizard; ordinary sidebar generation does not reuse a sketch. Existing maps retain their geometry. Saved painted maps include the original strokes: use **Load current map plan** in the wizard to edit them and generate a new map. House variation is applied to newly generated buildings, not silently to old footprints. See `docs/city-paint.html`.
+
+## City Studio refinement / 2.5D
+
+Extract the complete updated folder; new local modules and the expanded vector library are required. Save a backup first. Existing Studio maps keep their stored geometry and can be viewed through **Style → Open 2.5D view**. Missing older material/profile fields use safe defaults; loading does not regenerate a city. New maps use refined generation, so the same seed may differ from the first Studio release. A selected neighborhood is regenerated only on explicit request. The camera and pan/zoom are transient viewer state, not saved map geometry. Older application builds may not recognize new stamps or metadata. Legacy City and stored battle geometry remain unchanged.
+
 ## City Studio addition
 
 The new **Build → City Studio** tool is independent. **City · legacy** keeps the previous generator, and old saved geometry is never regenerated on load. New Studio maps use additive `cityStudio.version: 1` metadata with the existing atlas format. Older builds do not understand Studio rendering. Save an atlas backup and extract the complete updated package before using the new tool. See `docs/city-studio.html`.
