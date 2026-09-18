@@ -1,4 +1,5 @@
 name: Assemble city terrain fixes
+# retry after bounded transfer completed
 on:
   push:
     branches: [fix/painted-terrain-and-perspective]
