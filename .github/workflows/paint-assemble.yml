@@ -1,0 +1,89 @@
+name: Assemble painted city source
+on:
+  push:
+    branches: [feature/painted-city-plans]
+    paths: [.github/workflows/paint-assemble.yml]
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify and apply reviewed UTF-8 source operations
+        run: |
+          python - <<'PY'
+          import base64, hashlib, json, lzma
+          from pathlib import Path
+          digest = lambda b: hashlib.sha256(b).hexdigest()
+          parts = [Path(f'.paint-transfer/part-{i:02}.b64').read_bytes().strip() for i in range(5)]
+          for i, part in enumerate(parts):
+              print('Part', i, len(part), digest(part))
+          raw = lzma.decompress(base64.b64decode(b''.join(parts), validate=True))
+          assert digest(raw) == '7203330329d46d182f667f8fb10b529671055cfc33bc0eec010de4d051e620c8', 'Source bundle mismatch'
+          ops = json.loads(raw)
+          assert len(ops) == 42
+          for op in ops:
+              path = Path(op['path'])
+              assert not path.is_absolute() and '..' not in path.parts and '.git' not in path.parts
+              assert path.parts[0] != '.github' and not path.is_symlink()
+              assert all(not parent.is_symlink() for parent in path.parents)
+              if op['before'] is None:
+                  assert not path.exists(), str(path)
+                  text = ''
+              else:
+                  original = path.read_bytes()
+                  assert digest(original) == op['before'], 'Base mismatch: ' + str(path)
+                  text = original.decode('utf-8')
+              end = 0
+              for start, stop, replacement in op['edits']:
+                  assert end <= start <= stop <= len(text)
+                  end = stop
+              for start, stop, replacement in reversed(op['edits']):
+                  text = text[:start] + replacement + text[stop:]
+              data = text.encode('utf-8')
+              assert digest(data) == op['after'], 'Result mismatch: ' + str(path)
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_bytes(data)
+              print('Verified', path)
+          PY
+          for file in src/*.js; do node --check "$file"; done
+      - name: Build deterministic assets and examples; preserve legacy examples
+        run: |
+          node scripts/build-assets.cjs
+          node scripts/build-city-studio-examples.cjs
+          node scripts/build-city-studio-examples.cjs --check
+          node scripts/build-painted-city-examples.cjs
+          node scripts/build-painted-city-examples.cjs --check
+          node scripts/build-encounter-examples.cjs --check
+          node scripts/build-arena-example.cjs --check
+      - name: Run all source regressions
+        run: node --test tests/*.test.cjs
+      - name: Remove transport and create final package manifest
+        run: |
+          git rm -r .paint-transfer
+          git add -A
+          python - <<'PY'
+          import hashlib, json, subprocess
+          from pathlib import Path
+          manifest = 'docs/SHA256_MANIFEST.json'
+          omit = {manifest, '.github/workflows/paint-assemble.yml'}
+          names = subprocess.check_output(['git','ls-files','-z']).decode().split('\0')
+          files = {name:hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in sorted(names) if name and name not in omit}
+          data = {'version':'1.2.0','build':'Painted city plans, climate housing and 2.5D','algorithm':'SHA-256','excluded':[manifest],'files':files}
+          Path(manifest).write_text(json.dumps(data, indent=2) + '\n', encoding='utf-8')
+          print('Manifest:',len(files),'files')
+          PY
+          node scripts/verify-package.cjs
+          git add -A
+          git diff --cached --check
+      - name: Commit reviewed source to feature branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "Add painted city planning, climate-aware homes and refined 2.5D cities"
+          git push origin HEAD:feature/painted-city-plans
