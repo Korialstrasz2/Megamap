@@ -1,7 +1,7 @@
 {
   "version": "1.2.0",
   "license": "GPL-3.0-only",
-  "count": 294,
+  "count": 304,
   "categories": [
     "Nature",
     "Buildings",
@@ -2141,6 +2141,96 @@
       "meters": 16,
       "heightM": 4,
       "file": "svg/city-arcade-court.svg"
+    },
+    {
+      "id": "city-guard-post",
+      "name": "Citadel guard post",
+      "category": "City details",
+      "tags": "city studio architecture citadel guard post",
+      "meters": 6,
+      "heightM": 4,
+      "file": "svg/city-guard-post.svg"
+    },
+    {
+      "id": "city-temple-steps",
+      "name": "Processional temple steps",
+      "category": "City details",
+      "tags": "city studio architecture processional temple steps",
+      "meters": 9,
+      "heightM": 1.5,
+      "file": "svg/city-temple-steps.svg"
+    },
+    {
+      "id": "city-parterre",
+      "name": "Formal city parterre",
+      "category": "City details",
+      "tags": "city studio architecture formal city parterre",
+      "meters": 12,
+      "heightM": 0.7,
+      "file": "svg/city-parterre.svg"
+    },
+    {
+      "id": "city-statue-plinth",
+      "name": "Civic statue and plinth",
+      "category": "City details",
+      "tags": "city studio architecture civic statue and plinth",
+      "meters": 7,
+      "heightM": 5,
+      "file": "svg/city-statue-plinth.svg"
+    },
+    {
+      "id": "city-grand-fountain",
+      "name": "Great civic fountain",
+      "category": "City details",
+      "tags": "city studio architecture great civic fountain",
+      "meters": 10,
+      "heightM": 3,
+      "file": "svg/city-grand-fountain.svg"
+    },
+    {
+      "id": "city-dock-crane",
+      "name": "Timber dock crane",
+      "category": "City details",
+      "tags": "city studio architecture timber dock crane",
+      "meters": 10,
+      "heightM": 9,
+      "file": "svg/city-dock-crane.svg"
+    },
+    {
+      "id": "city-warehouse-cargo",
+      "name": "Warehouse cargo stacks",
+      "category": "City details",
+      "tags": "city studio architecture warehouse cargo stacks",
+      "meters": 12,
+      "heightM": 2.8,
+      "file": "svg/city-warehouse-cargo.svg"
+    },
+    {
+      "id": "city-park-pavilion",
+      "name": "Park pavilion",
+      "category": "City details",
+      "tags": "city studio architecture park pavilion",
+      "meters": 10,
+      "heightM": 5,
+      "file": "svg/city-park-pavilion.svg"
+    },
+    {
+      "id": "city-market-arcade",
+      "name": "Market arcade",
+      "category": "City details",
+      "tags": "city studio architecture market arcade",
+      "meters": 12,
+      "heightM": 4,
+      "file": "svg/city-market-arcade.svg"
+    },
+    {
+      "id": "city-granary-silos",
+      "name": "Raised grain stores",
+      "category": "City details",
+      "tags": "city studio architecture raised grain stores",
+      "meters": 11,
+      "heightM": 6,
+      "file": "svg/city-granary-silos.svg"
     }
   ]
 }

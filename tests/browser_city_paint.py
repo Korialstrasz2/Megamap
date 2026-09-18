@@ -30,11 +30,12 @@ with sync_playwright() as pw:
   page.locator('[data-wizard-field="opt:climate"] [data-wizard-value="cold"]').click()
   page.click('#wizardNext');page.wait_for_selector('#cityPaintCanvas',state='visible')
   check('Paint is a separate City Studio wizard step',page.locator('#wizardTitle').inner_text()=='Paint a city plan')
-  check('Disabled by default with labeled brushes',not page.is_checked('#cityPaintEnabled') and page.locator('[data-brush]').count()==20)
+  check('Disabled by default with labeled brushes',not page.is_checked('#cityPaintEnabled') and page.locator('[data-brush]').count()==21)
   page.click('#cityPaintExample');page.wait_for_timeout(150)
   check('Example enables the draft and has semantic strokes',page.is_checked('#cityPaintEnabled') and js('MegamapCityPaint.currentPlan().strokes.length')==11)
   # Actual pointer painting, capture, undo, redo and per-layer erase.
   def draw(role,points,width=100):
+   if page.locator("#cityPaintDetailed").count():page.locator("#cityPaintDetailed").evaluate("el=>el.open=true")
    page.click('[data-brush="'+role+'"]');page.locator('#cityPaintSize').evaluate('(el,v)=>{el.value=v;el.dispatchEvent(new Event("input",{bubbles:true}));}',width)
    canvas=page.locator('#cityPaintCanvas');canvas.scroll_into_view_if_needed();b=canvas.bounding_box()
    at=lambda p:(b['x']+b['width']*p[0]/1000,b['y']+b['height']*p[1]/1000)

@@ -24,7 +24,7 @@ test('A sea island stays dry in collision geometry and generated editable water'
 test('Every painted building footprint stays in its own painted district and clear of water',()=>{
  for(const seed of ['paint-0','paint-1','paint-2']){const s=make({},seed);E.validateScene(s);const st=s.cityStudio,buildings=s.features.filter(f=>f.type==='building');assert(buildings.length>40);
  for(const f of buildings){const w=st.neighborhoods.find(w=>w.feature===f.ward);assert(P.fits(s,f.polygon,C,w),f.id+' escapes district');assert(!P.touches(f.polygon,st.ground.paintWater.cells,x=>!!x,C));assert.equal(f.quarter,w.quarter);assert(s.features.some(p=>p.cityRole==='access'&&p.cityBuilding===f.id));}
- assert(!s.features.some(f=>f.cityRole==='civic'));assert(!s.population);assert(s.features.every(f=>!f.notes));}
+ assert(s.features.filter(f=>f.cityRole==='civic').every(f=>f.cityComplex),'Painted civic buildings belong to fitted complexes, not unpainted preset landmarks');assert(!s.population);assert(s.features.every(f=>!f.notes));}
 });
 test('Painted rich and poor districts receive their requested building programs and construction differences',()=>{
  const s=make({structureCount:160});const poor=s.features.filter(f=>f.type==='building'&&f.quarter==='slums'),rich=s.features.filter(f=>f.type==='building'&&f.quarter==='noble');assert(poor.length>10);assert(rich.length>5);assert(poor.every(f=>f.cityWealth==='modest'));assert(rich.every(f=>f.cityWealth==='affluent'));

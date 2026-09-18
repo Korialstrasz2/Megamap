@@ -65,7 +65,7 @@ function profile(s,quarter){const p={...(PROFILES[quarter]||PROFILES.commons)},v
  if(v.culture==='desert')p.material='plaster';
  if(v.culture==='stone'||v.culture==='arcane')p.material='slate';return p;
 }
-function assign(s,C){const st=s.cityStudio,v=st.resolved,wards=st.neighborhoods,free=new Set(wards),sequence=PROGRAMS[v.preset]||PROGRAMS.market,assigned=[];
+function assign(s,C){const st=s.cityStudio,v=st.resolved,wards=st.neighborhoods,free=new Set(wards),sequence=C.smartProgram?C.smartProgram(v):PROGRAMS[v.preset]||PROGRAMS.market,assigned=[];
  for(let i=0;i<wards.length;i++){
   let q=v.count<=6?'commons':sequence[i%sequence.length],best=null,score=Infinity;
   for(const w of free){const bank=C.bankDistance(st.ground,w.center),water=Number.isFinite(bank)?Math.max(0,bank):600,z=C.heightAt(st.ground,w.center)/Math.max(1,v.relief),core=C.distance(w.center,st.origin);

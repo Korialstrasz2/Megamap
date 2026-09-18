@@ -3,7 +3,7 @@
  * economy simulation or generated narrative. Units are metres at the boundary
  * of the model and local SVG units in geometry. All random streams are seeded.
  */
-(function(root,factory){const refinement=typeof module==='object'&&module.exports?require('./city-refinement.js'):root.MegamapCityRefinement;const node=typeof module==='object'&&module.exports;const api=factory(refinement,node?require('./city-housing.js'):root.MegamapCityHousing,node?require('./city-plan.js'):root.MegamapCityPlan);if(typeof module==='object'&&module.exports)module.exports=api;else root.MegamapCityStudio=api;})(typeof globalThis!=='undefined'?globalThis:this,function(Refine,Housing,Plan){
+(function(root,factory){const refinement=typeof module==='object'&&module.exports?require('./city-refinement.js'):root.MegamapCityRefinement;const node=typeof module==='object'&&module.exports;const api=factory(refinement,node?require('./city-housing.js'):root.MegamapCityHousing,node?require('./city-plan.js'):root.MegamapCityPlan,node?require('./city-complexes.js'):root.MegamapCityComplexes);if(typeof module==='object'&&module.exports)module.exports=api;else root.MegamapCityStudio=api;})(typeof globalThis!=='undefined'?globalThis:this,function(Refine,Housing,Plan,Complexes){
 'use strict';
 const VERSION=1,TAU=2*Math.PI,EPS=1e-7;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),mix=(a,b,t)=>a+(b-a)*t;
@@ -150,7 +150,7 @@ function urbanMask(s,p){if(s.cityStudio.paintPlan)return Plan.buildable(s,p);con
  if(distance(p,st.origin)<rad)return true;if(st.harbor&&distance(p,[st.harbor[0]-45,st.harbor[1]])<rad*.58)return true;
  return st.bridges.some(b=>distance(p,b[1])<rad*.58);
 }
-function makeNeighborhoods(s,r){const st=s.cityStudio,v=st.resolved,g=st.ground,hubCount=v.hubs;
+function makeNeighborhoods(s,r){const st=s.cityStudio,v=st.resolved,g=st.ground,hubCount=Math.max(v.hubs,Plan.Smart.program(v).length);
  const candidates=[];for(const f of s.features.filter(f=>f.type==='road'&&!['pier','bridge'].includes(f.cityRole)))for(const p of pathSamples(f.points,65))if(inside(p,st.boundary)&&urbanMask(s,p)&&distance(p,st.origin)>35&&p[0]>130&&p[0]<870&&p[1]>135&&p[1]<860)candidates.push(p);
  const centers=[point(st.origin,st.networkRoot,1.35)];while(centers.length<hubCount&&candidates.length){let best=0,score=-1;for(let i=0;i<candidates.length;i++){const p=candidates[i],d=Math.min(...centers.map(c=>distance(c,p)))*(1+heightAt(g,p)/Math.max(1,g.relief)*.4);if(d>score){best=i;score=d;}}centers.push(candidates.splice(best,1)[0]);}
  const special=new Map();if(centers.length>1){const rank=centers.map((p,i)=>({i,z:heightAt(g,p),water:waterAt(g,[p[0]+60,p[1]],0)||waterAt(g,[p[0]-60,p[1]],0)}));special.set(rank.reduce((a,b)=>a.z>b.z?a:b).i,'noble');const dock=rank.filter(x=>x.water&&!special.has(x.i))[0];if(dock)special.set(dock.i,'docks');}
@@ -261,9 +261,9 @@ function neighborhoodSquares(s){const st=s.cityStudio,v=st.resolved;if(v.count<1
 }
 function perimeterAndHistory(s){const st=s.cityStudio,v=st.resolved,r=rng(s.seed+'-history');if(v.count<=6)return;
  if(v.walls!=='none'){const centerWall=v.walls==='citadel'?st.civicCenter||st.origin:[465,510],radius=v.walls==='citadel'?90:357,poly=v.walls==='city'?st.boundary.map(p=>point(centerWall,p,.94)):circle(centerWall,radius,64);const roads=s.features.filter(f=>f.type==='road'&&!['access','pier'].includes(f.cityRole));let run=[];const flush=()=>{if(run.length>1)emit(s,'wall',{points:run,width:Math.max(1.5,3/v.metersPerUnit),cityRole:'fortification'});run=[];};
- for(const p of pathSamples([...poly,poly[0]],4)){const blocked=waterAt(st.ground,p,8)||roads.some(f=>lineDistance(p,f.points)<f.width/2+2.2);if(blocked)flush();else run.push(p);}flush();
- for(let i=0;i<poly.length;i+=5){const p=poly[i];if(!waterAt(st.ground,p,8)&&!roads.some(f=>lineDistance(p,f.points)<f.width/2+12))emit(s,'asset',{x:p[0],y:p[1],size:Math.max(3,6/v.metersPerUnit),asset:'roof-tower',citySymbol:'wall-tower',cityRole:'fortification'});}}
- if(['layered','ancient'].includes(v.history)){const o=st.origin,angle=r()*TAU,old=circle(o,145,40).slice(0,15),roads=s.features.filter(f=>f.type==='road');for(let i=1;i<old.length;i++)if(dryLine(st.ground,[old[i-1],old[i]],3)&&!roads.some(f=>lineDistance(old[i],f.points)<f.width/2+7))emit(s,'wall',{points:[old[i-1],old[i]],width:Math.max(1,2/v.metersPerUnit),cityRole:'old-wall'});
+ for(const p of pathSamples([...poly,poly[0]],4)){const blocked=st.complexes?.some(c=>{const f=s.features.find(f=>f.id===c.id);return f&&inside(p,f.polygon);})||waterAt(st.ground,p,8)||roads.some(f=>lineDistance(p,f.points)<f.width/2+2.2);if(blocked)flush();else run.push(p);}flush();
+ for(let i=0;i<poly.length;i+=5){const p=poly[i];if(!st.complexes?.some(c=>{const f=s.features.find(f=>f.id===c.id);return f&&overlaps(circle(p,8,8),f.polygon);})&&!waterAt(st.ground,p,8)&&!roads.some(f=>lineDistance(p,f.points)<f.width/2+12))emit(s,'asset',{x:p[0],y:p[1],size:Math.max(3,6/v.metersPerUnit),asset:'roof-tower',citySymbol:'wall-tower',cityRole:'fortification'});}}
+ if(['layered','ancient'].includes(v.history)){const o=st.origin,angle=r()*TAU,old=circle(o,145,40).slice(0,15),roads=s.features.filter(f=>f.type==='road');for(let i=1;i<old.length;i++)if(!st.complexes?.some(c=>{const f=s.features.find(f=>f.id===c.id);return f&&overlaps(corridor(old[i-1],old[i],5),f.polygon);})&&dryLine(st.ground,[old[i-1],old[i]],3)&&!roads.some(f=>lineDistance(old[i],f.points)<f.width/2+7))emit(s,'wall',{points:[old[i-1],old[i]],width:Math.max(1,2/v.metersPerUnit),cityRole:'old-wall'});
  const reserve=networkIndex(s),occupied=builtIndex(s);for(let i=0;i<(v.history==='ancient'?10:4);i++){const p=[160+r()*530,170+r()*650],poly=rect(p,20+r()*16,14+r()*10,r()*TAU);if(!footprintGood(s,poly,reserve,occupied))continue;const ward=neighborhoodAt(s,p),f=emit(s,'area',{polygon:poly,material:'hill',cityRole:'ruin',ward:ward.feature});occupied.add(poly,{feature:f});}}
 }
 function placeBoats(s){const st=s.cityStudio,v=st.resolved,g=st.ground,r=rng(s.seed+'-boats'),needed=v.boats;if(!needed)return;
@@ -309,13 +309,14 @@ function generate(seed,raw={}){seed=String(seed??'city').slice(0,120);const o=no
  const r=rng(seed+'-plan');
  if(o.cityPlan){
   s.cityStudio.boundary=s.city.boundary=[[8,8],[992,8],[992,992],[8,992]];
-  const plan=Plan.prepare(s,PLAN_API);Plan.paintRoads(s,plan,PLAN_API);Plan.paintWalls(s,plan,PLAN_API);Plan.network(s,PLAN_API);minorNetwork(s,r);
-  Refine.sites(s,REFINE_API);
- }else{addWater(s,g);placeOrigin(s,r);primaryNetwork(s,r);makeNeighborhoods(s,r);Refine.assign(s,REFINE_API);civicLandmark(s);neighborhoodSquares(s);Refine.sites(s,REFINE_API);minorNetwork(s,r);perimeterAndHistory(s);}
+  const plan=Plan.prepare(s,PLAN_API);Plan.paintRoads(s,plan,PLAN_API);Plan.paintWalls(s,plan,PLAN_API);Plan.network(s,PLAN_API);Complexes.place(s,COMPLEX_API);Refine.sites(s,REFINE_API);minorNetwork(s,r);Plan.network(s,PLAN_API);
+ }else{addWater(s,g);placeOrigin(s,r);primaryNetwork(s,r);makeNeighborhoods(s,r);Refine.assign(s,REFINE_API);civicLandmark(s);Complexes.place(s,COMPLEX_API);neighborhoodSquares(s);Refine.sites(s,REFINE_API);minorNetwork(s,r);perimeterAndHistory(s);}
+ Complexes.harbors(s,COMPLEX_API);
  if(o.cityPlan){
   const wards=s.cityStudio.neighborhoods.filter(w=>!Plan.OPEN.has(Plan.CODES[w.paintRole]));
   const weight=w=>s.cityStudio.paintPlan.cellWard.filter(i=>i===w.paintIndex).length*(['noble','temple','military','cemetery'].includes(w.quarter)?.5:w.quarter==='slums'?1.25:1);
-  const weights=wards.map(weight),total=weights.reduce((a,b)=>a+b,0);let remaining=v.count;
+  const weights=wards.map(weight),total=weights.reduce((a,b)=>a+b,0);let remaining=Math.max(0,v.count-s.features.filter(f=>f.type==='building').length);
+  if(s.cityStudio.smartCity)for(const w of wards){if(remaining<=0)break;if(!s.features.some(f=>f.type==='building'&&f.ward===w.feature))remaining-=buildFrontages(s,w,1).added;}
   for(let i=0;i<wards.length;i++){const target=Math.min(remaining,Math.max(1,Math.round(v.count*weights[i]/total)));wards[i].paintTarget=target;const result=buildFrontages(s,wards[i],target);remaining-=result.added;}
  }else if(v.count<=6)tinySettlement(s);else{buildFrontages(s,null,Math.max(0,v.count-s.features.filter(f=>f.type==='building').length));}
  placeBoats(s);Refine.details(s,REFINE_API);decorate(s);addLayers(s);if(o.cityPlan)Plan.finish(s,PLAN_API);summarize(s);
@@ -323,15 +324,15 @@ function generate(seed,raw={}){seed=String(seed??'city').slice(0,120);const o=no
  s.city.warnings=s.cityStudio.warnings.slice();return s;
 }
 function regenerateDistrict(s,id,quarter){if(!s.cityStudio)throw Error('Not a City Studio map.');const d=s.features.find(f=>f.id===id&&f.type==='district'),ward=s.cityStudio.neighborhoods.find(w=>w.feature===id);if(!d||!ward)throw Error('Select a City Studio neighborhood.');if(d.locked)throw Error('Unlock the neighborhood first.');if(!Object.hasOwn(KINDS,quarter))throw Error('Unknown neighborhood program.');
- const before=s.features.filter(f=>f.type==='building'&&f.ward===id).length,protectedIds=new Set(s.features.filter(f=>f.locked||f.cityRole==='civic'||f.cityRole==='special-ground').map(f=>f.id));
- s.features=s.features.filter(f=>f.ward!==id||f.locked||f.type==='district'||f.cityRole==='civic'||f.cityRole==='neighborhood-square'||f.cityRole==='special-ground'||f.cityRole==='site-detail'&&!f.cityBuilding||f.cityRole==='landmark'||f.cityBuilding&&protectedIds.has(f.cityBuilding));ward.quarter=quarter;ward.profile=Refine.profile(s,quarter);ward.revision++;d.quarter=quarter;d.label=ward.profile.name;d.ward=d.label;d.cityZone=d.label;
+ const before=s.features.filter(f=>f.type==='building'&&f.ward===id).length,protectedIds=new Set(s.features.filter(f=>f.cityComplex||f.locked||f.cityRole==='civic'||f.cityRole==='special-ground').map(f=>f.id));
+ s.features=s.features.filter(f=>f.ward!==id||f.cityComplex||f.locked||f.type==='district'||f.cityRole==='civic'||f.cityRole==='neighborhood-square'||f.cityRole==='special-ground'||f.cityRole==='site-detail'&&!f.cityBuilding||f.cityRole==='landmark'||f.cityBuilding&&protectedIds.has(f.cityBuilding));ward.quarter=quarter;ward.profile=Refine.profile(s,quarter);ward.revision++;d.quarter=quarter;d.label=ward.profile.name;d.ward=d.label;d.cityZone=d.label;
  const retained=s.features.filter(f=>f.type==='building'&&f.ward===id).length,result=buildFrontages(s,ward,Math.max(0,before-retained));s.cityStudio.revision++;addLayers(s);summarize(s);if(result.added+retained<before)s.cityStudio.warnings.push('Neighborhood regeneration kept protected objects and left constrained plots open.');s.city.warnings=s.cityStudio.warnings.slice();return d;
 }
 function validate(s){const st=s.cityStudio;if(!st)return true;
  if(s.mode!=='city'||st.version!==VERSION||s.width!==1000||s.height!==1000)throw Error('Unsupported City Studio document.');
  if(!Number.isInteger(st.nextId)||st.nextId<0||st.nextId>1e7)throw Error('Invalid City Studio identifier counter.');
- Plan.validate(s);if(st.refinementVersion!=null&&st.refinementVersion!==1)throw Error('Unsupported City Studio refinement.');
- for(const key of ['signatureSites','functionalDetails'])if(st[key]!=null&&(!Number.isInteger(st[key])||st[key]<0||st[key]>500))throw Error('Invalid City Studio detail count.');
+ Complexes.validate(s);Plan.validate(s);if(st.refinementVersion!=null&&st.refinementVersion!==1)throw Error('Unsupported City Studio refinement.');
+ for(const key of ['signatureSites','functionalDetails','harborPiers'])if(st[key]!=null&&(!Number.isInteger(st[key])||st[key]<0||st[key]>500))throw Error('Invalid City Studio detail count.');
  const pair=p=>Array.isArray(p)&&p.length===2&&p.every(v=>Number.isFinite(v)&&Math.abs(v)<20000);
  const points=(p,min=2,max=1000)=>Array.isArray(p)&&p.length>=min&&p.length<=max&&p.every(pair);
  const g=st.ground;
@@ -344,14 +345,16 @@ function validate(s){const st=s.cityStudio;if(!st)return true;
  const names=new Set();for(const d of st.neighborhoods){if(!d||!pair(d.center)||typeof d.id!=='string'||names.has(d.id)||typeof d.feature!=='string'||!Object.hasOwn(KINDS,d.quarter)||!Number.isInteger(d.revision)||d.revision<0||d.revision>1e7||!Number.isFinite(d.planAngle))throw Error('Invalid City Studio neighborhood.');if(d.profile!=null){const p=d.profile;if(typeof p!=='object'||typeof p.name!=='string'||p.name.length>120||typeof p.material!=='string'||p.material.length>30||p.site!=null&&(typeof p.site!=='string'||p.site.length>80)||['gap','width','depth','lanes'].some(k=>!Number.isFinite(p[k])||p[k]<0||p[k]>100))throw Error('Invalid City Studio neighborhood profile.');}names.add(d.id);}
  for(const f of s.features){if(!f||typeof f!=='object')throw Error('Invalid City Studio object.');
  if(/^cs[0-9]+$/.test(f.id)&&Number(f.id.slice(2))>=st.nextId)throw Error('Invalid City Studio identifier counter.');
- for(const k of ['cityRole','citySymbol','cityRoof','cityCulture','cityForm','cityAge','cityShip','cityBuilding','cityStreet','cityMaterial','cityZone','citySurface','cityWealth','cityClimate','cityHousingDetail','cityWaterKind','cityPaintRole'])if(f[k]!=null&&(typeof f[k]!=='string'||f[k].length>160))throw Error('Invalid City Studio object metadata.');
+ for(const k of ['cityRole','citySymbol','cityRoof','cityCulture','cityForm','cityAge','cityShip','cityBuilding','cityStreet','cityMaterial','cityZone','citySurface','cityWealth','cityClimate','cityHousingDetail','cityWaterKind','cityPaintRole','cityComplex','cityComplexKind'])if(f[k]!=null&&(typeof f[k]!=='string'||f[k].length>160))throw Error('Invalid City Studio object metadata.');
+ if(f.cityPitch!=null&&(!Number.isFinite(f.cityPitch)||f.cityPitch<0||f.cityPitch>1))throw Error('Invalid city housing metadata.');
  if(f.cityHousingVersion!=null&&(f.cityHousingVersion!==1||!Housing.WEALTH.includes(f.cityWealth)||!Housing.CLIMATES.includes(f.cityClimate)||!Number.isFinite(f.cityPitch)||f.cityPitch<0||f.cityPitch>1))throw Error('Invalid city housing metadata.');for(const k of ['cityFloors','cityFront','cityBeam','cityGapM'])if(f[k]!=null&&(!Number.isFinite(f[k])||Math.abs(f[k])>20000))throw Error('Invalid City Studio object dimensions.');
  if(f.cityLinks!=null&&(!Array.isArray(f.cityLinks)||f.cityLinks.length!==2||f.cityLinks.some(id=>typeof id!=='string'||id.length>160)))throw Error('Invalid City Studio route links.');
  }
  st.resolved=resolve(s.options);return true;
 }
 
-const PLAN_API={Refine,hash,rng,center,bounds,distance,overlaps,emit,street,waterAt,nearestRoad,route,corridor,pathSamples,buildGraph};
-const REFINE_API={hash,rng,bankDistance,heightAt,distance,KINDS,builtIndex,networkIndex,pathSamples,neighborhoodAt,nearestRoad,rect,footprintGood,corridor,dryLine,currentWaterClear,emit,street,bounds};
+const COMPLEX_API={Plan,hash,rng,center,bounds,distance,overlaps,emit,street,waterAt,nearestRoad,route,corridor,pathSamples,heightAt,bankDistance,builtIndex,networkIndex,neighborhoodAt,dryPolygon,dryLine,currentWaterClear,inside};
+const PLAN_API={Refine,hash,rng,center,bounds,distance,overlaps,emit,street,waterAt,nearestRoad,route,corridor,pathSamples,buildGraph,heightAt,bankDistance};
+const REFINE_API={smartProgram:Plan.Smart.program,hash,rng,bankDistance,heightAt,distance,KINDS,builtIndex,networkIndex,pathSamples,neighborhoodAt,nearestRoad,rect,footprintGood,corridor,dryLine,currentWaterClear,emit,street,bounds};
 return{PLAN:Plan,HOUSING:Housing,REFINEMENT:Refine,VERSION,PRESETS,DEFAULTS,ENUMS,SIZE_PROFILES,QUARTER_NAMES,KINDS,normalize,resolve,generate,regenerateDistrict,validate,buildGraph,alongLine,lotForm,currentWaterClear,bankDistance,heightAt,waterAt,dryLine,dryPolygon,bounds,center,area,inside,overlaps,rect,circle,corridor,distance,lineDistance,pathSamples,neighborhoodAt,Index,hash,rng};
 });

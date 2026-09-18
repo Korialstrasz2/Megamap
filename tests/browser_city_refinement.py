@@ -34,7 +34,7 @@ with sync_playwright() as pw:
             with page.expect_download(timeout=60000) as d:page.click(button)
             path=OUT/name;d.value.save_as(path);return path
         language('en');build('fishing')
-        check('294 library assets including the new city detail collection',js('MegamapAssets.catalog.length')==294 and js('MegamapAssets.categories.includes("City details")'))
+        check('304 library assets including the new city detail collection',js('MegamapAssets.catalog.length')==304 and js('MegamapAssets.categories.includes("City details")'))
         check('Four-hut preset retains its exact structure and boat counts',js('MegamapApp.getScene().cityStudio.statistics.buildings')==4 and js('MegamapApp.getScene().cityStudio.statistics.boats')==3)
         check('Functional fishing details exist as editable asset objects',js('MegamapApp.getScene().features.some(f=>f.asset==="city-net-racks")'))
         before=js('JSON.stringify(MegamapApp.getScene().features)');open_view()
