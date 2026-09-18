@@ -47,6 +47,7 @@ test('All building kinds have readable Italian program labels',()=>{
  assert.equal(L.kind({buildingKind:'warehouse'},'it'),'Magazzino');assert.equal(L.kind({cityRoof:'hip'},'it'),'A padiglione');assert.equal(L.kind({buildingKind:'fishmarket'},'en'),'Fish market');
 });
 test('City placement diagnostics translate their actual counts and district names',()=>{
+ assert.equal('12'+L.text(' buildings','it'),'12 edifici');assert.equal('28'+L.text(' objects','it'),'28 oggetti');
  assert.equal(L.text('Only 3 of 8 requested boats fit safely in navigable water.','it'),'Solo 3 delle 8 imbarcazioni richieste trovano posto in sicurezza nelle acque navigabili.');
  assert.match(L.text('No buildings fit Villas / wealthy homes patch 4; enlarge it or add a road.','it'),/zona 4 \(Ville \/ abitazioni benestanti\)/);
  assert.match(L.text('The sketch has 3 disconnected street groups. Paint connecting roads and bridge/gate crossings to join them.','it'),/3 gruppi di strade/);
