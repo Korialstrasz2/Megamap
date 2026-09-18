@@ -38,8 +38,26 @@ function resolve(s,plan,components,C,P){
  }
  const missing=required.filter(q=>!covered.has(q)),minCells=Math.max(10,Math.ceil(180/(s.scale*step)**2));
  const capacity=Math.max(smart.length,Math.floor(cells.length/minCells)),limit=Math.min(48-explicit.length,capacity,Math.max(missing.length,v.hubs,smart.length));
+ // Keep a usable civic footprint before routing streets through the
+ // neighborhood. Center-only seeds used to strand roomy painted districts.
+ const blocked=new Uint8Array(N*N),claims=new Uint8Array(N*N);
+ for(const stroke of [...plan.roads,...plan.walls])for(let k=1;k<stroke.points.length;k++){
+  const a=stroke.points[k-1],b=stroke.points[k],r=stroke.width/2+3;
+  for(let y=Math.max(0,Math.floor((Math.min(a[1],b[1])-r)/step));y<=Math.min(N-1,Math.floor((Math.max(a[1],b[1])+r)/step));y++)
+   for(let x=Math.max(0,Math.floor((Math.min(a[0],b[0])-r)/step));x<=Math.min(N-1,Math.floor((Math.max(a[0],b[0])+r)/step));x++)if(distanceToLine(point(y*N+x),[a,b])<r)blocked[y*N+x]=1;
+ }
+ const siteFor=(c,q)=>{const spec=C.Complexes.SPECS.find(a=>a.quarters[0]===q&&v.count>=a.min&&(a.kind!=='fortress'||s.options.walls!=='none'));
+  if(!spec)return null;
+  for(const factor of [1,.8,.62])for(const angle of [0,Math.PI/2]){const W=spec.size[0]*factor/s.scale,D=spec.size[1]*factor/s.scale,poly=C.rect(c.p,W,D,angle),w=(angle?D:W)/2+step,h=(angle?W:D)/2+step;
+   if(c.p[0]-w<10||c.p[0]+w>990||c.p[1]-h<10||c.p[1]+h>990)continue;
+   const zs=poly.map(p=>C.heightAt(st.ground,p));const rise=Math.max(...zs)-Math.min(...zs);if(rise>20)continue;
+   let ok=true;const reserve=[];
+   for(let y=Math.floor((c.p[1]-h)/step);y<=Math.floor((c.p[1]+h)/step)&&ok;y++)for(let x=Math.floor((c.p[0]-w)/step);x<=Math.floor((c.p[0]+w)/step);x++){const i=y*N+x;if(!mask[i]||blocked[i]||claims[i]){ok=false;break;}reserve.push(i);}
+   if(ok)return{kind:spec.kind,factor,polygon:poly,angle,cells:reserve,levelM:(Math.max(...zs)+Math.min(...zs))/2,cutFillM:rise/2};
+  }return null;
+ };
  const seeds=[],used=new Set(),spacing=Math.max(16,Math.min(130,Math.sqrt(cells.length*step*step/Math.max(1,limit))*.48));
- const select=(q,component=null)=>{let choice=null,score=Infinity;for(const c of candidates){if(used.has(c.i)||component!=null&&c.component!==component)continue;
+ const select=(q,component=null)=>{let choice=null,score=Infinity;for(const c of candidates){if(used.has(c.i)||claims[c.i]||component!=null&&c.component!==component)continue;
    if(q==='docks'&&(c.bank>125||c.clearance<Math.max(step*4,12/s.scale)))continue;
    const separation=seeds.length?Math.min(...seeds.map(n=>C.distance(c.p,n.p))):1000;
    if(separation<Math.min(14,spacing*.25))continue;
@@ -47,8 +65,10 @@ function resolve(s,plan,components,C,P){
    value+=Math.max(0,1500-smart[c.component].cells.length)*.3+Math.max(0,spacing-separation)*8+Math.max(0,24/s.scale-c.clearance)*3+c.road*.12;
    if(q==='merchants'){const dock=seeds.find(n=>n.q==='docks');if(dock)value+=C.distance(c.p,dock.p)*.25;}
    value+=(C.hash(s.seed+':'+q+':'+c.i)%100)/100;
-   if(value<score){score=value;choice=c;}
-  }if(!choice)return false;seeds.push({...choice,q});used.add(choice.i);return true;};
+   const needsSite=C.Complexes.SPECS.some(a=>a.quarters[0]===q&&v.count>=a.min&&(a.kind!=='fortress'||s.options.walls!=='none')),site=needsSite?siteFor(c,q):null;
+   if(needsSite)value+=site?(1-site.factor)*80:1800;
+   if(value<score){score=value;choice={...c,site};}
+  }if(!choice)return false;seeds.push({...choice,q});used.add(choice.i);if(choice.site)choice.site.cells.forEach(i=>claims[i]=1);return true;};
  for(const q of missing){if(seeds.length>=limit)break;select(q);}
  // Every disconnected dry island gets a seed; never silently drop a painted
  // component just to satisfy the main settlement's quarter quota.
@@ -56,12 +76,12 @@ function resolve(s,plan,components,C,P){
  for(let tries=0;seeds.length<limit&&tries<limit;tries++)if(!select(tries%3===0?'oldtown':'commons'))break;
  if(!seeds.length){st.warnings.push('Smart planning needs a wider painted area. Enlarge the building brush.');return explicit;}
  const owner=new Int16Array(N*N).fill(-1),cost=new Float64Array(N*N).fill(Infinity),heap=new Heap();
- seeds.forEach((n,k)=>{cost[n.i]=0;owner[n.i]=k;heap.push(0,n.i,k);});
+ seeds.forEach((n,k)=>{for(const i of n.site?.cells||[n.i]){cost[i]=0;owner[i]=k;heap.push(0,i,k);}});
  while(heap.a.length){const item=heap.pop();if(item.cost!==cost[item.id]||item.owner!==owner[item.id])continue;
   for(const j of neighbors(item.id)){if(!mask[j])continue;const q=seeds[item.owner].q,weight=q==='gardens'?1.55:q==='commons'||q==='slums'?.9:1;
    const next=item.cost+weight*(1+.12/(clearance[j]||1));if(next<cost[j]){cost[j]=next;owner[j]=item.owner;heap.push(next,j,item.owner);}}
  }
- const groups=seeds.map(n=>({code:P.CODES[n.q],cells:[],smart:true,anchor:n.p}));
+ const groups=seeds.map(n=>({code:P.CODES[n.q],cells:[],smart:true,anchor:n.p,site:n.site?{kind:n.site.kind,factor:n.site.factor,polygon:n.site.polygon,angle:n.site.angle,levelM:n.site.levelM,cutFillM:n.site.cutFillM}:null}));
  for(const i of cells)if(owner[i]>=0){const g=groups[owner[i]];g.cells.push(i);plan.zones[i]=g.code;}
  st.smartCity={version:1,required,assigned:[],fulfilled:[],missing:[],unbuilt:[]};
  return [...explicit,...groups.filter(g=>g.cells.length>=3)];

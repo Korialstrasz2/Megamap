@@ -15,6 +15,7 @@ function place(s,C){const st=s.cityStudio,v=st.resolved;if(v.count<=6)return;st.
  for(const spec of SPECS){if(v.count<spec.min&&!(spec.kind==='fortress'&&v.walls==='citadel'&&v.count>=60))continue;
   if(spec.kind==='fortress'&&s.options.walls==='none')continue;
   const wards=st.neighborhoods.filter(w=>spec.quarters.includes(w.quarter));if(!wards.length)continue;
+  st.reservations=st.reservations.filter(r=>!wards.some(w=>r.smartSite===w.id&&w.smartSite?.kind===spec.kind));
   const ordered=wards.sort((a,b)=>spec.quarters.indexOf(a.quarter)-spec.quarters.indexOf(b.quarter));let placed=false;
   for(const factor of [1,.8,.62]){if(placed)break;
    for(const ward of ordered){if(placed)break;const W=spec.size[0]*factor/s.scale,D=spec.size[1]*factor/s.scale;
@@ -36,7 +37,8 @@ function place(s,C){const st=s.cityStudio,v=st.resolved;if(v.count<=6)return;st.
       interior.push({center,angle,side:1,near,route:true});
     }}
     interior.sort((a,b)=>C.distance(a.center,ward.center)-C.distance(b.center,ward.center));
-    for(const slot of samples.slice(0,100).concat(samples.filter(x=>x.route),interior.slice(0,120))){const cs=Math.cos(slot.angle),sn=Math.sin(slot.angle),T=(x,y)=>[slot.center[0]+cs*x-sn*y*slot.side,slot.center[1]+sn*x+cs*y*slot.side],box=(x,y,w,h)=>[T(x-w/2,y-h/2),T(x+w/2,y-h/2),T(x+w/2,y+h/2),T(x-w/2,y+h/2)],poly=box(0,0,W,D);
+    const pinned=[];if(ward.smartSite?.kind===spec.kind&&ward.smartSite.factor===factor){const center=ward.center.slice(),angle=ward.smartSite.angle;for(const side of [-1,1]){const gate=[center[0]+Math.sin(angle)*D/2*side,center[1]-Math.cos(angle)*D/2*side],near=C.nearestRoad(s,gate);if(near)pinned.push({center,angle,side,near,route:true});}}
+    for(const slot of pinned.concat(samples.slice(0,100),samples.filter(x=>x.route),interior.slice(0,120))){const cs=Math.cos(slot.angle),sn=Math.sin(slot.angle),T=(x,y)=>[slot.center[0]+cs*x-sn*y*slot.side,slot.center[1]+sn*x+cs*y*slot.side],box=(x,y,w,h)=>[T(x-w/2,y-h/2),T(x+w/2,y-h/2),T(x+w/2,y+h/2),T(x-w/2,y+h/2)],poly=box(0,0,W,D);
      if(st.paintPlan){if(poly.some(p=>C.Plan.cell(p)<0)||C.Plan.touches(poly,st.paintPlan.cellWard,id=>id!==ward.paintIndex,C))continue;}
      else if(C.neighborhoodAt(s,slot.center).id!==ward.id)continue;
      if(!poly.every(p=>C.inside(p,st.boundary))||!C.dryPolygon(st.ground,poly,1.5)||!C.currentWaterClear(s,poly,1)||roads.hits(poly,.4)||occupied.hits(poly,.5))continue;
@@ -51,6 +53,7 @@ function place(s,C){const st=s.cityStudio,v=st.resolved;if(v.count<=6)return;st.
   }
   if(!placed)st.warnings.push('City complex could not fit safely: '+spec.name+'. More connected open land is needed.');
  }
+ st.reservations=st.reservations.filter(r=>!r.smartSite);for(const w of st.neighborhoods)delete w.smartSite;
 }
 function harbors(s,C){const st=s.cityStudio;if(st.resolved.count<=6)return;let made=0;
  for(const w of st.neighborhoods.filter(w=>w.quarter==='docks').slice(0,3)){
