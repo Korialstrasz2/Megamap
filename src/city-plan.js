@@ -3,7 +3,7 @@
  * paint are separate 256x256 semantic masks; roads/walls retain vector paths.
  * The visible brush preview uses the same compiled masks as generation.
  */
-(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.MegamapCityPlan=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
+(function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('./city-smart.js'):root.MegamapCitySmart);if(typeof module==='object'&&module.exports)module.exports=api;else root.MegamapCityPlan=api;})(typeof globalThis!=='undefined'?globalThis:this,function(Smart){
 'use strict';
 const N=256,STEP=1000/N,MAX_STROKES=240,MAX_POINTS=256,MAX_TOTAL=16000;
 const ROLES=[
@@ -13,7 +13,7 @@ const ROLES=[
  ['oldtown','Old town','#bf9862','districts'],['market','Market','#e4c551','districts'],['merchants','Merchants','#d991bd','districts'],
  ['artisans','Artisans','#cf975e','districts'],['docks','Docks','#559f9c','districts'],['temple','Temple precinct','#a2a2de','districts'],
  ['military','Military','#ba727c','districts'],['university','Scholars','#99aedd','districts'],['industrial','Industry','#969789','districts'],
- ['gardens','Gardens / park','#78ac73','districts'],['farming','Farmsteads','#bdc675','districts'],['cemetery','Memorial gardens','#a0a9a5','districts'],['square','Public square','#eadb99','districts']
+ ['gardens','Gardens / park','#78ac73','districts'],['farming','Farmsteads','#bdc675','districts'],['cemetery','Memorial gardens','#a0a9a5','districts'],['square','Public square','#eadb99','districts'],['smart','Smart buildings','#ddb66c','districts']
 ].map(([id,name,color,layer])=>({id,name,color,layer}));
 const DISTRICTS=ROLES.filter(r=>r.layer==='districts'),CODES=Object.fromEntries(DISTRICTS.map((r,i)=>[r.id,i+1]));
 const OPEN=new Set([CODES.gardens,CODES.square]);
@@ -84,13 +84,14 @@ function prepare(s,C){const st=s.cityStudio,plan=compile(s.options.cityPlan),g=s
  // preset river, sea, palace or central landmark over the user's sketch.
  g.heights=g.heights.map((z,i)=>z*clamp(bankDistance(g,[(i%64+.5)*1000/64,(Math.floor(i/64)+.5)*1000/64])/40,0,1));
  for(const band of rectangles(plan.terrain))C.emit(s,'water',{polygon:band.polygon,cityRole:'water',cityPaintBand:true,cityWaterKind:band.code===2?'sea':'river'});
- const visited=new Uint8Array(N*N),components=[];
+ const visited=new Uint8Array(N*N);let components=[];
  for(let i=0;i<visited.length;i++){if(visited[i]||!plan.zones[i]||plan.terrain[i])continue;const cells=[i],code=plan.zones[i];visited[i]=1;for(let j=0;j<cells.length;j++){const u=cells[j],x=u%N,y=Math.floor(u/N);for(const k of [x?u-1:-1,x<N-1?u+1:-1,y?u-N:-1,y<N-1?u+N:-1])if(k>=0&&!visited[k]&&plan.zones[k]===code&&!plan.terrain[k]){visited[k]=1;cells.push(k);}}if(cells.length>=3)components.push({code,cells});}
+ components=Smart.resolve(s,plan,components,C,{N,STEP,CODES,DISTRICTS,bankDistance});
  if(components.length>48)throw Error('Too many disconnected districts (maximum 48). Join or erase small patches.');
  if(!components.some(c=>!OPEN.has(c.code)))throw Error('Paint at least one buildable district before generating.');
- for(const component of components){const index=st.neighborhoods.length,cells=component.cells,mean=cells.reduce((p,i)=>[p[0]+(i%N+.5)*STEP/cells.length,p[1]+(Math.floor(i/N)+.5)*STEP/cells.length],[0,0]),cellCenter=i=>[(i%N+.5)*STEP,(Math.floor(i/N)+.5)*STEP],best=cells.reduce((a,b)=>C.distance(cellCenter(a),mean)<C.distance(cellCenter(b),mean)?a:b),center=cellCenter(best),brush=DISTRICTS[component.code-1],quarter=brush.id==='square'?'gardens':brush.id;
-  const ward={id:'paint'+index,center,quarter,seed:C.hash(s.seed+'paint'+index),revision:0,target:0,planAngle:0,paintIndex:index,paintRole:brush.id};ward.profile=C.Refine.profile(s,quarter);ward.profile.name=brush.name;
-  const f=C.emit(s,'district',{polygon:outline(cells),x:center[0],y:center[1],ward:brush.name,quarter,label:brush.name,cityWard:ward.id,cityPaintRole:brush.id});ward.feature=f.id;st.neighborhoods.push(ward);cells.forEach(i=>st.paintPlan.cellWard[i]=index);
+ for(const component of components){const index=st.neighborhoods.length,cells=component.cells,mean=cells.reduce((p,i)=>[p[0]+(i%N+.5)*STEP/cells.length,p[1]+(Math.floor(i/N)+.5)*STEP/cells.length],[0,0]),cellCenter=i=>[(i%N+.5)*STEP,(Math.floor(i/N)+.5)*STEP],best=cells.reduce((a,b)=>C.distance(cellCenter(a),mean)<C.distance(cellCenter(b),mean)?a:b),center=component.anchor||cellCenter(best),brush=DISTRICTS[component.code-1],quarter=brush.id==='square'?'gardens':brush.id;
+  const ward={id:'paint'+index,center,quarter,seed:C.hash(s.seed+'paint'+index),revision:0,target:0,planAngle:0,paintIndex:index,paintRole:brush.id,citySmart:component.smart===true};ward.profile=C.Refine.profile(s,quarter);if(!component.smart)ward.profile.name=brush.name;
+  const f=C.emit(s,'district',{polygon:outline(cells),x:center[0],y:center[1],ward:ward.profile.name,quarter,label:ward.profile.name,cityWard:ward.id,cityPaintRole:brush.id});ward.feature=f.id;st.neighborhoods.push(ward);cells.forEach(i=>st.paintPlan.cellWard[i]=index);
  }
  const first=st.neighborhoods.find(w=>!OPEN.has(CODES[w.paintRole]));st.origin=first.center.slice();st.networkRoot=first.center.slice();st.planAngle=0;st.refinementVersion=1;
  // Open ground is physically present, not a request for buildings painted green.
@@ -119,22 +120,27 @@ function network(s,C){const st=s.cityStudio,g=st.ground;
  // Join disjoint painted-road groups only through traversable dry land. Never
  // fabricate a crossing across a sea or force a gate through a painted wall.
  for(let pass=0;pass<6;pass++){const graph=C.buildGraph(s);if(graph.components.length<2)break;const main=graph.components.slice().sort((a,b)=>b.length-a.length)[0],pool=graph.nodes,mainSet=new Set(main);let joined=false;
-  for(const component of graph.components){if(component===main||component.some(i=>mainSet.has(i)))continue;let best=null;
-   const sample=a=>a.filter((_,i)=>i%Math.max(1,Math.floor(a.length/24))===0);for(const u of sample(component))for(const v of sample(main)){const a=[pool[u].x,pool[u].y],b=[pool[v].x,pool[v].y],d=C.distance(a,b);if(!best||d<best.d)best={a,b,d};}
-   if(best){const line=C.route(s,best.a,best.b,Math.max(2,4/s.scale));if(line){C.street(s,line,'street',Math.max(2,4/s.scale));joined=true;}}
+  for(const component of graph.components){if(component===main||component.some(i=>mainSet.has(i)))continue;const candidates=[],width=Math.max(2,4/s.scale);
+   const sample=a=>a.filter((_,i)=>i%Math.max(1,Math.floor(a.length/28))===0);
+   for(const u of sample(component))for(const v of sample(main)){const a=[pool[u].x,pool[u].y],b=[pool[v].x,pool[v].y];if(!C.waterAt(g,a,width/2+1)&&!C.waterAt(g,b,width/2+1))candidates.push({a,b,d:C.distance(a,b)});}
+   candidates.sort((a,b)=>a.d-b.d);
+   // The closest pair may lie on opposite banks. Try other dry endpoints,
+   // including the existing bridge approach, before declaring isolation.
+   for(const best of candidates.slice(0,48)){const line=C.route(s,best.a,best.b,width);if(line){C.street(s,line,'street',width);joined=true;break;}}
+
   }if(!joined)break;
  }
 }
 function finish(s,C){const st=s.cityStudio,graph=C.buildGraph(s);st.paintPlan.components=graph.components.length;
  if(graph.components.length>1)st.warnings.push('The sketch has '+graph.components.length+' disconnected street groups. Paint connecting roads and bridge/gate crossings to join them.');
  for(const w of st.neighborhoods){if(OPEN.has(CODES[w.paintRole]))continue;const count=s.features.filter(f=>f.type==='building'&&f.ward===w.feature).length;if(!count)st.warnings.push('No buildings fit '+DISTRICTS.find(d=>d.id===w.paintRole).name+' patch '+(w.paintIndex+1)+'; enlarge it or add a road.');}
- st.warnings=[...new Set(st.warnings)].slice(0,150);
+ Smart.finish(s);st.warnings=[...new Set(st.warnings)].slice(0,150);
 }
-function validate(s){const st=s.cityStudio;if(!st.paintPlan&&!st.ground.paintWater)return;
+function validate(s){Smart.validate(s);const st=s.cityStudio;if(!st.paintPlan&&!st.ground.paintWater)return;
  const plan=st.paintPlan,g=st.ground.paintWater;if(!plan||plan.version!==1||plan.n!==N||!g||g.n!==N)throw Error('Invalid painted city masks.');normalize(s.options.cityPlan);
  for(const [a,min,max]of [[g.cells,0,2],[plan.zones,0,DISTRICTS.length],[plan.cellWard,-1,st.neighborhoods.length-1]])if(!Array.isArray(a)||a.length!==N*N||a.some(x=>!Number.isInteger(x)||x<min||x>max))throw Error('Invalid painted city mask cells.');
  for(const [i,w]of st.neighborhoods.entries())if(w.paintIndex!==i||!CODES[w.paintRole])throw Error('Invalid painted district index.');
 }
 function example(){return{version:1,strokes:[{role:'sea',width:280,points:[[975,70],[975,960]]},{role:'river',width:54,points:[[570,0],[555,240],[650,460],[610,690],[850,790]]},{role:'slums',width:235,points:[[235,650],[445,650]]},{role:'commons',width:240,points:[[230,380],[455,390]]},{role:'noble',width:210,points:[[225,155],[425,160]]},{role:'market',width:125,points:[[490,490]]},{role:'docks',width:135,points:[[752,450],[754,595]]},{role:'gardens',width:110,points:[[360,845],[535,850]]},{role:'road',width:11,points:[[95,490],[790,490]]},{role:'road',width:9,points:[[325,80],[325,900]]},{role:'wall',width:5,points:[[100,290],[480,290]]}]};}
-return{N,STEP,MAX_STROKES,MAX_POINTS,MAX_TOTAL,ROLES,DISTRICTS,CODES,OPEN,normalize,compile,simplify,cell,waterAt,bankDistance,rectangles,touches,fits,at,buildable,prepare,paintRoads,paintWalls,network,finish,validate,example};
+return{Smart,N,STEP,MAX_STROKES,MAX_POINTS,MAX_TOTAL,ROLES,DISTRICTS,CODES,OPEN,normalize,compile,simplify,cell,waterAt,bankDistance,rectangles,touches,fits,at,buildable,prepare,paintRoads,paintWalls,network,finish,validate,example};
 });

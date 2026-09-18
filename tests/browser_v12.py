@@ -54,7 +54,7 @@ with sync_playwright() as p:
         dest=OUT/name;w.value.save_as(dest);expect(dest.stat().st_size>0);page.wait_for_selector('#busy',state='hidden');return dest
     try:
         page.wait_for_selector('#mapHost svg');page.wait_for_selector('#busy',state='hidden')
-        check('Five separate creation modes, including legacy city, and 294 bundled assets',lambda:(expect(page.locator('[data-mode]').count()==5),expect(page.locator('.asset-card').count()==294),expect(js('MegamapApp.getVersion()')=='1.2.0')))
+        check('Five separate creation modes, including legacy city, and 304 bundled assets',lambda:(expect(page.locator('[data-mode]').count()==5),expect(page.locator('.asset-card').count()==304),expect(js('MegamapApp.getVersion()')=='1.2.0')))
         def shapes():
             mode('city');expect(page.locator('[data-opt="shape"] option').count()==12);opt('shape','l-shape');opt('shapeGuidance',100);opt('river',False);expect('Exact target envelope' in page.locator('#shapePreview').inner_text());opt('shapeGuidance',1);expect('Target ignored' in page.locator('#shapePreview').inner_text());opt('shapeGuidance',100)
         check('Twelve shape choices, live preview, guidance endpoints 1 and 100',shapes)

@@ -30,3 +30,6 @@
 .city-perspective-dialog{height:96vh;max-height:96vh;}
 #city25ZoomIn,#city25ZoomOut{font-size:20px;min-width:38px;min-height:38px;}
 @media(max-width:650px){.canvas-header{flex-wrap:wrap;}.view-controls{flex-wrap:wrap;}.city25-heading{gap:4px;}.city-perspective-dialog h2{font-size:1.15rem;}#city25MapName{font-size:.8rem;}#city25Host{min-height:180px;}}
+
+/* Simple brush intent first; detailed quarter colors stay available on demand. */
+.paint-palette details{border:1px solid var(--line);border-radius:6px;padding:7px;margin:6px 0}.paint-palette summary{cursor:pointer;font-size:11px;margin-bottom:7px}.paint-palette [data-brush="smart"]{font-weight:650;min-height:42px}.paint-palette details:not([open])>button{display:none}

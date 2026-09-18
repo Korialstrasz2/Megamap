@@ -143,8 +143,9 @@ function render(s,view={},bearing=0){const lang=R.labels.language(view);
    item={art,d:cam.depth(at)+(f.size||0)*.4,center:at,z:z+height};
   }
   if(item?.art){objects.push({...item,id:f.id});
-   if(layers.labels!==false&&v.labels!==false&&f.label&&f.cityRole==='civic'){const q=project(item.center,item.z+12/s.scale);labels.push(`<text x="${n(q[0])}" y="${n(q[1])}" text-anchor="middle" font-size="10" font-family="Georgia,serif" fill="${p.ink}" stroke="${p.paper}" stroke-width="2" paint-order="stroke">${esc(R.labels.feature(f,lang))}</text>`);}
+   if(layers.labels!==false&&v.labels!==false&&f.label&&f.cityRole==='civic'&&(!f.cityComplex||f.cityComplexKind==='temple'||f.labelCustom)){const q=project(item.center,item.z+12/s.scale);labels.push(`<text x="${n(q[0])}" y="${n(q[1])}" text-anchor="middle" font-size="10" font-family="Georgia,serif" fill="${p.ink}" stroke="${p.paper}" stroke-width="2" paint-order="stroke">${esc(R.labels.feature(f,lang))}</text>`);}
   }
+  if(f.cityRole==='complex-ground'&&(f.cityComplexKind!=='temple'||f.labelCustom)&&f.label&&layers.labels!==false&&v.labels!==false){const gate=lerp(f.polygon[0],f.polygon[1],.5),q=project(gate,elevation(s,gate)+4/s.scale);labels.push(`<text data-city-complex-label="true" x="${n(q[0])}" y="${n(q[1])}" text-anchor="middle" font-size="10" font-family="Georgia,serif" fill="${p.ink}" stroke="${p.paper}" stroke-width="2" paint-order="stroke">${esc(R.labels.feature(f,lang))}</text>`);}
   if(f.type==='label'&&f.label&&layers.labels!==false&&v.labels!==false){const q=project(at,z+1);labels.push(`<text x="${n(q[0])}" y="${n(q[1])}" fill="${p.ink}" font-family="Georgia,serif" font-size="11">${esc(R.labels.feature(f,lang))}</text>`);}
  }
  ground.sort((a,b)=>a.d-b.d);objects.sort((a,b)=>a.d-b.d||a.id.localeCompare(b.id));

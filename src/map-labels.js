@@ -5,7 +5,8 @@
  */
 (function(root,factory){const api=factory(root);if(typeof module==='object'&&module.exports)module.exports=api;else root.MegamapMapLabels=api;})(typeof globalThis!=='undefined'?globalThis:this,function(root){
 'use strict';
-const IT=Object.freeze({
+const IT=Object.freeze({"Smart capital · painted":"Capitale intelligente · dipinta","Monumental capital · automatic":"Capitale monumentale · automatica","Harbor pier":"Molo portuale",
+"Citadel guard post":"Posto di guardia della cittadella","Processional temple steps":"Scalinata processionale del tempio","Formal city parterre":"Parterre urbano formale","Civic statue and plinth":"Statua civica e piedistallo","Great civic fountain":"Grande fontana civica","Timber dock crane":"Gru portuale di legno","Warehouse cargo stacks":"Cataste di merci dei magazzini","Park pavilion":"Padiglione del parco","Market arcade":"Porticato del mercato","Raised grain stores":"Granai rialzati","Smart buildings":"Edifici intelligenti","Smart example":"Esempio intelligente","Detailed districts":"Quartieri dettagliati","Smart quarters":"Quartieri intelligenti","Inner fortress":"Fortezza interna","Inner keep":"Mastio interno","Citadel barracks":"Caserme della cittadella","Great temple gardens":"Giardini del grande tempio","Great temple":"Grande tempio","Warehouse district yards":"Corti del quartiere dei magazzini","Great warehouse":"Grande magazzino","City park":"Parco cittadino","Monument square":"Piazza monumentale","Great fountain":"Grande fontana","Civic monument":"Monumento civico","Paint Smart buildings for automatic quarters, or open Detailed districts to assign them yourself. Water, roads and walls stay under your control.":"Dipingi Edifici intelligenti per creare quartieri automatici, oppure apri Quartieri dettagliati per assegnarli tu. Acqua, strade e mura restano sotto il tuo controllo.","Smart planning needs a wider painted area. Enlarge the building brush.":"La pianificazione intelligente richiede una zona dipinta più ampia. Allarga il pennello degli edifici.",
  "Search assets…": "Cerca asset…",
  "Library": "Biblioteca",
  "Alchemy table": "Tavolo alchemico",
@@ -828,6 +829,10 @@ function text(value,lang=language()){
  if(typeof value!=='string'||lang!=='it'||!value||value.length>512)return value;
  if(has(value))return IT[value];
  let m;
+ if((m=value.match(/^Smart quarter unavailable: (\w+)\. Add suitable painted land( beside water)?\.$/)))return `Quartiere intelligente non disponibile: ${text(m[1],lang)}. Aggiungi terreno dipinto adatto${m[2]?' accanto all’acqua':''}.`;
+ if((m=value.match(/^Smart quarter has no usable buildings: (\w+)\. Enlarge its area or improve road access\.$/)))return `Il quartiere intelligente ${text(m[1],lang)} non ha edifici utilizzabili. Amplia l’area o migliora l’accesso stradale.`;
+ if((m=value.match(/^City complex could not fit safely: (.+)\. More connected open land is needed\.$/)))return `Il complesso urbano ${text(m[1],lang)} non trova posto in sicurezza. Serve più terreno libero collegato alle strade.`;
+
  if((m=value.match(/^Only (\d+) of (\d+) requested boats fit safely in navigable water\.$/)))return `Solo ${m[1]} delle ${m[2]} imbarcazioni richieste trovano posto in sicurezza nelle acque navigabili.`;
  if((m=value.match(/^Placed (\d+) of (\d+) requested structures; unsuitable or inaccessible plots were left open\.$/)))return `Collocati ${m[1]} dei ${m[2]} edifici richiesti; i lotti inadatti o inaccessibili sono rimasti liberi.`;
  if((m=value.match(/^The sketch has (\d+) disconnected street groups\. Paint connecting roads and bridge\/gate crossings to join them\.$/)))return `Lo schizzo contiene ${m[1]} gruppi di strade separati. Disegna strade di collegamento e attraversamenti con ponti o porte per unirli.`;

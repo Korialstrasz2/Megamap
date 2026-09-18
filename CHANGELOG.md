@@ -1,3 +1,10 @@
+## City Studio Part 2 — Smart planning and physical complexes
+
+- Add the wizard-only Smart buildings brush, hybrid zoning, required-role placement and physical coverage reporting without renumbering old mask codes.
+- Reserve gated fortress, temple-garden, large warehouse, park and monument-square complexes in automatic and painted generation; preserve them during district regeneration.
+- Improve dry road reconnection and add safe waterfront piers. Bundle ten new original SVGs and bilingual labels; retain Part 1 controls and offline exports.
+- Add deterministic examples and source/browser regressions.
+
 ## City upgrade · Part 1
 
 - Presentation-only EN/IT default labels across maps, inspectors, atlas/search and exports, with persisted custom-name protection and translated planning warnings.

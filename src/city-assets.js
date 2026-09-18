@@ -22,6 +22,88 @@ const definitions=[
  ['city-cargo-scales','Cargo weighbridge','Pesa delle merci',7,3,'<rect x="-21" y="-18" width="42" height="36" fill="@sand"/><path d="M0-19V18M-20-10H20" stroke="@roof" stroke-width="2.8"/><path d="M-13-10L-20 7H-6ZM13-10L6 7H20Z" fill="@hill"/><path d="M-20 7Q-13 15-6 7M6 7Q13 15 20 7" fill="@paper"/><circle cy="-10" r="3" fill="@roof"/>'],
  ['city-arcade-court','Colonnaded court','Corte colonnata',16,4,'<rect x="-23" y="-22" width="46" height="44" fill="@paper"/><rect x="-14" y="-13" width="28" height="26" fill="@sand"/><path d="M-18-16H18V16H-18Z" fill="none" stroke="@hill" stroke-width="3"/><path d="M-18-16H18M-18 16H18M-18-16V16M18-16V16" stroke="@paper" stroke-width="3" stroke-dasharray="2 6"/><circle r="5" fill="@water"/>']
 ];
+definitions.push(...[
+ [
+  "city-guard-post",
+  "Citadel guard post",
+  "Posto di guardia della cittadella",
+  6,
+  4,
+  "<rect x=\"-20\" y=\"-16\" width=\"40\" height=\"32\" fill=\"@hill\"/><path d=\"M-17-13H17V13H-17Z\" fill=\"@roof\"/><path d=\"M0-13V13M-17-13L0-4L17-13\" fill=\"none\"/><path d=\"M-5 13H5V20H-5\" fill=\"@sand\"/>"
+ ],
+ [
+  "city-temple-steps",
+  "Processional temple steps",
+  "Scalinata processionale del tempio",
+  9,
+  1.5,
+  "<path d=\"M-22 20H22V12H18V4H14V-4H10V-20H-10V-4H-14V4H-18V12H-22Z\" fill=\"@paper\"/><path d=\"M-22 14H22M-18 6H18M-14-2H14M-10-10H10\" fill=\"none\" stroke=\"@hill\" stroke-width=\"1.4\"/>"
+ ],
+ [
+  "city-parterre",
+  "Formal city parterre",
+  "Parterre urbano formale",
+  12,
+  0.7,
+  "<rect x=\"-23\" y=\"-23\" width=\"46\" height=\"46\" fill=\"@sand\"/><path d=\"M-19-19H-3V-3H-19ZM3-19H19V-3H3ZM-19 3H-3V19H-19ZM3 3H19V19H3Z\" fill=\"@forest\"/><path d=\"M-15-15H-7V-7H-15ZM7-15H15V-7H7ZM-15 7H-7V15H-15ZM7 7H15V15H7Z\" fill=\"@grass\"/><circle r=\"2\" fill=\"@paper\"/>"
+ ],
+ [
+  "city-statue-plinth",
+  "Civic statue and plinth",
+  "Statua civica e piedistallo",
+  7,
+  5,
+  "<circle r=\"22\" fill=\"@sand\"/><rect x=\"-14\" y=\"-14\" width=\"28\" height=\"28\" fill=\"@hill\"/><rect x=\"-9\" y=\"-9\" width=\"18\" height=\"18\" fill=\"@paper\"/><path d=\"M-4 7L-6-5L-3-12L3-12L6-5L4 7Z\" fill=\"@mountain\"/><circle cy=\"-12\" r=\"4\" fill=\"@paper\"/><path d=\"M-17 16H17M-16-17H16\" stroke=\"@roof\" stroke-width=\"1.5\"/>"
+ ],
+ [
+  "city-grand-fountain",
+  "Great civic fountain",
+  "Grande fontana civica",
+  10,
+  3,
+  "<path d=\"M-10-23H10L23-10V10L10 23H-10L-23 10V-10Z\" fill=\"@paper\"/><circle r=\"16\" fill=\"@water\"/><circle r=\"9\" fill=\"@hill\"/><circle r=\"6\" fill=\"@water\"/><circle r=\"2.5\" fill=\"@paper\"/><path d=\"M-12 0H-8M8 0H12M0-12V-8M0 8V12\" stroke=\"@paper\" stroke-width=\"1.7\"/>"
+ ],
+ [
+  "city-dock-crane",
+  "Timber dock crane",
+  "Gru portuale di legno",
+  10,
+  9,
+  "<rect x=\"-15\" y=\"-17\" width=\"30\" height=\"34\" fill=\"@sand\"/><circle cx=\"-5\" cy=\"4\" r=\"11\" fill=\"@roof\"/><circle cx=\"-5\" cy=\"4\" r=\"7\" fill=\"@paper\"/><path d=\"M-16 4H6M-5-7V15\" stroke=\"@roof\" stroke-width=\"2\"/><path d=\"M-5 4L18-19L22-15L-1 8Z\" fill=\"@roof\"/><path d=\"M19-17V3q0 5-4 3\" fill=\"none\" stroke-width=\"1.7\"/>"
+ ],
+ [
+  "city-warehouse-cargo",
+  "Warehouse cargo stacks",
+  "Cataste di merci dei magazzini",
+  12,
+  2.8,
+  "<rect x=\"-23\" y=\"-23\" width=\"46\" height=\"46\" fill=\"@sand\"/><path d=\"M-20-19H-4V-3H-20ZM1-19H20V-3H1ZM-20 3H-2V20H-20Z\" fill=\"@roof\"/><path d=\"M-20-19L-4-3M-20-3L-4-19M1-19L20-3M1-3L20-19M-20 3L-2 20M-20 20L-2 3\" stroke=\"@paper\" stroke-width=\"1.2\"/><circle cx=\"8\" cy=\"8\" r=\"5\" fill=\"@hill\"/><circle cx=\"15\" cy=\"17\" r=\"5\" fill=\"@hill\"/>"
+ ],
+ [
+  "city-park-pavilion",
+  "Park pavilion",
+  "Padiglione del parco",
+  10,
+  5,
+  "<path d=\"M-10-22H10L22-10V10L10 22H-10L-22 10V-10Z\" fill=\"@paper\"/><path d=\"M-7-16H7L16-7V7L7 16H-7L-16 7V-7Z\" fill=\"@roof\"/><path d=\"M0 0L-7-16M0 0L7-16M0 0L16-7M0 0L16 7M0 0L7 16M0 0L-7 16M0 0L-16 7M0 0L-16-7\" fill=\"none\" stroke=\"@paper\"/><circle r=\"3\" fill=\"@hill\"/>"
+ ],
+ [
+  "city-market-arcade",
+  "Market arcade",
+  "Porticato del mercato",
+  12,
+  4,
+  "<rect x=\"-22\" y=\"-17\" width=\"44\" height=\"34\" fill=\"@sand\"/><path d=\"M-22-17H22V0H-22Z\" fill=\"@roof\"/><path d=\"M-22-8H22\" stroke=\"@paper\"/><path d=\"M-18 0V16M-6 0V16M6 0V16M18 0V16\" stroke=\"@hill\" stroke-width=\"3\"/><path d=\"M-18 14Q-12 5-6 14Q0 5 6 14Q12 5 18 14\" fill=\"none\" stroke-width=\"1.5\"/>"
+ ],
+ [
+  "city-granary-silos",
+  "Raised grain stores",
+  "Granai rialzati",
+  11,
+  6,
+  "<rect x=\"-23\" y=\"-21\" width=\"46\" height=\"42\" fill=\"@sand\"/><path d=\"M-20-18H-3V18H-20ZM3-18H20V18H3Z\" fill=\"@roof\"/><path d=\"M-12-18V18M12-18V18\" stroke=\"@paper\"/><path d=\"M-20-12H-3M-20 12H-3M3-12H20M3 12H20\" stroke=\"@hill\" stroke-width=\"2\"/>"
+ ]
+]);
 const assets=definitions.map(([id,name,it,meters,heightM,body])=>({id,name,category:'City details',tags:'city studio architecture '+name.toLowerCase(),body,meters,heightM}));
 const IT=Object.fromEntries([['City details','Dettagli città'],...definitions.map(d=>[d[1],d[2]])]);
 return{assets,IT};

@@ -6,8 +6,8 @@ function connected(s){const{cols,rows,cells}=s.battle,root=cells.indexOf(1);asse
 function feature(s,f){s.features.push({id:'test-'+s.features.length,...f});return s;}
 function atlas(s=battle()){return{format:'megamap-atlas',version:1,active:0,maps:[s],library:[]};}
 test('Version is 1.2.0',()=>assert.equal(E.VERSION,'1.2.0'));
-test('Catalog has 294 unique IDs and fifteen categories',()=>{assert.equal(A.catalog.length,294);assert.equal(new Set(A.catalog.map(x=>x.id)).size,294);assert.equal(A.categories.length,15);assert.deepEqual(E.ASSETS,A.catalog.map(x=>x.id));});
-test('New drawings are distinct, resolved and self-contained',()=>{const bodies=A.catalog.filter(a=>a.body).map(a=>a.body);assert.equal(bodies.length,254);assert.equal(new Set(bodies).size,254);for(const id of E.ASSETS){const svg=R.assetFile(id);assert(!/@(?:paper|roof|water|ink|forest|tree)/.test(svg));assert(!/NaN|undefined|<script|<image/.test(svg));assert(!/href="https?:/.test(svg));}});
+test('Catalog has 304 unique IDs and fifteen categories',()=>{assert.equal(A.catalog.length,304);assert.equal(new Set(A.catalog.map(x=>x.id)).size,304);assert.equal(A.categories.length,15);assert.deepEqual(E.ASSETS,A.catalog.map(x=>x.id));});
+test('New drawings are distinct, resolved and self-contained',()=>{const bodies=A.catalog.filter(a=>a.body).map(a=>a.body);assert.equal(bodies.length,264);assert.equal(new Set(bodies).size,264);for(const id of E.ASSETS){const svg=R.assetFile(id);assert(!/@(?:paper|roof|water|ink|forest|tree)/.test(svg));assert(!/NaN|undefined|<script|<image/.test(svg));assert(!/href="https?:/.test(svg));}});
 test('All six palettes render every asset',()=>{for(const palette of C.PALETTES)for(const id of E.ASSETS){const s=R.assetPreview(id,palette,52);assert(s.includes('<svg'));assert(!s.includes('undefined'));}});
 for(const layout of ['organic','planned','radial']){
  test(layout+': city generation is repeatable',()=>{const a=E.generate('city','layout-'+layout,{layout}),b=E.generate('city','layout-'+layout,{layout});assert.deepEqual(a,b);assert.equal(a.options.layout,layout);});

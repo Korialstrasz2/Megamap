@@ -1,10 +1,10 @@
 /* Locality, physical-detail, projection and backward-compatibility regressions. */
 'use strict';
-const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const test=(name,fn)=>require('node:test')(name,async()=>{await new Promise(done=>setImmediate(done));return fn();}),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const E=require('../src/engine'),C=E.CITY_STUDIO,Ref=C.REFINEMENT,Core=require('../src/editor-core'),R=require('../src/render'),CR=require('../src/city-render'),A=require('../src/assets'),CA=require('../src/city-assets'),P=require('../src/city-perspective'),View=require('../src/city-view');
 const make=(preset='market',extra={},seed='refine-0')=>E.generate('fantasy',seed,{preset,...extra}),clone=x=>JSON.parse(JSON.stringify(x));
-test('Sixteen original city assets extend the library without replacing existing symbols',()=>{
- assert.equal(CA.assets.length,16);assert.equal(new Set(CA.assets.map(a=>a.body)).size,16);assert.equal(A.catalog.length,294);assert(A.categories.includes('City details'));
+test('Original city assets and ten complex details extend the library without replacing existing symbols',()=>{
+ assert.equal(CA.assets.length,26);assert.equal(new Set(CA.assets.map(a=>a.body)).size,26);assert.equal(A.catalog.length,304);assert(A.categories.includes('City details'));
  for(const asset of CA.assets){assert(A.byId[asset.id]);assert(asset.heightM>=0);assert(CA.IT[asset.name]);for(const palette of Core.PALETTES){const svg=R.assetFile(asset.id,palette);assert(!/undefined|NaN|<script/.test(svg));assert(svg.includes(asset.id));}assert.equal(fs.readFileSync(path.join(__dirname,'../assets/svg',asset.id+'.svg'),'utf8'),R.assetFile(asset.id));}
 });
 test('Every origin has spatially assigned neighborhood identities without extra generator settings',()=>{

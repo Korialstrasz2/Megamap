@@ -1,3 +1,7 @@
+## City upgrade Part 2: Smart buildings and landmark complexes
+
+The wizard now starts with one **Smart buildings** brush; the original district colors are under **Detailed districts**. Required quarters use terrain/water/roads and actual content checks. Both automatic and painted cities include fitted inner fortresses, temple gardens, warehouse courts, parks and monument squares. Ten new original SVGs bring the bundled library to **304 assets**; no separate download is needed. See `docs/city-part2.html` and `examples/Smart-Cities.megamap.json`. Existing stored geometry, old brush codes, Italian/English labels and direct 2.5D access are retained.
+
 ## City upgrade · Part 1: labels and direct 2.5D
 
 Generated map labels now follow English/Italian throughout the map, inspector, search and exports. Custom names remain verbatim. A direct **2.5D** map-header button, **Shift+V** shortcut, visible zoom controls and **2.5D preview** in the painted-plan wizard make perspective easier to open. No generation rules or assets change in this part. See [Part 1 guide and Part 2 scope](docs/city-part1.html).

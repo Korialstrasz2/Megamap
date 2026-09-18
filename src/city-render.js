@@ -101,7 +101,7 @@ function feature(f,s,p,v){if(!s.cityStudio)return null;const hq=v.hq===true,poly
  return out;
  }
  if(f.cityRole==='ruin')return `<polygon points="${poly}" fill="${p.hill}" fill-opacity=".25" stroke="${p.hill}" stroke-width="2.5" stroke-dasharray="6 3 10 5"/><polygon points="${poly}" fill="url(#city-ground-grain)" stroke="${p.ink}" stroke-width=".5" stroke-dasharray="6 3 10 5"/>`;
- if(f.cityRole==='special-ground')return `<polygon points="${poly}" fill="${f.citySurface==='garden'?p.grass:p.sand}" stroke="${p.ink}" stroke-opacity=".3" stroke-width=".7"/>${hq?`<polygon points="${poly}" fill="url(#city-paving)"/>`:''}`;
+ if(f.cityRole==='special-ground'||f.cityRole==='complex-ground')return `<polygon points="${poly}" fill="${f.citySurface==='garden'?p.grass:p.sand}" stroke="${p.ink}" stroke-opacity=".3" stroke-width=".7"/>${hq?`<polygon points="${poly}" fill="url(#city-paving)"/>`:''}`;
  if(f.type==='plaza')return `<polygon points="${poly}" fill="${p.sand}" stroke="${p.ink}" stroke-opacity=".28" stroke-width=".7"/>${hq?`<polygon points="${poly}" fill="url(#city-paving)"/>`:''}`;
  if(f.type==='wall'&&f.cityRole==='retaining')return `<polyline points="${line}" fill="none" stroke="${p.ink}" stroke-opacity=".5" stroke-width="${num(f.width+1)}"/><polyline points="${line}" fill="none" stroke="${p.paper}" stroke-width="${num(f.width)}" stroke-dasharray="2 1"/>`;
  if(f.type==='wall'&&f.cityRole==='old-wall')return `<polyline points="${line}" fill="none" stroke="${p.ink}" stroke-opacity=".6" stroke-width="${num(f.width+1)}" stroke-dasharray="8 3 5 2"/><polyline points="${line}" fill="none" stroke="${p.hill}" stroke-width="${num(f.width)}" stroke-dasharray="8 3 5 2"/>`;
