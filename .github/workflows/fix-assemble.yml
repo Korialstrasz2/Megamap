@@ -20,7 +20,8 @@ jobs:
           import base64, hashlib, json, lzma
           from pathlib import Path
           digest=lambda b: hashlib.sha256(b).hexdigest()
-          raw=lzma.decompress(base64.b64decode(Path('.fix-transfer/fix.b64').read_bytes().strip(),validate=True))
+          encoded=b''.join(Path(f'.fix-transfer/part-{i:02}.b64').read_bytes().strip() for i in range(8))
+          raw=lzma.decompress(base64.b64decode(encoded,validate=True))
           assert digest(raw)=='61c21da47a70a8136b3f7377fd9683a0a3dd4e31530c80819bd1d3bb8cc07e9e'
           ops=json.loads(raw)
           assert len(ops)==9
@@ -74,6 +75,6 @@ jobs:
       - name: Commit fixes to feature branch
         run: |
           git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config user.email '41898282+Korialstrasz2@users.noreply.github.com'
           git commit -m "Fix painted-city capacity, complexes, boats and 2.5D projection"
           git push origin HEAD:fix/painted-terrain-and-perspective
