@@ -1,0 +1,75 @@
+name: Assemble City Part 1 source
+on:
+  push:
+    branches: [feature/city-part1-language-view]
+    paths: [.github/workflows/part1-assemble.yml]
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply hash-verified reviewed UTF-8 source operations
+        run: |
+          python - <<'PY'
+          import base64, hashlib, json, lzma
+          from pathlib import Path
+          digest = lambda data: hashlib.sha256(data).hexdigest()
+          parts = [Path(f'.part1-transfer/part-{i:02d}.b64').read_bytes().strip() for i in range(3)]
+          for i, part in enumerate(parts):
+              print('Part', i, len(part), digest(part))
+          raw = lzma.decompress(base64.b64decode(b''.join(parts), validate=True))
+          assert digest(raw) == '8245f4d186f6a764e1c2041879d9953edf5dd9c718fc7aea49aa89b40f988ee9', 'Source bundle mismatch'
+          ops = json.loads(raw)
+          assert len(ops) == 17
+          for op in ops:
+              path = Path(op['path'])
+              assert not path.is_absolute() and '..' not in path.parts and '.git' not in path.parts
+              assert path.parts[0] != '.github' and not path.is_symlink()
+              assert all(not parent.is_symlink() for parent in path.parents)
+              if op['before'] is None:
+                  assert not path.exists(), str(path)
+                  text = ''
+              else:
+                  original = path.read_bytes()
+                  assert digest(original) == op['before'], 'Base mismatch: ' + str(path)
+                  text = original.decode('utf-8')
+              end = 0
+              for start, stop, replacement in op['edits']:
+                  assert end <= start <= stop <= len(text)
+                  end = stop
+              for start, stop, replacement in reversed(op['edits']):
+                  text = text[:start] + replacement + text[stop:]
+              data = text.encode('utf-8')
+              assert digest(data) == op['after'], 'Result mismatch: ' + str(path)
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_bytes(data)
+              print('Verified', path)
+          PY
+          for file in src/*.js; do node --check "$file"; done
+          git diff --check
+      - name: Verify unchanged generated assets and examples
+        run: |
+          node scripts/build-assets.cjs
+          git diff --exit-code -- assets/
+          node scripts/build-city-studio-examples.cjs --check
+          node scripts/build-painted-city-examples.cjs --check
+          node scripts/build-encounter-examples.cjs --check
+          node scripts/build-arena-example.cjs --check
+          node scripts/verify-package.cjs
+      - name: Run source regressions
+        run: node --test tests/*.test.cjs
+      - name: Remove transfer and commit reviewed source on feature branch
+        run: |
+          git rm -r .part1-transfer
+          git add -A
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "Implement Part 1 bilingual map labels and direct 2.5D access"
+          git push origin HEAD:feature/city-part1-language-view
