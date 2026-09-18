@@ -93,6 +93,7 @@ with sync_playwright() as p:
         page.screenshot(path=str(OUT/'city-wizard-italian.png'));page.set_viewport_size({'width':760,'height':850})
         check('Wizard fits a narrow screen',page.locator('#newWizardDialog').evaluate('el=>el.scrollWidth<=el.clientWidth+2'))
         page.set_viewport_size({'width':1600,'height':1050});page.click('#wizardNext');check('Customization is a separate optional step','Personalizza' in page.locator('#wizardTitle').inner_text())
+        page.click('#wizardNext')  # Optional wizard-only painted plan; disabled by default.
         n=count();page.click('#wizardNext');page.wait_for_function('(n)=>MegamapApp.getAtlas().maps.length===n+1',arg=n);page.wait_for_selector('#busy',state='hidden');page.wait_for_function('!document.querySelector("#newWizardDialog").open')
         s=scene();check('Imperial capital generated from wizard with an armada',s['cityStudio']['statistics']['buildings']>900 and s['cityStudio']['statistics']['boats']==18)
         check('Palace is a real compound',any(f.get('cityRole')=='civic' and f.get('cityForm')=='court' for f in s['features']))

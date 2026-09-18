@@ -11,6 +11,7 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
  'use strict';
  const IT={
+  'Paint a city plan':'Dipingi una pianta urbana',
   'New wizard':'Nuova procedura guidata',
   'New map wizard':'Creazione guidata della mappa',
   'Map and seed':'Mappa e seme',
@@ -51,9 +52,10 @@
   dialog.innerHTML='<header class="wizard-header"><div><p class="eyebrow" id="wizardEyebrow"></p><h1 id="wizardTitle" tabindex="-1"></h1><p id="wizardIntro"></p></div><button type="button" id="wizardClose"></button></header><div class="wizard-navigation"><span id="wizardProgress" role="status" aria-live="polite"></span><progress id="wizardMeter"></progress><details id="wizardSections"><summary></summary><nav></nav></details><button type="button" id="wizardRandomSection"></button></div><div class="wizard-body" id="wizardBody"></div><p id="wizardError" class="wizard-error" role="alert" hidden></p><footer class="wizard-footer"><button type="button" id="wizardBack"></button><button type="button" id="wizardSkip"></button><button type="button" id="wizardNext" class="primary"></button></footer>';
   doc.body.append(dialog);
   const body=$('wizardBody'),records=new Map();let current='setup',markers=[],frame=0,generating=false,previousFocus=null,lastMode='',oldTab=null;
+  const painter=win.MegamapCityPaint?.mount(doc,I);if(painter)body.append(painter.node);
   const fields='#preset,#seed,[data-opt],[data-subset],[data-zone],[data-zone-template],[data-zone-size],[data-zone-access],[data-zone-near],[data-zone-label],[data-zone-group]';
   const tabs=()=>[...options.querySelectorAll('[data-opt-tab]')];
-  const steps=()=>[{id:'setup',name:t('Map and seed')},...tabs().map(b=>({id:b.dataset.optTab,name:b.textContent.trim()}))];
+  const steps=()=>[{id:'setup',name:t('Map and seed')},...tabs().map(b=>({id:b.dataset.optTab,name:b.textContent.trim()})),...(mode()==='fantasy'&&painter?[{id:'paint-plan',name:t('Paint a city plan')}]:[])];
   const mode=()=>setup.querySelector('[data-mode].active')?.dataset.mode;
   function name(x){
    const label=x.closest('label');
@@ -134,23 +136,23 @@
   }
   function schedule(){if(dialog.open&&!frame&&!generating)frame=win.requestAnimationFrame(refresh);}
   const observer=new win.MutationObserver(changes=>{
-   if(changes.some(r=>!r.target.parentElement?.closest('[data-wizard-ui],#shapePreview,[data-zone-preview],[data-zone-report],[data-zone-catalog]')))schedule();
+   if(changes.some(r=>!r.target.parentElement?.closest('[data-city-paint],[data-wizard-ui],#shapePreview,[data-zone-preview],[data-zone-report],[data-zone-catalog]')))schedule();
   });
   function paint(){
    const list=steps();let index=list.findIndex(s=>s.id===current);if(index<0){current='setup';index=0;}
-   setup.hidden=index!==0;options.hidden=index===0;
+   setup.hidden=index!==0;options.hidden=index===0||current==='paint-plan';if(painter){painter.node.hidden=current!=='paint-plan';if(current==='paint-plan')painter.show();}
    if(index)for(const pane of options.querySelectorAll('[data-opt-pane]'))pane.hidden=pane.dataset.optPane!==current;
    $('wizardEyebrow').textContent=t('New map wizard');$('wizardTitle').textContent=list[index].name;$('wizardIntro').textContent=t('Choose with buttons, adjust exact values, then generate. Your settings stay in the sidebar.');
    $('wizardClose').textContent=t('Close wizard');$('wizardBack').textContent=t('Back');$('wizardBack').disabled=!index;
    $('wizardSkip').textContent=t('Skip section');$('wizardSkip').hidden=index===list.length-1;
    $('wizardNext').textContent=t(generating?'Generating…':index===list.length-1?'Generate map':'Next');
-   $('wizardRandomSection').textContent=t('Randomize section');$('wizardProgress').textContent=t('Step')+' '+(index+1)+' '+t('of')+' '+list.length;
+   $('wizardRandomSection').textContent=t('Randomize section');$('wizardRandomSection').hidden=current==='paint-plan';$('wizardProgress').textContent=t('Step')+' '+(index+1)+' '+t('of')+' '+list.length;
    $('wizardMeter').max=list.length;$('wizardMeter').value=index+1;$('wizardMeter').setAttribute('aria-label',$('wizardProgress').textContent);
    const menu=$('wizardSections');menu.querySelector('summary').textContent=t('Sections');const nav=menu.querySelector('nav');nav.setAttribute('aria-label',t('Sections'));nav.replaceChildren();
    list.forEach((s,i)=>{const b=button((i+1)+'. '+s.name,()=>{if(valid()){go(s.id);menu.open=false;}});if(s.id===current)b.setAttribute('aria-current','step');nav.append(b);});
   }
   function valid(all=false){
-   const scope=all?body:current==='setup'?setup:options.querySelector('[data-opt-pane="'+current+'"]');
+   const scope=all?body:current==='setup'?setup:current==='paint-plan'?painter.node:options.querySelector('[data-opt-pane="'+current+'"]');
    const invalid=[...scope.querySelectorAll('input[type=number]')].find(x=>!x.disabled&&!(all?x.closest('label[hidden]'):x.closest('[hidden]'))&&!x.checkValidity());
    if(!invalid){$('wizardError').hidden=true;return true;}
    if(all){const pane=invalid.closest('[data-opt-pane]');go(pane?.dataset.optPane||'setup');}error(t('Correct the highlighted value before continuing.'));invalid.reportValidity();invalid.focus();return false;
@@ -181,7 +183,7 @@
    $('wizardError').hidden=true;dialog.showModal();refresh();$('wizardTitle').focus();
   }
   function close(created=false){
-   if(generating)return;observer.disconnect();if(frame)win.cancelAnimationFrame(frame);frame=0;
+   if(generating)return;if(painter)painter.hide();observer.disconnect();if(frame)win.cancelAnimationFrame(frame);frame=0;
    for(const {x,anchor,wrap,required}of records.values()){
     x.classList.remove('wizard-native-choice');x.required=required;
     if(wrap.isConnected){wrap.before(anchor);wrap.remove();}
@@ -194,7 +196,7 @@
    else {$('status').textContent=t('Settings retained. No map was generated.');}
   }
   function finish(){
-   if(generating||!valid(true))return;
+   if(generating||painter?.isPreviewing()||!valid(true))return;
    if($('generate').classList.contains('atlas-full')){error(t('The atlas is full. Close the wizard and remove a map in Atlas, or start a new atlas after saving a backup.'));return;}
    const before=$('mapCount').textContent;generating=true;observer.disconnect();
    body.inert=true;$('wizardNext').textContent=t('Generating…');for(const id of ['wizardNext','wizardBack','wizardSkip','wizardClose','wizardRandomSection'])$(id).disabled=true;
@@ -216,7 +218,7 @@
   dialog.addEventListener('cancel',e=>{e.preventDefault();close();});
   dialog.addEventListener('keydown',e=>{e.stopPropagation();});
   body.addEventListener('input',schedule);body.addEventListener('change',schedule);body.addEventListener('click',schedule);
-  function language(){launch.textContent=t('New wizard');launch.setAttribute('aria-label',t('New map wizard'));if(dialog.open){for(const r of records.values())r.signature='';body.querySelectorAll('[data-wizard-mode-random],.program-actions>[data-wizard-ui]').forEach(n=>n.remove());schedule();}}
+  function language(){painter?.language();launch.textContent=t('New wizard');launch.setAttribute('aria-label',t('New map wizard'));if(dialog.open){for(const r of records.values())r.signature='';body.querySelectorAll('[data-wizard-mode-random],.program-actions>[data-wizard-ui]').forEach(n=>n.remove());schedule();}}
   new win.MutationObserver(language).observe(doc.documentElement,{attributes:true,attributeFilter:['lang']});language();
   return {open,close};
  }

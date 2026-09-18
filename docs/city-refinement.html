@@ -1,0 +1,161 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>City refinement and 2.5D · Megamap</title><style>body{max-width:1020px;margin:36px auto;padding:0 24px 64px;background:#f2f0e6;color:#263e34;font:16px/1.7 system-ui,sans-serif}a{color:inherit}h1,h2,h3{line-height:1.2}h1{font-size:36px}h2{margin-top:2.2em;padding-top:.7em;border-top:1px solid #bbc6b8}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px 12px;border-bottom:1px solid #bcc6b8;text-align:left;vertical-align:top}th{background:#e1e8da}pre{overflow:auto;padding:16px;background:#e3e8dc}code{font-size:.9em}hr{margin:3em 0}nav{display:flex;gap:20px;flex-wrap:wrap;font-size:14px}@media(max-width:600px){body{padding:0 14px 30px}h1{font-size:28px}table{font-size:12px}td,th{padding:6px}code{overflow-wrap:anywhere}}</style></head><body><nav><a href="../index.html">Megamap</a><a href="guide.html">User guide</a><a href="city-refinement.md">Markdown source</a></nav><main><h1>City refinement and 2.5D / Quartieri e vista 2.5D</h1>
+<p>This update refines <strong>City Studio</strong>, without replacing its simple preset-led controls or changing <strong>City · legacy</strong>. Everything runs locally. It generates physical settlements only, not people, factions, rumors, population estimates or stories.</p>
+<h2>Nuanced zones without extra sliders</h2>
+<p>A neighborhood now has a physical profile: location preference, frontage spacing, building proportions, setbacks, lane spacing, building height and roof material. The preset supplies the profile automatically. The same quarter type can have a different identity in different settings.</p>
+<table>
+<thead>
+<tr>
+  <th>Settlement</th>
+  <th>Examples of physical neighborhood identity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Golden River capital</td>
+  <td>Naval yards, palace-side villas, bridge markets, arsenal courts and the old river quarter.</td>
+</tr>
+<tr>
+  <td>Nordic council harbor</td>
+  <td>Longship landing, an assembly terrace, longhouse clusters, old timber lanes and boatwright yards. Ordinary residential buildings are mostly one or two floors.</td>
+</tr>
+<tr>
+  <td>Mountain citadel</td>
+  <td>High garrison, upper stone courts, lower forge terraces and slope-side houses.</td>
+</tr>
+<tr>
+  <td>Lagoon port</td>
+  <td>Quay warehouses, canal trading courts and canalside lanes.</td>
+</tr>
+<tr>
+  <td>Oasis</td>
+  <td>Shaded bazaar, caravan courts, irrigated gardens and a spring sanctuary.</td>
+</tr>
+<tr>
+  <td>Great-tree sanctuary</td>
+  <td>Root sanctuary, sacred grove gardens and woodland halls.</td>
+</tr>
+<tr>
+  <td>Crater city</td>
+  <td>Astral terraces, crystal workshops and rim-side lanes.</td>
+</tr>
+<tr>
+  <td>Reclaimed colossus</td>
+  <td>Reclaimed foundations, relic gardens and stonecutters’ yards.</td>
+</tr>
+</tbody>
+</table>
+<p>Assignments use the generated shoreline, elevation, settlement center and nearby compatible uses. A docks program without a nearby waterfront becomes a merchant program rather than placing a shipyard inland. Major routes can attract shopfronts; quieter district edges can mix residential uses. Villa plots keep more space than the dense old town. These are compact spatial rules, not an economic or historical simulation.</p>
+<p>Some neighborhoods reserve a <strong>signature court</strong> before minor roads and building infill. A court has real ground geometry, an access connection and a fitting asset. Assembly benches, working yards, colonnaded courts or excavation gardens are not scattered indiscriminately over roofs. At most seven such sites are attempted per settlement; constrained sites may be omitted. Neighborhood regeneration preserves existing signature sites, civic buildings, streets and locked objects.</p>
+<p>The recommended fishing landing still has <strong>four huts and three boats</strong>. It receives only a small amount of functional detail, such as two net racks, rather than capital-scale institutions.</p>
+<h2>Sixteen new editable assets</h2>
+<p>The new <strong>City details</strong> collection brings the bundled library to <strong>294 assets in 15 categories</strong>. All 278 earlier assets remain. These are original, distinct vector definitions, not recolored copies. They work in the library, palette-aware top-down rendering and exports; they are also used by generation where space permits.</p>
+<table>
+<thead>
+<tr>
+  <th>Stable ID</th>
+  <th>Asset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>city-net-racks</code></td>
+  <td>Fishing net racks</td>
+</tr>
+<tr>
+  <td><code>city-boat-slip</code></td>
+  <td>Boatbuilding cradle</td>
+</tr>
+<tr>
+  <td><code>city-capstan</code></td>
+  <td>Harbor capstan</td>
+</tr>
+<tr>
+  <td><code>city-ropewalk</code></td>
+  <td>Rope-making yard</td>
+</tr>
+<tr>
+  <td><code>city-assembly-stones</code></td>
+  <td>Assembly stone benches</td>
+</tr>
+<tr>
+  <td><code>city-runestone</code></td>
+  <td>Carved standing stone</td>
+</tr>
+<tr>
+  <td><code>city-forge-yard</code></td>
+  <td>Kiln and forge yard</td>
+</tr>
+<tr>
+  <td><code>city-cloister-herbs</code></td>
+  <td>Cloister herb beds</td>
+</tr>
+<tr>
+  <td><code>city-pergola</code></td>
+  <td>Vine pergola</td>
+</tr>
+<tr>
+  <td><code>city-cistern</code></td>
+  <td>Octagonal cistern</td>
+</tr>
+<tr>
+  <td><code>city-caravan-yard</code></td>
+  <td>Caravan loading court</td>
+</tr>
+<tr>
+  <td><code>city-covered-bazaar</code></td>
+  <td>Shaded market stalls</td>
+</tr>
+<tr>
+  <td><code>city-observatory-dais</code></td>
+  <td>Astral observatory dais</td>
+</tr>
+<tr>
+  <td><code>city-relic-garden</code></td>
+  <td>Excavated relic garden</td>
+</tr>
+<tr>
+  <td><code>city-cargo-scales</code></td>
+  <td>Cargo weighbridge</td>
+</tr>
+<tr>
+  <td><code>city-arcade-court</code></td>
+  <td>Colonnaded court</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Visual detail</strong> still controls decorative density. Asset placement uses complete footprints and respects roads, water, buildings and existing occupied ground. Not every possible asset is forced into every city. No extra asset pack, renderer account or download is needed.</p>
+<h2>Refined HQ</h2>
+<p>HQ differentiates <strong>tile, slate, shingle, thatch, turf, plaster and weathered roofs</strong>, with stable building-to-building variation and all six existing palettes. Courtyard paving and garden accents are clipped to their actual ground polygons, including after manual edits. Standard mode remains available.</p>
+<p>HQ is appearance only: toggling it does not move buildings, change street geometry or rerun the seed. Existing Studio maps that lack the new material fields use compatible fallback rendering.</p>
+<h2>Open the 2.5D view</h2>
+<p>Open a <strong>City Studio</strong> map, then choose <strong>Style → Open 2.5D view</strong>. The viewer projects the existing terrain and footprints into an axonometric view with extruded walls, building heights, pitched roof planes, flat roofs, trees, vessels and decks. Courtyard openings remain open. It is not merely a skewed screenshot.</p>
+<p>Use <strong>Rotate left/right</strong> for four camera bearings, drag to pan, and scroll or press <strong>+ / −</strong> to zoom. Arrow keys pan and <strong>Home</strong> or <strong>Fit view</strong> restores the whole map. <strong>Escape</strong> or <strong>Back to map</strong> returns to the editor. Controls support English and Italian and adapt to a narrower window.</p>
+<p>The viewer is deliberately <strong>read-only</strong>. Editing hit coordinates stay in the top-down map. Opening, rotating, panning, zooming or exporting the perspective does not change the city, its seed or its history. Camera position is temporary and is not saved in the atlas. Open the viewer again after changing the top-down style or geometry.</p>
+<p><strong>Export 2.5D SVG</strong> saves the full vector projection; <strong>Export 2.5D PNG</strong> rasterizes the full projection with a target width of 2,048 pixels, bounded to 4,096 pixels in height. Exports use the selected camera bearing, but do not use a temporary panned/zoomed crop. They inherit the active HQ, palette, layer visibility and player-view filtering. Editable atlas files still contain all stored objects, including GM-only content, and are not player-safe exports.</p>
+<p>There is no 2.5D WebP or Universal VTT wall export. The ordinary top-down image exports are unchanged.</p>
+<h2>What the perspective does and does not model</h2>
+<p>Terrain comes from the Studio height field and is displayed as a simplified mesh. Building heights are inferred from floor counts and structural type, using the map scale. Roofs, facades, decks, walls, foliage and ship details use procedural vector geometry. Other library stamps and imported images can remain projected flat artwork rather than fully modeled objects.</p>
+<p>This is <strong>schematic 2.5D cartography</strong>, not a full 3D mesh editor, surveying tool, collision engine, line-of-sight system, or exact visibility/occlusion solver. Painter ordering can be imperfect at overlapping steep terrain or complex manually edited geometry. Underground and rooftop routes remain annotations, not automatically constructed interior floors. For precision placement or inspection, use the top-down editor.</p>
+<p>Large cities can pause while generating or projecting; high-detail SVGs may be several megabytes. Both generation and drawing remain bounded and synchronous. No cloud processing or external network access is required.</p>
+<h2>Saved maps, regeneration and verification</h2>
+<p>Loading a saved city preserves stored geometry. New maps use the refined rules; reproducing an old seed with the updated generator can therefore look different. Older Studio maps without refinement metadata can still be viewed in 2.5D. Only an explicit neighborhood regeneration changes that neighborhood's unlocked content, and existing signature courts remain protected. Moving a building does not automatically move every associated yard, approach or annotation.</p>
+<p>Keep an atlas backup before upgrading and extract the whole application folder. New source modules and vector files must remain with <code>index.html</code>. Older builds may not understand the additional stamps or metadata. Legacy City and stored battle geometry are not converted.</p>
+<p>Developer checks:</p>
+<pre><code class="language-sh">node --test tests/*.test.cjs
+node scripts/build-assets.cjs
+node scripts/build-city-studio-examples.cjs --check
+node scripts/build-arena-example.cjs --check
+node scripts/build-encounter-examples.cjs --check
+python tests/browser_city_studio.py
+python tests/browser_city_refinement.py
+</code></pre>
+<p>The source tests check spatial profiles, complete footprint separation, exact tiny settlements, deterministic materials, protected regeneration, validation, projected roofs, courtyard openings, visibility filtering, bounded capital rendering and legacy compatibility. Browser tests cover the actual local application, viewer controls, SVG/PNG export, Italian, save/reload and the unchanged top-down workflow. The optional <code>--inline</code> fallback is only for constrained local test environments: it removes CSP and is <strong>not</strong> evidence of shipped local-file/CSP behavior. GitHub Actions uses the actual local entry point without that fallback.</p>
+<hr />
+<h2>Guida in italiano</h2>
+<p>L’aggiornamento raffina <strong>Studio città</strong> senza aggiungere una lunga serie di parametri. Ogni modello assegna quartieri in base ad acqua, altezza, posizione e attività: cantieri navali e ville nella capitale, approdo dei drakkar e terrazza dell’assemblea nel porto nordico, bazar e corti carovaniere nell’oasi, giardini dei reperti presso il colosso. I fronti principali e i margini più tranquilli possono avere usi diversi. Non si tratta di una simulazione economica o storica.</p>
+<p>Sedici nuovi <strong>Dettagli città</strong> portano la libreria a <strong>294 simboli in 15 categorie</strong>: reti, scali per barche, argani, cortili delle corde, sedute dell’assemblea, pietre incise, forge, aiuole, pergole, cisterne, corti carovaniere, bazar, osservatori, giardini archeologici, bilance e porticati. Gli spazi caratteristici sono riservati prima degli edifici; non vengono sovrapposti casualmente ai tetti. Il piccolo approdo conserva esattamente quattro capanne e tre barche con le dimensioni consigliate.</p>
+<p>HQ distingue tegole, ardesia, scandole, paglia, zolle erbose, intonaco e superfici invecchiate, oltre a pavimentazioni e giardini ritagliati nelle corti reali. Le sei palette e la modalità standard rimangono disponibili.</p>
+<p>Per la prospettiva apri una mappa di Studio città e scegli <strong>Stile → Apri vista 2.5D</strong>. Ruota a sinistra o destra, trascina per spostare e scorri o premi <strong>+ / −</strong> per lo zoom. Le frecce spostano, <strong>Home</strong> adatta; <strong>Esc</strong> o <strong>Torna alla mappa</strong> chiudono l’anteprima. SVG e PNG esportano l’intera proiezione nella direzione scelta, non il ritaglio dello zoom. La telecamera è temporanea e non modifica né rigenera la città.</p>
+<p>La vista è di sola lettura: modifica gli edifici nella mappa dall’alto. Altezze, terreno e ordinamento visivo sono schematici; non è un editor 3D, un sistema preciso di visibilità, un modello di interni o un’esportazione VTT. Alcuni simboli e immagini restano elementi piatti proiettati. Per un controllo preciso torna alla vista dall’alto.</p>
+<p>Salva un backup ed estrai l’intera cartella aggiornata. Le mappe esistenti mantengono la geometria memorizzata; le nuove generazioni usano le regole raffinate. Città classica e Battaglia rimangono disponibili. Tutto funziona offline, senza personaggi, fazioni, voci o storie generate.</p>
+</main></body></html>

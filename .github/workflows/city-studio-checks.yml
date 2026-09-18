@@ -22,9 +22,12 @@ jobs:
         run: |
           set -o pipefail
           node --test tests/*.test.cjs | tee "$RUNNER_TEMP/city-studio-tests.tap"
-      - name: Verify reproducible city atlas
+      - name: Verify reproducible assets and city atlas
         run: |
+          node scripts/build-assets.cjs
+          git diff --exit-code -- assets/
           node scripts/build-city-studio-examples.cjs --check
+          node scripts/build-painted-city-examples.cjs --check
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -34,6 +37,10 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Fantasy settlements, HQ, layers, Italian, save and exports with shipped CSP
         run: python tests/browser_city_studio.py --output "$RUNNER_TEMP/city-studio-qa"
+      - name: Refined neighborhoods and 2.5D controls, PNG/SVG and compatibility with shipped CSP
+        run: python tests/browser_city_refinement.py --output "$RUNNER_TEMP/city-refinement-qa"
+      - name: Wizard-only painting, housing, masks, preview and saved plans with shipped CSP
+        run: python tests/browser_city_paint.py --output "$RUNNER_TEMP/city-paint-qa"
       - name: Package matching source for reproduction
         if: always()
         run: git archive --format=tar.gz -o "$RUNNER_TEMP/city-studio-source.tar.gz" HEAD
@@ -48,12 +55,13 @@ jobs:
           tap = root / 'city-studio-tests.tap'
           if tap.exists():
               lines += [line for line in tap.read_text().splitlines() if line.startswith(('# tests ', '# pass ', '# fail '))]
-          report = root / 'city-studio-qa' / 'report.json'
-          if report.exists():
-              data = json.loads(report.read_text())
-              lines += ['', f"Browser: {data.get('browser', '?')}; {data.get('passed', '?')} assertions passed; inline: {data.get('inline', '?')}; errors: {data.get('errors', [])}."]
-          else:
-              lines += ['', 'No success report; inspect job logs and retained artifacts.']
+          for suite in ['city-studio-qa', 'city-refinement-qa', 'city-paint-qa']:
+              report = root / suite / 'report.json'
+              if report.exists():
+                  data = json.loads(report.read_text())
+                  lines += ['', f"{suite}: Chromium {data.get('browser', '?')}; {data.get('passed', '?')} assertions passed; inline: {data.get('inline', '?')}; errors: {data.get('errors', [])}."]
+              else:
+                  lines += ['', f'{suite}: no success report; inspect job logs and retained artifacts.']
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as output:
               output.write('\n'.join(lines) + '\n')
           PY
@@ -64,5 +72,7 @@ jobs:
           path: |
             ${{ runner.temp }}/city-studio-tests.tap
             ${{ runner.temp }}/city-studio-qa/
+            ${{ runner.temp }}/city-refinement-qa/
+            ${{ runner.temp }}/city-paint-qa/
             ${{ runner.temp }}/city-studio-source.tar.gz
           retention-days: 7

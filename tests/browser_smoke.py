@@ -74,7 +74,7 @@ with sync_playwright() as p:
         page.wait_for_selector('#busy',state='hidden');return target
     try:
         page.wait_for_selector('#mapHost svg');page.wait_for_selector('#busy',state='hidden')
-        check('Startup: version, default 20 km region, 278 assets and visible Generate button',lambda:(expect(page.evaluate('MegamapApp.getVersion()')=='1.2.0'),expect(s()['scale']==20),expect(page.locator('.asset-card').count()==278),expect(page.locator('#generate').is_visible())))
+        check('Startup: version, default 20 km region, 294 assets and visible Generate button',lambda:(expect(page.evaluate('MegamapApp.getVersion()')=='1.2.0'),expect(s()['scale']==20),expect(page.locator('.asset-card').count()==294),expect(page.locator('#generate').is_visible())))
         def styles():
             left('style');page.select_option('#palette','parchment');page.select_option('#grid','hex');page.check('#contours');expect(s()['appearance']['palette']=='parchment');expect(s()['appearance']['grid']=='hex');expect(s()['appearance']['contours'])
         check('Style controls change and store per-map appearance',styles)

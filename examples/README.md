@@ -1,3 +1,7 @@
+# Painted City Studio examples
+
+Open **Painted-Cities.megamap.json** for two editable cities from the same brush sketch, with temperate and hot/dry house styles. In the City Studio wizard, **Load current map plan** retrieves the strokes from the active map. **City-Studio.megamap.json** retains six refined preset cities; all support the 2.5D viewer. Save your current atlas before opening examples.
+
 # Example maps
 
 ## New in 1.2

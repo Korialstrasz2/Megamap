@@ -1,3 +1,18 @@
+## Wizard-painted city planning and housing variety
+
+- Wizard-only labeled brushes for water, infrastructure and 16 district/open-space roles, with layer erasers, stroke undo/redo, preview, save/load and bounded deterministic fill.
+- Mixed, modest and wealthy housing with climate-dependent shapes, roof pitch, materials, spacing and facade detail in 2D/HQ/2.5D.
+- Painted geometry is authoritative for placement; narrow/isolated districts and impossible water crossings report warnings. Legacy tools remain separate.
+- Includes the previously delivered neighborhood, asset and 2.5D refinement sources in the repository update.
+
+## City Studio refinement and axonometric view
+
+- Added location-aware, preset-specific neighborhood profiles with frontage/height/material variation, mixed district seams, coherent working waterfronts and reserved signature courts.
+- Added 16 original, editable City details (294 assets, 15 categories) and richer deterministic HQ roof and courtyard rendering.
+- Added an offline, read-only 2.5D viewer with projected terrain, building walls and roofs, decks, foliage and vessels; four camera bearings, pan/zoom, keyboard access and full-view SVG/PNG export.
+- Kept the legacy city generator and old saved geometry; viewer actions do not alter the top-down scene. Tightened routing around protected civic footprints and preserved signature sites during neighborhood regeneration.
+- Added source/browser acceptance tests, English/Italian instructions and reproducible updated City Studio examples. No NPC or narrative generation.
+
 ## City Studio · independent fantasy settlement engine
 
 - Added the separate City Studio tool, ten terrain-led fantasy presets, compact sidebar/wizard controls, physical street-frontage parcels, real courts and L-shaped buildings, civic landmarks, fleets, terrain relief and optional historic remains.

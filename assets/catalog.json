@@ -1,7 +1,7 @@
 {
   "version": "1.2.0",
   "license": "GPL-3.0-only",
-  "count": 278,
+  "count": 294,
   "categories": [
     "Nature",
     "Buildings",
@@ -16,7 +16,8 @@
     "Quarter details",
     "Local landscape",
     "Battle landscapes",
-    "Manor & castle"
+    "Manor & castle",
+    "City details"
   ],
   "assets": [
     {
@@ -1996,6 +1997,150 @@
       "tags": "castle barracks servants bed bunk",
       "battleShape": true,
       "file": "svg/guard-bunk.svg"
+    },
+    {
+      "id": "city-net-racks",
+      "name": "Fishing net racks",
+      "category": "City details",
+      "tags": "city studio architecture fishing net racks",
+      "meters": 7,
+      "heightM": 1.8,
+      "file": "svg/city-net-racks.svg"
+    },
+    {
+      "id": "city-boat-slip",
+      "name": "Boatbuilding cradle",
+      "category": "City details",
+      "tags": "city studio architecture boatbuilding cradle",
+      "meters": 12,
+      "heightM": 1.5,
+      "file": "svg/city-boat-slip.svg"
+    },
+    {
+      "id": "city-capstan",
+      "name": "Harbor capstan",
+      "category": "City details",
+      "tags": "city studio architecture harbor capstan",
+      "meters": 5,
+      "heightM": 1.8,
+      "file": "svg/city-capstan.svg"
+    },
+    {
+      "id": "city-ropewalk",
+      "name": "Rope-making yard",
+      "category": "City details",
+      "tags": "city studio architecture rope-making yard",
+      "meters": 16,
+      "heightM": 2,
+      "file": "svg/city-ropewalk.svg"
+    },
+    {
+      "id": "city-assembly-stones",
+      "name": "Assembly stone benches",
+      "category": "City details",
+      "tags": "city studio architecture assembly stone benches",
+      "meters": 12,
+      "heightM": 1.2,
+      "file": "svg/city-assembly-stones.svg"
+    },
+    {
+      "id": "city-runestone",
+      "name": "Carved standing stone",
+      "category": "City details",
+      "tags": "city studio architecture carved standing stone",
+      "meters": 4,
+      "heightM": 3.5,
+      "file": "svg/city-runestone.svg"
+    },
+    {
+      "id": "city-forge-yard",
+      "name": "Kiln and forge yard",
+      "category": "City details",
+      "tags": "city studio architecture kiln and forge yard",
+      "meters": 9,
+      "heightM": 3,
+      "file": "svg/city-forge-yard.svg"
+    },
+    {
+      "id": "city-cloister-herbs",
+      "name": "Cloister herb beds",
+      "category": "City details",
+      "tags": "city studio architecture cloister herb beds",
+      "meters": 12,
+      "heightM": 0.6,
+      "file": "svg/city-cloister-herbs.svg"
+    },
+    {
+      "id": "city-pergola",
+      "name": "Vine pergola",
+      "category": "City details",
+      "tags": "city studio architecture vine pergola",
+      "meters": 8,
+      "heightM": 2.8,
+      "file": "svg/city-pergola.svg"
+    },
+    {
+      "id": "city-cistern",
+      "name": "Octagonal cistern",
+      "category": "City details",
+      "tags": "city studio architecture octagonal cistern",
+      "meters": 8,
+      "heightM": 1.2,
+      "file": "svg/city-cistern.svg"
+    },
+    {
+      "id": "city-caravan-yard",
+      "name": "Caravan loading court",
+      "category": "City details",
+      "tags": "city studio architecture caravan loading court",
+      "meters": 16,
+      "heightM": 2.5,
+      "file": "svg/city-caravan-yard.svg"
+    },
+    {
+      "id": "city-covered-bazaar",
+      "name": "Shaded market stalls",
+      "category": "City details",
+      "tags": "city studio architecture shaded market stalls",
+      "meters": 12,
+      "heightM": 2.6,
+      "file": "svg/city-covered-bazaar.svg"
+    },
+    {
+      "id": "city-observatory-dais",
+      "name": "Astral observatory dais",
+      "category": "City details",
+      "tags": "city studio architecture astral observatory dais",
+      "meters": 10,
+      "heightM": 4,
+      "file": "svg/city-observatory-dais.svg"
+    },
+    {
+      "id": "city-relic-garden",
+      "name": "Excavated relic garden",
+      "category": "City details",
+      "tags": "city studio architecture excavated relic garden",
+      "meters": 14,
+      "heightM": 1.5,
+      "file": "svg/city-relic-garden.svg"
+    },
+    {
+      "id": "city-cargo-scales",
+      "name": "Cargo weighbridge",
+      "category": "City details",
+      "tags": "city studio architecture cargo weighbridge",
+      "meters": 7,
+      "heightM": 3,
+      "file": "svg/city-cargo-scales.svg"
+    },
+    {
+      "id": "city-arcade-court",
+      "name": "Colonnaded court",
+      "category": "City details",
+      "tags": "city studio architecture colonnaded court",
+      "meters": 16,
+      "heightM": 4,
+      "file": "svg/city-arcade-court.svg"
     }
   ]
 }

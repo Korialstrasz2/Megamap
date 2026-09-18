@@ -16,3 +16,13 @@ npm-debug.log*
 
 # City Studio developer browser reports
 docs/qa-city-studio/
+
+# Local refinement / perspective browser artifacts
+docs/qa-city-refinement/
+
+# Python test bytecode
+__pycache__/
+*.pyc
+
+# Wizard paint acceptance artifacts
+docs/qa-city-paint/
